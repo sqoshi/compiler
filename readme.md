@@ -16,4 +16,6 @@
 ## General Info
 ## Code Example
 ## Technologies
+- Pyton 3.9
+
 ## License
