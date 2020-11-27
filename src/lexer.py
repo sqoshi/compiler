@@ -4,7 +4,7 @@ tokens = ('DECLARE', 'BEGIN', 'END',
           'PLUS', 'MINUS', 'DIV', 'MULT', 'MOD',
           'NUM', 'ID', 'ASSIGN',
           'EQ', 'NEQ', 'LEQ', 'GEQ', 'LT', 'GT',
-          'LBR', 'RBR', 'COLON', 'SEMICOLON',
+          'LBR', 'RBR', 'COLON', 'SEMICOLON','COMMA',
           'READ', 'WRITE',
           'IF', 'THEN', 'ELSE', 'ENDIF',
           'WHILE', 'DO', 'ENDWHILE',
@@ -15,6 +15,7 @@ t_ignore_COMMENT = r'\[[^\]]*\]'
 t_ignore = ' \t'
 
 t_DECLARE = r'DECLARE'
+t_BEGIN = r'BEGIN'
 t_END = r'END'
 
 
@@ -45,6 +46,7 @@ t_LBR = r'\('
 t_RBR = r'\)'
 t_COLON = r':'
 t_SEMICOLON = r';'
+t_COMMA = r','
 
 t_IF = r'IF'
 t_THEN = r'THEN'
