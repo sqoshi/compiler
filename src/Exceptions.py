@@ -12,3 +12,8 @@ class VariableNotDeclaredException(Exception):
         super().__init__(message)
 
 
+class VariableNotInitializedException(Exception):
+    def __init__(self, var=None, line_no=None, message="Variable were not initialized."):
+        if var and line_no:
+            message = "Error in line {}. Variable {} were not initialized.".format(line_no, var)
+        super().__init__(message)

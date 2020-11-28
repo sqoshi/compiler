@@ -1,1 +1,9 @@
-DECLARE a,b
+DECLARE
+a,c
+BEGIN
+    a := 3 ;
+    WRITE a;
+    READ c;
+    WRITE c;
+    WRITE a;
+END

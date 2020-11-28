@@ -1,3 +1,5 @@
+import os
+
 import ply.yacc
 import re
 from src.Exceptions import *
@@ -6,8 +8,16 @@ from src.lexer import lexer, tokens
 memory_counter = 1
 arrays = dict()
 variables = dict()
-
+initialized = set()
 labels_val = []
+
+
+def clarify(text: str) -> str:
+    output = ""
+    for line in text.split("\n"):
+        if line != '':
+            output += line.lstrip() + "\n"
+    return output
 
 
 def get_memory_counter():
@@ -26,6 +36,24 @@ def inc_memory_counter(val=1):
     memory_counter += val
 
 
+###########################################################################
+######################### variable validation #############################
+###########################################################################
+def is_initialized(id, lineno):
+    """ Check if variable was initialized. """
+    if id not in initialized:
+        raise VariableNotInitializedException(var=id, line_no=lineno)
+
+
+def validate_var_addr(id, lineno):
+    """ Check  if var was properly used and declared."""
+    if id not in variables.keys():
+        if id in arrays:
+            raise TypeError('Error in line {}. Wrong usage of table variable {}.'.format(id, lineno))
+        else:
+            raise VariableNotDeclaredException(id, lineno)
+
+
 def is_var_taken(id, line_no):
     """ Check if id is taken."""
     if id in variables.keys():
@@ -38,15 +66,17 @@ def is_var_declared(id, line_no):
         raise VariableNotDeclaredException(var=id, line_no=line_no)
 
 
-def check_indexes_array(idx1, idx2, line_no, id):
+def validate_indexes_array(idx1, idx2, line_no, id):
     """ Check if array indexes are valid."""
     if idx1 > idx2:
         raise IndexError('Error in line {}. Array {} indexes are wrong. ({}:{})'.format(line_no, id, idx1, idx2))
 
 
+############################################################################
+
 def add_arr(id, idx1, idx2, line_no):
     """ Save arr by id in memory and increase memory counter by array length."""
-    check_indexes_array(idx1, idx2, line_no, id)
+    validate_indexes_array(idx1, idx2, line_no, id)
     global memory_counter
     arrays[id] = (memory_counter + 1, idx1, idx2)
     inc_memory_counter(idx2 - idx1 + 1)
@@ -69,57 +99,52 @@ def rm_var(id):
     variables.pop(id)
 
 
-def begin(string: str) -> str:
-    return "BEGIN {} \n".format(string)
+def render_operation(*args):
+    return ' '.join(args)
 
 
-def end(string: str) -> str:
-    return "END {} \n".format(string)
+def add_nl(word):
+    return str(word) + "\n"
 
 
-def remove_labels(program):
-    print(program)
-    line_num = 0
-    removed_labels = []
-    for line in program.split("\n"):
-        match = re.search("#L[0-9]+#", line)
-        if match is not None:
-            label_id = int(match.group()[2:-1])
-            labels_val[label_id] = line_num
-            line = re.sub("#L[0-9]+#", "", line)
-        removed_labels.append(line)
-        line_num += 1
+def generate_number(number, register):
+    commands = ""
+    while number != 0:
+        if number % 2 == 0:
+            number = number // 2
+            commands = render_operation("SHL", register, "\n", commands)
+        else:
+            number -= 1
+            commands = render_operation("INC", register, "\n", commands)
+    commands = render_operation("RESET", register, "\n", commands)
+    return commands
 
-    removed_jumps = ""
-    for line in removed_labels:
-        match = re.search("#J[0-9]+#", line)
-        if match is not None:
-            jump_id = int(match.group()[2:-1])
-            jump_line = labels_val[jump_id]
-            line = re.sub("#J[0-9]+#", str(jump_line), line)
-        removed_jumps += line + "\n"
-    return removed_jumps
+
+def load_addr(item, lineno):
+    if item[0] == "id":
+        validate_var_addr(item[1], lineno)
+        return generate_number(variables[item[1]], "b")
+
+
+def load_value(val, register, lineno):
+    if val[0] == "num":
+        return generate_number(int(val[1]), register)
+    if val[0] == "id":
+        is_initialized(val[1], lineno)
+        return load_addr(val, lineno)
 
 
 ##################################################################
 ########################### program ##############################
 ##################################################################
-"""def p_program_declare(p):
+def p_program_declare(p):
     '''program  : DECLARE declarations BEGIN commands END'''
-    p[0] = remove_labels(p[4] + "HALT")
+    p[0] = p[4] + "HALT"
 
 
 def p_program_(p):
     '''program  : BEGIN commands END'''
-    p[0] = remove_labels(p[2] + "HALT")"""
-
-
-def p_program_(p):
-    '''program  : BEGIN declarations END'''
-    print('program')
-    print(variables)
-    p[0] = " HALT"
-    print(variables)
+    p[0] = + p[2] + "HALT"
 
 
 ##################################################################
@@ -155,27 +180,46 @@ def p_declarations_array(p):
 ##################################################################
 ######################## commands ################################
 ##################################################################
-"""def p_commands_multiple(p):
+def p_commands_multiple(p):
     '''commands : commands command'''
     p[0] = p[1] + p[2]
 
 
 def p_commands_single(p):
     '''commands : command'''
-    p[0] = p[1]"""
+    p[0] = p[1]
+
 
 ##################################################################
 ######################### command ################################
 ##################################################################
+
+def p_command_assign(p):
+    '''command  : identifier ASSIGN expression SEMICOLON'''
+    identifier, expression, lineno = p[1], p[3], str(p.lineno(1))
+    p[0] = str(expression) + load_addr(identifier, lineno) + "STORE a b\n"
+    initialized.add(identifier[1])
+
+
+def p_command_write(p):
+    '''command	: WRITE value SEMICOLON '''
+    p[0] = load_value(p[2], "b", str(p.lineno(1))) + 'PUT b\n'
+
+
+def p_command_read(p):
+    '''command	: READ identifier SEMICOLON '''
+    initialized.add(p[2][1])
+    print(variables)
+    p[0] = load_addr(p[2], str(p.lineno(1))) + "GET b\n" + "LOAD a b\n"
 
 
 ##################################################################
 ####################### expression ###############################
 ##################################################################
 
-"""def p_expression_value(p):
+def p_expression_value(p):
     '''expression   : value'''
-    p[0] = ("num", p[1])"""
+    p[0] = load_value(p[1], "a", str(p.lineno(1)))
 
 
 ##################################################################
@@ -229,10 +273,12 @@ parser = ply.yacc.yacc()
 
 def test_compiler(f1='../test', f2='result.mr'):
     f = open(f1, "r")
-    parsed = parser.parse(f.read(), tracking=True, debug=1)
-    print(parsed)
+    parsed = parser.parse(f.read(), tracking=True)
     fw = open(f2, "w")
-    fw.write(parsed)
+    print(clarify(parsed))
+    fw.write(clarify(parsed))
+    fw.close()
+    os.system('../virtual_machine/maszyna-wirtualna result.mr')
 
 
 test_compiler()
