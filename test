@@ -1,9 +1,10 @@
 DECLARE
-a,c
+    a,b,f,c,d,e
 BEGIN
-    a := 3 ;
+    a := 3;
+    d := 5;
     WRITE a;
-    READ c;
-    WRITE c;
-    WRITE a;
+    WRITE d;
+    e := d+a;
+    WRITE e;
 END

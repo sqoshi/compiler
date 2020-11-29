@@ -9,7 +9,15 @@ memory_counter = 1
 arrays = dict()
 variables = dict()
 initialized = set()
-labels_val = []
+
+
+def deko(func):
+    def inner1():
+        print("------before-----" + str(func.__name__))
+        func()
+        print("------after------")
+
+    return inner1
 
 
 def clarify(text: str) -> str:
@@ -107,16 +115,21 @@ def add_nl(word):
     return str(word) + "\n"
 
 
+def nl() -> str:
+    return "\n"
+
+
 def generate_number(number, register):
+    print(number)
     commands = ""
     while number != 0:
         if number % 2 == 0:
             number = number // 2
-            commands = render_operation("SHL", register, "\n", commands)
+            commands = render_operation("SHL", register, nl(), commands)
         else:
             number -= 1
-            commands = render_operation("INC", register, "\n", commands)
-    commands = render_operation("RESET", register, "\n", commands)
+            commands = render_operation("INC", register, nl(), commands)
+    commands = render_operation("RESET", register, nl(), commands)
     return commands
 
 
@@ -131,6 +144,8 @@ def load_value(val, register, lineno):
         return generate_number(int(val[1]), register)
     if val[0] == "id":
         is_initialized(val[1], lineno)
+        print('inload')
+        print(val)
         return load_addr(val, lineno)
 
 
@@ -153,28 +168,28 @@ def p_program_(p):
 
 def p_declarations_variable_rec(p):
     '''declarations : declarations COMMA ID'''
-    print('declarations')
     id, line_no = p[3], str(p.lineno(3))
     add_var(id, line_no)
 
 
 def p_declarations_array_rec(p):
     '''declarations : declarations COMMA ID LBR NUM COLON NUM RBR'''
-    print('declarations')
     add_arr(p[3], p[5], p[7], str(p.lineno(3)))
 
 
 def p_declarations_variable(p):
     '''declarations : ID'''
-    print('declarations')
     id, line_no = p[1], str(p.lineno(1))
     add_var(id, line_no)
 
 
 def p_declarations_array(p):
     '''declarations : ID LBR NUM COLON NUM RBR'''
-    print('declarations')
     add_arr(p[1], p[3], p[5], str(p.lineno(1)))
+
+
+def pack(test, tag="##"):
+    return tag + nl() + test + tag[::-1] + nl()
 
 
 ##################################################################
@@ -197,20 +212,19 @@ def p_commands_single(p):
 def p_command_assign(p):
     '''command  : identifier ASSIGN expression SEMICOLON'''
     identifier, expression, lineno = p[1], p[3], str(p.lineno(1))
-    p[0] = str(expression) + load_addr(identifier, lineno) + "STORE a b\n"
+    p[0] = pack(str(expression) + load_addr(identifier, lineno) + "STORE a b" + nl(), '##asg')
     initialized.add(identifier[1])
 
 
 def p_command_write(p):
     '''command	: WRITE value SEMICOLON '''
-    p[0] = load_value(p[2], "b", str(p.lineno(1))) + 'PUT b\n'
+    p[0] = pack(load_value(p[2], "b", str(p.lineno(1))) + 'PUT b' + nl(), '##write')
 
 
 def p_command_read(p):
     '''command	: READ identifier SEMICOLON '''
     initialized.add(p[2][1])
-    print(variables)
-    p[0] = load_addr(p[2], str(p.lineno(1))) + "GET b\n" + "LOAD a b\n"
+    p[0] = load_addr(p[2], str(p.lineno(1))) + "GET b" + nl() + "LOAD a b" + nl()
 
 
 ##################################################################
@@ -219,7 +233,30 @@ def p_command_read(p):
 
 def p_expression_value(p):
     '''expression   : value'''
+    print('expression   : value: '+ str(p[1]))
     p[0] = load_value(p[1], "a", str(p.lineno(1)))
+
+
+def p_expression_plus(p):
+    '''expression   : value PLUS value'''
+    print(variables)
+    print(p[1], ';', p[3])
+    p[0] = pack(load_value(p[1], "c", str(p.lineno(1))) \
+                + load_value(p[3], "d", str(p.lineno(1))) \
+                + "ADD c d" + nl() + "RESET b" + nl() + "ADD b c" + nl(), '##plus')
+
+
+def p_expression_minus(p):
+    '''expression   : value MINUS value'''
+    print(p[1], ';', p[3])
+    p[0] = load_value(p[1], "a", str(p.lineno(1))) \
+           + load_value(p[3], "b", str(p.lineno(1))) \
+           + "SUB a b" + nl()
+
+
+##################################################################
+######################## condition ###############################
+##################################################################
 
 
 ##################################################################
@@ -228,13 +265,11 @@ def p_expression_value(p):
 
 def p_value_num(p):
     '''value    : NUM '''
-    print('value')
     p[0] = ("num", p[1])
 
 
 def p_value_identifier(p):
     '''value    : identifier '''
-    print('value')
     p[0] = (p[1])
 
 
@@ -244,19 +279,16 @@ def p_value_identifier(p):
 
 def p_identifier_id(p):
     '''identifier	: ID '''
-    print('identifier')
     p[0] = ("id", p[1])
 
 
 def p_identifier_table_id(p):
     '''identifier   : ID LBR ID RBR '''
-    print('identifier')
     p[0] = ("tab", p[1], ("id", p[3]))
 
 
 def p_identifier(p):
     '''identifier	: ID LBR NUM RBR '''
-    print('identifier')
     p[0] = ("tab", p[1], ("num", p[3]))
 
 
