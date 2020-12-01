@@ -1,10 +1,10 @@
 DECLARE
-    a,b,f,c,d,e
+    a,b(10:30),f,c,d,e
 BEGIN
-    a := 3;
-    d := 5;
+    a := 4;
+    d := 7;
     WRITE a;
     WRITE d;
-    e := d+a;
-    WRITE e;
+    f := d*a;
+    WRITE f;
 END

@@ -1,69 +1,74 @@
-##asg
-RESET a 
-INC a 
-SHL a 
-INC a 
-RESET b 
-INC b 
-SHL b 
-STORE a b
-gsa##
-##asg
 RESET a 
 INC a 
 SHL a 
 SHL a 
+RESET b 
+INC b 
+SHL b 
+STORE a b
+RESET a 
+INC a 
+SHL a 
+INC a 
+SHL a 
 INC a 
 RESET b 
 INC b 
 SHL b 
 INC b 
 SHL b 
+SHL b 
+INC b 
+SHL b 
 STORE a b
-gsa##
-##write
 RESET b 
 INC b 
 SHL b 
 PUT b
-etirw##
-##write
 RESET b 
 INC b 
+SHL b 
+INC b 
+SHL b 
 SHL b 
 INC b 
 SHL b 
 PUT b
-etirw##
-##asg
-##plus
+RESET d 
+INC d 
+SHL d 
+INC d 
+SHL d 
+SHL d 
+INC d 
+SHL d 
+RESET c 
+INC c 
+SHL c 
+LOAD d d
+LOAD c c
+RESET a
+JZERO d 7
+JODD d 3
+SHL c
+SHR d
+ADD a c
+DEC d
+JUMP -6
 RESET b 
 INC b 
 SHL b 
 INC b 
 SHL b 
-RESET b 
-INC b 
 SHL b 
-ADD c d
-RESET b
-ADD b c
-sulp##
-RESET b 
-INC b 
 SHL b 
-INC b 
-SHL b 
-INC b 
 STORE a b
-gsa##
-##write
 RESET b 
 INC b 
 SHL b 
 INC b 
 SHL b 
-INC b 
+SHL b 
+SHL b 
 PUT b
-etirw##
 HALT

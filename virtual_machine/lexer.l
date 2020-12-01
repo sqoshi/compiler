@@ -6,7 +6,7 @@
  * 2020-11-12
 */
 %option noyywrap
-%option yylineno
+%option yyline
 %option nounput
 %{
 #include "parser.hh"

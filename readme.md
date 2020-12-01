@@ -71,7 +71,7 @@ HALT
 ```python
 def p_expression_value(p):
     '''expression   : value'''
-    p[0] = load_value(p[1], "a", str(p.lineno(1)))
+    p[0] = load_value(p[1], "a", str(p.line(1)))
 ```
 ## Technologies
 - Pyton 3.9

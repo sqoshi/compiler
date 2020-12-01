@@ -80,7 +80,7 @@
 
 using namespace std;
 
-extern int yylineno;
+extern int yyline;
 int yylex( void );
 void yyset_in( FILE * in_str );
 void yyerror( vector< tuple<int,int,int> > & program, char const *s );
@@ -1593,7 +1593,7 @@ yyreturn:
 
 void yyerror( vector< tuple<int,int,int> > & program, char const *s )
 {
-  cerr << cRed << "Linia " << yylineno << ": " << s << cReset << endl;
+  cerr << cRed << "Linia " << yyline << ": " << s << cReset << endl;
   exit(-1);
 }
 

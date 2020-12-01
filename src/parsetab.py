@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'ASSIGN BEGIN COLON COMMA DECLARE DIV DO DOWNTO ELSE END ENDFOR ENDIF ENDWHILE EQ FOR FROM GEQ GT ID IF LBR LEQ LT MINUS MOD MULT NEQ NUM PLUS RBR READ REPEAT SEMICOLON THEN TO UNTIL WHILE WRITEprogram  : DECLARE declarations BEGIN commands ENDprogram  : BEGIN commands ENDdeclarations : declarations COMMA IDdeclarations : declarations COMMA ID LBR NUM COLON NUM RBRdeclarations : IDdeclarations : ID LBR NUM COLON NUM RBRcommands : commands commandcommands : commandcommand  : identifier ASSIGN expression SEMICOLONcommand\t: WRITE value SEMICOLON command\t: READ identifier SEMICOLON expression   : valueexpression   : value PLUS valueexpression   : value MINUS valuevalue    : NUM value    : identifier identifier\t: ID identifier   : ID LBR ID RBR identifier\t: ID LBR NUM RBR '
+_lr_signature = 'ASSIGN BEGIN COLON COMMA DECLARE DIV DO DOWNTO ELSE END ENDFOR ENDIF ENDWHILE EQ FOR FROM GEQ GT ID IF LBR LEQ LT MINUS MOD MULT NEQ NUM PLUS RBR READ REPEAT SEMICOLON THEN TO UNTIL WHILE WRITEprogram  : DECLARE declarations BEGIN commands ENDprogram  : BEGIN commands ENDdeclarations : declarations COMMA IDdeclarations : declarations COMMA ID LBR NUM COLON NUM RBRdeclarations : IDdeclarations : ID LBR NUM COLON NUM RBRcommands : commands commandcommands : commandcommand  : identifier ASSIGN expression SEMICOLONcommand\t: WRITE value SEMICOLON command\t: READ identifier SEMICOLON expression   : valueexpression   : value PLUS valueexpression   : value MINUS valueexpression   : value MULT valuevalue    : NUM value    : identifier identifier\t: ID identifier   : ID LBR ID RBR identifier\t: ID LBR NUM RBR '
     
-_lr_action_items = {'DECLARE':([0,],[2,]),'BEGIN':([0,4,5,24,45,47,],[3,12,-5,-3,-6,-4,]),'$end':([1,15,32,],[0,-2,-1,]),'ID':([2,3,6,7,9,10,12,13,16,17,22,23,28,29,35,36,37,],[5,11,11,-8,11,11,11,24,-7,11,30,11,-10,-11,-9,11,11,]),'WRITE':([3,6,7,12,16,23,28,29,35,],[9,9,-8,9,-7,9,-10,-11,-9,]),'READ':([3,6,7,12,16,23,28,29,35,],[10,10,-8,10,-7,10,-10,-11,-9,]),'COMMA':([4,5,24,45,47,],[13,-5,-3,-6,-4,]),'LBR':([5,11,24,],[14,22,33,]),'END':([6,7,16,23,28,29,35,],[15,-8,-7,32,-10,-11,-9,]),'ASSIGN':([8,11,38,39,],[17,-17,-18,-19,]),'NUM':([9,14,17,22,33,34,36,37,44,],[19,25,19,31,40,41,19,19,46,]),'SEMICOLON':([11,18,19,20,21,26,27,38,39,42,43,],[-17,28,-15,-16,29,35,-12,-18,-19,-13,-14,]),'PLUS':([11,19,20,27,38,39,],[-17,-15,-16,36,-18,-19,]),'MINUS':([11,19,20,27,38,39,],[-17,-15,-16,37,-18,-19,]),'COLON':([25,40,],[34,44,]),'RBR':([30,31,41,46,],[38,39,45,47,]),}
+_lr_action_items = {'DECLARE':([0,],[2,]),'BEGIN':([0,4,5,24,47,49,],[3,12,-5,-3,-6,-4,]),'$end':([1,15,32,],[0,-2,-1,]),'ID':([2,3,6,7,9,10,12,13,16,17,22,23,28,29,35,36,37,38,],[5,11,11,-8,11,11,11,24,-7,11,30,11,-10,-11,-9,11,11,11,]),'WRITE':([3,6,7,12,16,23,28,29,35,],[9,9,-8,9,-7,9,-10,-11,-9,]),'READ':([3,6,7,12,16,23,28,29,35,],[10,10,-8,10,-7,10,-10,-11,-9,]),'COMMA':([4,5,24,47,49,],[13,-5,-3,-6,-4,]),'LBR':([5,11,24,],[14,22,33,]),'END':([6,7,16,23,28,29,35,],[15,-8,-7,32,-10,-11,-9,]),'ASSIGN':([8,11,39,40,],[17,-18,-19,-20,]),'NUM':([9,14,17,22,33,34,36,37,38,46,],[19,25,19,31,41,42,19,19,19,48,]),'SEMICOLON':([11,18,19,20,21,26,27,39,40,43,44,45,],[-18,28,-16,-17,29,35,-12,-19,-20,-13,-14,-15,]),'PLUS':([11,19,20,27,39,40,],[-18,-16,-17,36,-19,-20,]),'MINUS':([11,19,20,27,39,40,],[-18,-16,-17,37,-19,-20,]),'MULT':([11,19,20,27,39,40,],[-18,-16,-17,38,-19,-20,]),'COLON':([25,41,],[34,46,]),'RBR':([30,31,42,48,],[39,40,47,49,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -17,7 +17,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'program':([0,],[1,]),'declarations':([2,],[4,]),'commands':([3,12,],[6,23,]),'command':([3,6,12,23,],[7,16,7,16,]),'identifier':([3,6,9,10,12,17,23,36,37,],[8,8,20,21,8,20,8,20,20,]),'value':([9,17,36,37,],[18,27,42,43,]),'expression':([17,],[26,]),}
+_lr_goto_items = {'program':([0,],[1,]),'declarations':([2,],[4,]),'commands':([3,12,],[6,23,]),'command':([3,6,12,23,],[7,16,7,16,]),'identifier':([3,6,9,10,12,17,23,36,37,38,],[8,8,20,21,8,20,8,20,20,20,]),'value':([9,17,36,37,38,],[18,27,43,44,45,]),'expression':([17,],[26,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -27,23 +27,24 @@ for _k, _v in _lr_goto_items.items():
 del _lr_goto_items
 _lr_productions = [
   ("S' -> program","S'",1,None,None,None),
-  ('program -> DECLARE declarations BEGIN commands END','program',5,'p_program_declare','parser.py',145),
-  ('program -> BEGIN commands END','program',3,'p_program_','parser.py',150),
-  ('declarations -> declarations COMMA ID','declarations',3,'p_declarations_variable_rec','parser.py',159),
-  ('declarations -> declarations COMMA ID LBR NUM COLON NUM RBR','declarations',8,'p_declarations_array_rec','parser.py',165),
-  ('declarations -> ID','declarations',1,'p_declarations_variable','parser.py',170),
-  ('declarations -> ID LBR NUM COLON NUM RBR','declarations',6,'p_declarations_array','parser.py',176),
-  ('commands -> commands command','commands',2,'p_commands_multiple','parser.py',184),
-  ('commands -> command','commands',1,'p_commands_single','parser.py',189),
-  ('command -> identifier ASSIGN expression SEMICOLON','command',4,'p_command_assign','parser.py',198),
-  ('command -> WRITE value SEMICOLON','command',3,'p_command_write','parser.py',205),
-  ('command -> READ identifier SEMICOLON','command',3,'p_command_read','parser.py',210),
-  ('expression -> value','expression',1,'p_expression_value','parser.py',220),
-  ('expression -> value PLUS value','expression',3,'p_expression_plus','parser.py',225),
-  ('expression -> value MINUS value','expression',3,'p_expression_minus','parser.py',233),
-  ('value -> NUM','value',1,'p_value_num','parser.py',250),
-  ('value -> identifier','value',1,'p_value_identifier','parser.py',255),
-  ('identifier -> ID','identifier',1,'p_identifier_id','parser.py',264),
-  ('identifier -> ID LBR ID RBR','identifier',4,'p_identifier_table_id','parser.py',269),
-  ('identifier -> ID LBR NUM RBR','identifier',4,'p_identifier','parser.py',274),
+  ('program -> DECLARE declarations BEGIN commands END','program',5,'p_program_declare','parser.py',182),
+  ('program -> BEGIN commands END','program',3,'p_program_','parser.py',187),
+  ('declarations -> declarations COMMA ID','declarations',3,'p_declarations_variable_rec','parser.py',196),
+  ('declarations -> declarations COMMA ID LBR NUM COLON NUM RBR','declarations',8,'p_declarations_array_rec','parser.py',202),
+  ('declarations -> ID','declarations',1,'p_declarations_variable','parser.py',207),
+  ('declarations -> ID LBR NUM COLON NUM RBR','declarations',6,'p_declarations_array','parser.py',213),
+  ('commands -> commands command','commands',2,'p_commands_multiple','parser.py',221),
+  ('commands -> command','commands',1,'p_commands_single','parser.py',226),
+  ('command -> identifier ASSIGN expression SEMICOLON','command',4,'p_command_assign','parser.py',235),
+  ('command -> WRITE value SEMICOLON','command',3,'p_command_write','parser.py',243),
+  ('command -> READ identifier SEMICOLON','command',3,'p_command_read','parser.py',249),
+  ('expression -> value','expression',1,'p_expression_value','parser.py',259),
+  ('expression -> value PLUS value','expression',3,'p_expression_plus','parser.py',264),
+  ('expression -> value MINUS value','expression',3,'p_expression_minus','parser.py',274),
+  ('expression -> value MULT value','expression',3,'p_expression_multiplication','parser.py',284),
+  ('value -> NUM','value',1,'p_value_num','parser.py',303),
+  ('value -> identifier','value',1,'p_value_identifier','parser.py',308),
+  ('identifier -> ID','identifier',1,'p_identifier_id','parser.py',317),
+  ('identifier -> ID LBR ID RBR','identifier',4,'p_identifier_table_id','parser.py',322),
+  ('identifier -> ID LBR NUM RBR','identifier',4,'p_identifier','parser.py',327),
 ]

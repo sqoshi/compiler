@@ -167,22 +167,22 @@ extern FILE *yyin, *yyout;
      *       access to the local variable yy_act. Since yyless() is a macro, it would break
      *       existing scanners that call yyless() from OUTSIDE yylex.
      *       One obvious solution it to make yy_act a global. I tried that, and saw
-     *       a 5% performance hit in a non-yylineno scanner, because yy_act is
-     *       normally declared as a register variable-- so it is not worth it.
+     *       a 5% performance hit in a non-yyline scanner, because yy_act is
+     *       normally declared as a reg variable-- so it is not worth it.
      */
-    #define  YY_LESS_LINENO(n) \
+    #define  YY_LESS_line(n) \
             do { \
                 int yyl;\
                 for ( yyl = n; yyl < yyleng; ++yyl )\
                     if ( yytext[yyl] == '\n' )\
-                        --yylineno;\
+                        --yyline;\
             }while(0)
-    #define YY_LINENO_REWIND_TO(dst) \
+    #define YY_line_REWIND_TO(dst) \
             do {\
                 const char *p;\
                 for ( p = yy_cp-1; p >= (dst); --p)\
                     if ( *p == '\n' )\
-                        --yylineno;\
+                        --yyline;\
             }while(0)
     
 /* Return all but the first "n" matched characters back to the input stream. */
@@ -191,7 +191,7 @@ extern FILE *yyin, *yyout;
 		{ \
 		/* Undo effects of setting up yytext. */ \
         int yyless_macro_arg = (n); \
-        YY_LESS_LINENO(yyless_macro_arg);\
+        YY_LESS_line(yyless_macro_arg);\
 		*yy_cp = (yy_hold_char); \
 		YY_RESTORE_YY_MORE_OFFSET \
 		(yy_c_buf_p) = yy_cp = yy_bp + yyless_macro_arg - YY_MORE_ADJ; \
@@ -238,7 +238,7 @@ struct yy_buffer_state
 	 */
 	int yy_at_bol;
 
-    int yy_bs_lineno; /**< The line count. */
+    int yy_bs_line; /**< The line count. */
     int yy_bs_column; /**< The column count. */
 
 	/* Whether to try to fill the input buffer when we reach the
@@ -351,8 +351,8 @@ FILE *yyin = NULL, *yyout = NULL;
 
 typedef int yy_state_type;
 
-extern int yylineno;
-int yylineno = 1;
+extern int yyline;
+int yyline = 1;
 
 extern char *yytext;
 #ifdef yytext_ptr
@@ -572,9 +572,9 @@ void yyset_out  ( FILE * _out_str  );
 
 char *yyget_text ( void );
 
-int yyget_lineno ( void );
+int yyget_line ( void );
 
-void yyset_lineno ( int _line_number  );
+void yyset_line ( int _line_number  );
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -798,7 +798,7 @@ yy_find_action:
 			for ( yyl = 0; yyl < yyleng; ++yyl )
 				if ( yytext[yyl] == '\n' )
 					
-    yylineno++;
+    yyline++;
 ;
 			}
 
@@ -1360,7 +1360,7 @@ static int yy_get_next_buffer (void)
 
 	if ( c == '\n' )
 		
-    yylineno++;
+    yyline++;
 ;
 
 	return c;
@@ -1493,10 +1493,10 @@ static void yy_load_buffer_state  (void)
 
     /* If b is the current buffer, then yy_init_buffer was _probably_
      * called from yyrestart() or through yy_get_next_buffer.
-     * In that case, we don't want to reset the lineno or column.
+     * In that case, we don't want to reset the line or column.
      */
     if (b != YY_CURRENT_BUFFER){
-        b->yy_bs_lineno = 1;
+        b->yy_bs_line = 1;
         b->yy_bs_column = 0;
     }
 
@@ -1734,7 +1734,7 @@ static void yynoreturn yy_fatal_error (const char* msg )
 		{ \
 		/* Undo effects of setting up yytext. */ \
         int yyless_macro_arg = (n); \
-        YY_LESS_LINENO(yyless_macro_arg);\
+        YY_LESS_line(yyless_macro_arg);\
 		yytext[yyleng] = (yy_hold_char); \
 		(yy_c_buf_p) = yytext + yyless_macro_arg; \
 		(yy_hold_char) = *(yy_c_buf_p); \
@@ -1748,10 +1748,10 @@ static void yynoreturn yy_fatal_error (const char* msg )
 /** Get the current line number.
  * 
  */
-int yyget_lineno  (void)
+int yyget_line  (void)
 {
     
-    return yylineno;
+    return yyline;
 }
 
 /** Get the input stream.
@@ -1791,10 +1791,10 @@ char *yyget_text  (void)
  * @param _line_number line number
  * 
  */
-void yyset_lineno (int  _line_number )
+void yyset_line (int  _line_number )
 {
     
-    yylineno = _line_number;
+    yyline = _line_number;
 }
 
 /** Set the input stream. This does not discard the current
@@ -1829,8 +1829,8 @@ static int yy_init_globals (void)
      * This function is called from yylex_destroy(), so don't allocate here.
      */
 
-    /* We do not touch yylineno unless the option is enabled. */
-    yylineno =  1;
+    /* We do not touch yyline unless the option is enabled. */
+    yyline =  1;
     
     (yy_buffer_stack) = NULL;
     (yy_buffer_stack_top) = 0;
