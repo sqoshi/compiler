@@ -268,6 +268,13 @@ def p_command_read(p):
     p[0] = render_addr(p[2], str(p.lineno(1)), "b") + "GET b" + nl()
 
 
+def p_command_while(p):
+    '''command	: WHILE condition DO commands ENDWHILE'''
+    m1 = mark()
+    p[0] = pack(m1 + p[2][0] + p[4]
+                + "JUMP " + jump_label[m1] + nl() + p[2][1], '<<while')
+
+
 ##################################################################
 ####################### expression ###############################
 ##################################################################
@@ -344,6 +351,32 @@ def p_expression_division(p):
 ##################################################################
 ######################## condition ###############################
 ##################################################################
+def p_condition_gt(p):
+    '''condition   : value GT value'''
+    command = render_vaules_double(p, 'c', 'd')
+    if is_id(p[1]):
+        command += "LOAD c c" + nl()
+    if is_id(p[3]):
+        command += "LOAD d d" + nl()
+    m1 = mark()
+    p[0] = (pack(command
+                 + "SUB c d" + nl()
+                 + 'JZERO c ' + jump_label[m1] + nl()
+                 , '<<GT'), m1)
+
+
+def p_condition_lt(p):
+    '''condition   : value LT value'''
+    command = render_vaules_double(p, 'd', 'c')
+    if is_id(p[1]):
+        command += "LOAD d d" + nl()
+    if is_id(p[3]):
+        command += "LOAD c c" + nl()
+    m1 = mark()
+    p[0] = (pack(command
+                 + "SUB c d" + nl()
+                 + 'JZERO c ' + jump_label[m1] + nl()
+                 , '<<LT'), m1)
 
 
 ##################################################################

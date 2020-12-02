@@ -1,10 +1,13 @@
 DECLARE
     a,b(10:30),f,c,d,e
 BEGIN
-    a := 4;
+    a := 5;
     d := 7;
-    WRITE a;
     WRITE d;
-    f := d*a;
-    WRITE f;
+    WHILE
+        a<6
+    DO
+            WRITE a;
+            a:=a+1;
+    ENDWHILE
 END

@@ -2,6 +2,7 @@ RESET a
 INC a 
 SHL a 
 SHL a 
+INC a 
 RESET b 
 INC b 
 SHL b 
@@ -24,10 +25,6 @@ STORE a b
 RESET b 
 INC b 
 SHL b 
-PUT b
-RESET b 
-INC b 
-SHL b 
 INC b 
 SHL b 
 SHL b 
@@ -37,38 +34,28 @@ PUT b
 RESET d 
 INC d 
 SHL d 
-INC d 
-SHL d 
-SHL d 
-INC d 
-SHL d 
 RESET c 
 INC c 
 SHL c 
+INC c 
+SHL c 
 LOAD d d
-LOAD c c
-RESET a
-JZERO d 7
-JODD d 3
-SHL c
-SHR d
-ADD a c
-DEC d
-JUMP -6
+SUB c d
+JZERO c 17
 RESET b 
 INC b 
-SHL b 
-INC b 
-SHL b 
-SHL b 
-SHL b 
-STORE a b
-RESET b 
-INC b 
-SHL b 
-INC b 
-SHL b 
-SHL b 
 SHL b 
 PUT b
+RESET a 
+INC a 
+SHL a 
+RESET c 
+INC c 
+LOAD a a
+ADD a c
+RESET b 
+INC b 
+SHL b 
+STORE a b
+JUMP -26
 HALT
