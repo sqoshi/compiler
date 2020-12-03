@@ -90,6 +90,13 @@ def p_command_while(p):
                 + "JUMP " + jump_label[m1] + nl() + p[2][1], '<<while')
 
 
+def p_command_repeat_until(p):
+    """command	: REPEAT commands UNTIL condition SEMICOLON"""
+    m1 = mark(jump_label)
+    print(m1 + p[2] + nl() + p[4][0] + p[4][1] + "JUMP " + jump_label[m1] + nl())
+    p[0] = pack(m1 + p[2] + nl() + p[4][0] + "JUMP " + jump_label[m1] + nl() +p[4][1], '<<repeat_until')
+
+
 def p_command_if(p):
     """command	: IF condition THEN commands ENDIF"""
     p[0] = pack(p[2][0] + p[4] + nl() + p[2][1], '<<if')
@@ -97,8 +104,10 @@ def p_command_if(p):
 
 def p_command_if_else(p):
     """command	: IF condition THEN commands ELSE commands ENDIF"""
+    m1 = mark(jump_label)
     p[0] = pack(p[2][0] + p[4] + nl()
-                + p[2][1] + p[6], '<<if')
+                + "JUMP " + jump_label[m1] + nl()
+                + p[2][1] + p[6] + m1, '<<if_else')
 
 
 ##################################################################
@@ -229,11 +238,11 @@ def p_condition_neq(p):
                  + "SUB e d" + nl()
                  + "SUB f c" + nl()
                  + 'JZERO e ' + jump_label[m3] + nl()
-                 + 'JUMP ' + jump_label[m2] + nl()
-                 + m3 + 'JZERO f ' + jump_label[m1] + nl()
-                 + 'JUMP ' + jump_label[m2] + nl()
+                 + 'JUMP ' + jump_label[m1] + nl()
+                 + m3 + 'JZERO f ' + jump_label[m2] + nl()
+                 + 'JUMP ' + jump_label[m1] + nl()
                  + m1
-                 , '<<EQ'), m2)
+                 , '<<NEQ'), m2)
 
 
 ##################################################################
@@ -280,7 +289,7 @@ def p_error(p):
 parser = ply.yacc.yacc()
 
 
-def test_compiler(f1='../test', f2='result.mr'):
+def test_compiler(f1='../my_tests/test', f2='result.mr'):
     f = open(f1, "r")
     parsed = parser.parse(f.read(), tracking=True)
     fw = open(f2, "w")
@@ -291,4 +300,4 @@ def test_compiler(f1='../test', f2='result.mr'):
     os.system('../virtual_machine/maszyna-wirtualna result.mr')
 
 
-test_compiler()
+test_compiler(f1='../examples/tests/program0.imp')

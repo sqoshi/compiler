@@ -2,21 +2,19 @@ DECLARE
     a,b(10:30),f,c,d,e
 BEGIN
     a := 6;
-    c := 0;
+    c := 6;
     d := 1 * a;
     WRITE d;
-    WHILE
-        a > 1
-    DO
         WRITE a;
         IF
-            c >= 1
+            c >= 64
         THEN
             f := d * 2;
-            f := f * 2;
+            WRITE f;
+        ELSE
+            f := d * 3;
             WRITE f;
         ENDIF
     WRITE d;
     a := a-1;
-    ENDWHILE
 END

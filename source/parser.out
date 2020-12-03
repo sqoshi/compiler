@@ -7,9 +7,7 @@ Unused terminals:
     FOR
     FROM
     MOD
-    REPEAT
     TO
-    UNTIL
 
 Grammar
 
@@ -26,24 +24,25 @@ Rule 9     command -> identifier ASSIGN expression SEMICOLON
 Rule 10    command -> WRITE value SEMICOLON
 Rule 11    command -> READ identifier SEMICOLON
 Rule 12    command -> WHILE condition DO commands ENDWHILE
-Rule 13    command -> IF condition THEN commands ENDIF
-Rule 14    command -> IF condition THEN commands ELSE commands ENDIF
-Rule 15    expression -> value
-Rule 16    expression -> value PLUS value
-Rule 17    expression -> value MINUS value
-Rule 18    expression -> value MULT value
-Rule 19    expression -> value DIV value
-Rule 20    condition -> value GT value
-Rule 21    condition -> value LT value
-Rule 22    condition -> value GEQ value
-Rule 23    condition -> value LEQ value
-Rule 24    condition -> value EQ value
-Rule 25    condition -> value NEQ value
-Rule 26    value -> NUM
-Rule 27    value -> identifier
-Rule 28    identifier -> ID
-Rule 29    identifier -> ID LBR ID RBR
-Rule 30    identifier -> ID LBR NUM RBR
+Rule 13    command -> REPEAT commands UNTIL condition SEMICOLON
+Rule 14    command -> IF condition THEN commands ENDIF
+Rule 15    command -> IF condition THEN commands ELSE commands ENDIF
+Rule 16    expression -> value
+Rule 17    expression -> value PLUS value
+Rule 18    expression -> value MINUS value
+Rule 19    expression -> value MULT value
+Rule 20    expression -> value DIV value
+Rule 21    condition -> value GT value
+Rule 22    condition -> value LT value
+Rule 23    condition -> value GEQ value
+Rule 24    condition -> value LEQ value
+Rule 25    condition -> value EQ value
+Rule 26    condition -> value NEQ value
+Rule 27    value -> NUM
+Rule 28    value -> identifier
+Rule 29    identifier -> ID
+Rule 30    identifier -> ID LBR ID RBR
+Rule 31    identifier -> ID LBR NUM RBR
 
 Terminals, with rules where they appear
 
@@ -52,37 +51,37 @@ BEGIN                : 1 2
 COLON                : 4 6
 COMMA                : 3 4
 DECLARE              : 1
-DIV                  : 19
+DIV                  : 20
 DO                   : 12
 DOWNTO               : 
-ELSE                 : 14
+ELSE                 : 15
 END                  : 1 2
 ENDFOR               : 
-ENDIF                : 13 14
+ENDIF                : 14 15
 ENDWHILE             : 12
-EQ                   : 24
+EQ                   : 25
 FOR                  : 
 FROM                 : 
-GEQ                  : 22
-GT                   : 20
-ID                   : 3 4 5 6 28 29 29 30
-IF                   : 13 14
-LBR                  : 4 6 29 30
-LEQ                  : 23
-LT                   : 21
-MINUS                : 17
+GEQ                  : 23
+GT                   : 21
+ID                   : 3 4 5 6 29 30 30 31
+IF                   : 14 15
+LBR                  : 4 6 30 31
+LEQ                  : 24
+LT                   : 22
+MINUS                : 18
 MOD                  : 
-MULT                 : 18
-NEQ                  : 25
-NUM                  : 4 4 6 6 26 30
-PLUS                 : 16
-RBR                  : 4 6 29 30
+MULT                 : 19
+NEQ                  : 26
+NUM                  : 4 4 6 6 27 31
+PLUS                 : 17
+RBR                  : 4 6 30 31
 READ                 : 11
-REPEAT               : 
-SEMICOLON            : 9 10 11
-THEN                 : 13 14
+REPEAT               : 13
+SEMICOLON            : 9 10 11 13
+THEN                 : 14 15
 TO                   : 
-UNTIL                : 
+UNTIL                : 13
 WHILE                : 12
 WRITE                : 10
 error                : 
@@ -90,13 +89,13 @@ error                :
 Nonterminals, with rules where they appear
 
 command              : 7 8
-commands             : 1 2 7 12 13 14 14
-condition            : 12 13 14
+commands             : 1 2 7 12 13 14 15 15
+condition            : 12 13 14 15
 declarations         : 1 3 4
 expression           : 9
-identifier           : 9 11 27
+identifier           : 9 11 28
 program              : 0
-value                : 10 15 16 16 17 17 18 18 19 19 20 20 21 21 22 22 23 23 24 24 25 25
+value                : 10 16 17 17 18 18 19 19 20 20 21 21 22 22 23 23 24 24 25 25 26 26
 
 Parsing method: LALR
 
@@ -138,17 +137,19 @@ state 3
     (10) command -> . WRITE value SEMICOLON
     (11) command -> . READ identifier SEMICOLON
     (12) command -> . WHILE condition DO commands ENDWHILE
-    (13) command -> . IF condition THEN commands ENDIF
-    (14) command -> . IF condition THEN commands ELSE commands ENDIF
-    (28) identifier -> . ID
-    (29) identifier -> . ID LBR ID RBR
-    (30) identifier -> . ID LBR NUM RBR
+    (13) command -> . REPEAT commands UNTIL condition SEMICOLON
+    (14) command -> . IF condition THEN commands ENDIF
+    (15) command -> . IF condition THEN commands ELSE commands ENDIF
+    (29) identifier -> . ID
+    (30) identifier -> . ID LBR ID RBR
+    (31) identifier -> . ID LBR NUM RBR
 
     WRITE           shift and go to state 9
     READ            shift and go to state 10
     WHILE           shift and go to state 11
-    IF              shift and go to state 12
-    ID              shift and go to state 13
+    REPEAT          shift and go to state 12
+    IF              shift and go to state 13
+    ID              shift and go to state 14
 
     commands                       shift and go to state 6
     command                        shift and go to state 7
@@ -160,8 +161,8 @@ state 4
     (3) declarations -> declarations . COMMA ID
     (4) declarations -> declarations . COMMA ID LBR NUM COLON NUM RBR
 
-    BEGIN           shift and go to state 14
-    COMMA           shift and go to state 15
+    BEGIN           shift and go to state 15
+    COMMA           shift and go to state 16
 
 
 state 5
@@ -171,7 +172,7 @@ state 5
 
     BEGIN           reduce using rule 5 (declarations -> ID .)
     COMMA           reduce using rule 5 (declarations -> ID .)
-    LBR             shift and go to state 16
+    LBR             shift and go to state 17
 
 
 state 6
@@ -182,20 +183,22 @@ state 6
     (10) command -> . WRITE value SEMICOLON
     (11) command -> . READ identifier SEMICOLON
     (12) command -> . WHILE condition DO commands ENDWHILE
-    (13) command -> . IF condition THEN commands ENDIF
-    (14) command -> . IF condition THEN commands ELSE commands ENDIF
-    (28) identifier -> . ID
-    (29) identifier -> . ID LBR ID RBR
-    (30) identifier -> . ID LBR NUM RBR
+    (13) command -> . REPEAT commands UNTIL condition SEMICOLON
+    (14) command -> . IF condition THEN commands ENDIF
+    (15) command -> . IF condition THEN commands ELSE commands ENDIF
+    (29) identifier -> . ID
+    (30) identifier -> . ID LBR ID RBR
+    (31) identifier -> . ID LBR NUM RBR
 
-    END             shift and go to state 17
+    END             shift and go to state 18
     WRITE           shift and go to state 9
     READ            shift and go to state 10
     WHILE           shift and go to state 11
-    IF              shift and go to state 12
-    ID              shift and go to state 13
+    REPEAT          shift and go to state 12
+    IF              shift and go to state 13
+    ID              shift and go to state 14
 
-    command                        shift and go to state 18
+    command                        shift and go to state 19
     identifier                     shift and go to state 8
 
 state 7
@@ -206,8 +209,10 @@ state 7
     WRITE           reduce using rule 8 (commands -> command .)
     READ            reduce using rule 8 (commands -> command .)
     WHILE           reduce using rule 8 (commands -> command .)
+    REPEAT          reduce using rule 8 (commands -> command .)
     IF              reduce using rule 8 (commands -> command .)
     ID              reduce using rule 8 (commands -> command .)
+    UNTIL           reduce using rule 8 (commands -> command .)
     ENDWHILE        reduce using rule 8 (commands -> command .)
     ENDIF           reduce using rule 8 (commands -> command .)
     ELSE            reduce using rule 8 (commands -> command .)
@@ -217,104 +222,131 @@ state 8
 
     (9) command -> identifier . ASSIGN expression SEMICOLON
 
-    ASSIGN          shift and go to state 19
+    ASSIGN          shift and go to state 20
 
 
 state 9
 
     (10) command -> WRITE . value SEMICOLON
-    (26) value -> . NUM
-    (27) value -> . identifier
-    (28) identifier -> . ID
-    (29) identifier -> . ID LBR ID RBR
-    (30) identifier -> . ID LBR NUM RBR
+    (27) value -> . NUM
+    (28) value -> . identifier
+    (29) identifier -> . ID
+    (30) identifier -> . ID LBR ID RBR
+    (31) identifier -> . ID LBR NUM RBR
 
-    NUM             shift and go to state 21
-    ID              shift and go to state 13
+    NUM             shift and go to state 22
+    ID              shift and go to state 14
 
-    value                          shift and go to state 20
-    identifier                     shift and go to state 22
+    value                          shift and go to state 21
+    identifier                     shift and go to state 23
 
 state 10
 
     (11) command -> READ . identifier SEMICOLON
-    (28) identifier -> . ID
-    (29) identifier -> . ID LBR ID RBR
-    (30) identifier -> . ID LBR NUM RBR
+    (29) identifier -> . ID
+    (30) identifier -> . ID LBR ID RBR
+    (31) identifier -> . ID LBR NUM RBR
 
-    ID              shift and go to state 13
+    ID              shift and go to state 14
 
-    identifier                     shift and go to state 23
+    identifier                     shift and go to state 24
 
 state 11
 
     (12) command -> WHILE . condition DO commands ENDWHILE
-    (20) condition -> . value GT value
-    (21) condition -> . value LT value
-    (22) condition -> . value GEQ value
-    (23) condition -> . value LEQ value
-    (24) condition -> . value EQ value
-    (25) condition -> . value NEQ value
-    (26) value -> . NUM
-    (27) value -> . identifier
-    (28) identifier -> . ID
-    (29) identifier -> . ID LBR ID RBR
-    (30) identifier -> . ID LBR NUM RBR
+    (21) condition -> . value GT value
+    (22) condition -> . value LT value
+    (23) condition -> . value GEQ value
+    (24) condition -> . value LEQ value
+    (25) condition -> . value EQ value
+    (26) condition -> . value NEQ value
+    (27) value -> . NUM
+    (28) value -> . identifier
+    (29) identifier -> . ID
+    (30) identifier -> . ID LBR ID RBR
+    (31) identifier -> . ID LBR NUM RBR
 
-    NUM             shift and go to state 21
-    ID              shift and go to state 13
+    NUM             shift and go to state 22
+    ID              shift and go to state 14
 
-    condition                      shift and go to state 24
-    value                          shift and go to state 25
-    identifier                     shift and go to state 22
+    condition                      shift and go to state 25
+    value                          shift and go to state 26
+    identifier                     shift and go to state 23
 
 state 12
 
-    (13) command -> IF . condition THEN commands ENDIF
-    (14) command -> IF . condition THEN commands ELSE commands ENDIF
-    (20) condition -> . value GT value
-    (21) condition -> . value LT value
-    (22) condition -> . value GEQ value
-    (23) condition -> . value LEQ value
-    (24) condition -> . value EQ value
-    (25) condition -> . value NEQ value
-    (26) value -> . NUM
-    (27) value -> . identifier
-    (28) identifier -> . ID
-    (29) identifier -> . ID LBR ID RBR
-    (30) identifier -> . ID LBR NUM RBR
+    (13) command -> REPEAT . commands UNTIL condition SEMICOLON
+    (7) commands -> . commands command
+    (8) commands -> . command
+    (9) command -> . identifier ASSIGN expression SEMICOLON
+    (10) command -> . WRITE value SEMICOLON
+    (11) command -> . READ identifier SEMICOLON
+    (12) command -> . WHILE condition DO commands ENDWHILE
+    (13) command -> . REPEAT commands UNTIL condition SEMICOLON
+    (14) command -> . IF condition THEN commands ENDIF
+    (15) command -> . IF condition THEN commands ELSE commands ENDIF
+    (29) identifier -> . ID
+    (30) identifier -> . ID LBR ID RBR
+    (31) identifier -> . ID LBR NUM RBR
 
-    NUM             shift and go to state 21
-    ID              shift and go to state 13
+    WRITE           shift and go to state 9
+    READ            shift and go to state 10
+    WHILE           shift and go to state 11
+    REPEAT          shift and go to state 12
+    IF              shift and go to state 13
+    ID              shift and go to state 14
 
-    condition                      shift and go to state 26
-    value                          shift and go to state 25
-    identifier                     shift and go to state 22
+    commands                       shift and go to state 27
+    command                        shift and go to state 7
+    identifier                     shift and go to state 8
 
 state 13
 
-    (28) identifier -> ID .
-    (29) identifier -> ID . LBR ID RBR
-    (30) identifier -> ID . LBR NUM RBR
+    (14) command -> IF . condition THEN commands ENDIF
+    (15) command -> IF . condition THEN commands ELSE commands ENDIF
+    (21) condition -> . value GT value
+    (22) condition -> . value LT value
+    (23) condition -> . value GEQ value
+    (24) condition -> . value LEQ value
+    (25) condition -> . value EQ value
+    (26) condition -> . value NEQ value
+    (27) value -> . NUM
+    (28) value -> . identifier
+    (29) identifier -> . ID
+    (30) identifier -> . ID LBR ID RBR
+    (31) identifier -> . ID LBR NUM RBR
 
-    ASSIGN          reduce using rule 28 (identifier -> ID .)
-    SEMICOLON       reduce using rule 28 (identifier -> ID .)
-    GT              reduce using rule 28 (identifier -> ID .)
-    LT              reduce using rule 28 (identifier -> ID .)
-    GEQ             reduce using rule 28 (identifier -> ID .)
-    LEQ             reduce using rule 28 (identifier -> ID .)
-    EQ              reduce using rule 28 (identifier -> ID .)
-    NEQ             reduce using rule 28 (identifier -> ID .)
-    PLUS            reduce using rule 28 (identifier -> ID .)
-    MINUS           reduce using rule 28 (identifier -> ID .)
-    MULT            reduce using rule 28 (identifier -> ID .)
-    DIV             reduce using rule 28 (identifier -> ID .)
-    DO              reduce using rule 28 (identifier -> ID .)
-    THEN            reduce using rule 28 (identifier -> ID .)
-    LBR             shift and go to state 27
+    NUM             shift and go to state 22
+    ID              shift and go to state 14
 
+    condition                      shift and go to state 28
+    value                          shift and go to state 26
+    identifier                     shift and go to state 23
 
 state 14
+
+    (29) identifier -> ID .
+    (30) identifier -> ID . LBR ID RBR
+    (31) identifier -> ID . LBR NUM RBR
+
+    ASSIGN          reduce using rule 29 (identifier -> ID .)
+    SEMICOLON       reduce using rule 29 (identifier -> ID .)
+    GT              reduce using rule 29 (identifier -> ID .)
+    LT              reduce using rule 29 (identifier -> ID .)
+    GEQ             reduce using rule 29 (identifier -> ID .)
+    LEQ             reduce using rule 29 (identifier -> ID .)
+    EQ              reduce using rule 29 (identifier -> ID .)
+    NEQ             reduce using rule 29 (identifier -> ID .)
+    PLUS            reduce using rule 29 (identifier -> ID .)
+    MINUS           reduce using rule 29 (identifier -> ID .)
+    MULT            reduce using rule 29 (identifier -> ID .)
+    DIV             reduce using rule 29 (identifier -> ID .)
+    DO              reduce using rule 29 (identifier -> ID .)
+    THEN            reduce using rule 29 (identifier -> ID .)
+    LBR             shift and go to state 29
+
+
+state 15
 
     (1) program -> DECLARE declarations BEGIN . commands END
     (7) commands -> . commands command
@@ -323,45 +355,47 @@ state 14
     (10) command -> . WRITE value SEMICOLON
     (11) command -> . READ identifier SEMICOLON
     (12) command -> . WHILE condition DO commands ENDWHILE
-    (13) command -> . IF condition THEN commands ENDIF
-    (14) command -> . IF condition THEN commands ELSE commands ENDIF
-    (28) identifier -> . ID
-    (29) identifier -> . ID LBR ID RBR
-    (30) identifier -> . ID LBR NUM RBR
+    (13) command -> . REPEAT commands UNTIL condition SEMICOLON
+    (14) command -> . IF condition THEN commands ENDIF
+    (15) command -> . IF condition THEN commands ELSE commands ENDIF
+    (29) identifier -> . ID
+    (30) identifier -> . ID LBR ID RBR
+    (31) identifier -> . ID LBR NUM RBR
 
     WRITE           shift and go to state 9
     READ            shift and go to state 10
     WHILE           shift and go to state 11
-    IF              shift and go to state 12
-    ID              shift and go to state 13
+    REPEAT          shift and go to state 12
+    IF              shift and go to state 13
+    ID              shift and go to state 14
 
-    commands                       shift and go to state 28
+    commands                       shift and go to state 30
     command                        shift and go to state 7
     identifier                     shift and go to state 8
 
-state 15
+state 16
 
     (3) declarations -> declarations COMMA . ID
     (4) declarations -> declarations COMMA . ID LBR NUM COLON NUM RBR
 
-    ID              shift and go to state 29
-
-
-state 16
-
-    (6) declarations -> ID LBR . NUM COLON NUM RBR
-
-    NUM             shift and go to state 30
+    ID              shift and go to state 31
 
 
 state 17
+
+    (6) declarations -> ID LBR . NUM COLON NUM RBR
+
+    NUM             shift and go to state 32
+
+
+state 18
 
     (2) program -> BEGIN commands END .
 
     $end            reduce using rule 2 (program -> BEGIN commands END .)
 
 
-state 18
+state 19
 
     (7) commands -> commands command .
 
@@ -369,128 +403,156 @@ state 18
     WRITE           reduce using rule 7 (commands -> commands command .)
     READ            reduce using rule 7 (commands -> commands command .)
     WHILE           reduce using rule 7 (commands -> commands command .)
+    REPEAT          reduce using rule 7 (commands -> commands command .)
     IF              reduce using rule 7 (commands -> commands command .)
     ID              reduce using rule 7 (commands -> commands command .)
+    UNTIL           reduce using rule 7 (commands -> commands command .)
     ENDWHILE        reduce using rule 7 (commands -> commands command .)
     ENDIF           reduce using rule 7 (commands -> commands command .)
     ELSE            reduce using rule 7 (commands -> commands command .)
 
 
-state 19
-
-    (9) command -> identifier ASSIGN . expression SEMICOLON
-    (15) expression -> . value
-    (16) expression -> . value PLUS value
-    (17) expression -> . value MINUS value
-    (18) expression -> . value MULT value
-    (19) expression -> . value DIV value
-    (26) value -> . NUM
-    (27) value -> . identifier
-    (28) identifier -> . ID
-    (29) identifier -> . ID LBR ID RBR
-    (30) identifier -> . ID LBR NUM RBR
-
-    NUM             shift and go to state 21
-    ID              shift and go to state 13
-
-    identifier                     shift and go to state 22
-    expression                     shift and go to state 31
-    value                          shift and go to state 32
-
 state 20
 
-    (10) command -> WRITE value . SEMICOLON
+    (9) command -> identifier ASSIGN . expression SEMICOLON
+    (16) expression -> . value
+    (17) expression -> . value PLUS value
+    (18) expression -> . value MINUS value
+    (19) expression -> . value MULT value
+    (20) expression -> . value DIV value
+    (27) value -> . NUM
+    (28) value -> . identifier
+    (29) identifier -> . ID
+    (30) identifier -> . ID LBR ID RBR
+    (31) identifier -> . ID LBR NUM RBR
 
-    SEMICOLON       shift and go to state 33
+    NUM             shift and go to state 22
+    ID              shift and go to state 14
 
+    identifier                     shift and go to state 23
+    expression                     shift and go to state 33
+    value                          shift and go to state 34
 
 state 21
 
-    (26) value -> NUM .
+    (10) command -> WRITE value . SEMICOLON
 
-    SEMICOLON       reduce using rule 26 (value -> NUM .)
-    GT              reduce using rule 26 (value -> NUM .)
-    LT              reduce using rule 26 (value -> NUM .)
-    GEQ             reduce using rule 26 (value -> NUM .)
-    LEQ             reduce using rule 26 (value -> NUM .)
-    EQ              reduce using rule 26 (value -> NUM .)
-    NEQ             reduce using rule 26 (value -> NUM .)
-    PLUS            reduce using rule 26 (value -> NUM .)
-    MINUS           reduce using rule 26 (value -> NUM .)
-    MULT            reduce using rule 26 (value -> NUM .)
-    DIV             reduce using rule 26 (value -> NUM .)
-    DO              reduce using rule 26 (value -> NUM .)
-    THEN            reduce using rule 26 (value -> NUM .)
+    SEMICOLON       shift and go to state 35
 
 
 state 22
 
-    (27) value -> identifier .
+    (27) value -> NUM .
 
-    SEMICOLON       reduce using rule 27 (value -> identifier .)
-    GT              reduce using rule 27 (value -> identifier .)
-    LT              reduce using rule 27 (value -> identifier .)
-    GEQ             reduce using rule 27 (value -> identifier .)
-    LEQ             reduce using rule 27 (value -> identifier .)
-    EQ              reduce using rule 27 (value -> identifier .)
-    NEQ             reduce using rule 27 (value -> identifier .)
-    PLUS            reduce using rule 27 (value -> identifier .)
-    MINUS           reduce using rule 27 (value -> identifier .)
-    MULT            reduce using rule 27 (value -> identifier .)
-    DIV             reduce using rule 27 (value -> identifier .)
-    DO              reduce using rule 27 (value -> identifier .)
-    THEN            reduce using rule 27 (value -> identifier .)
+    SEMICOLON       reduce using rule 27 (value -> NUM .)
+    GT              reduce using rule 27 (value -> NUM .)
+    LT              reduce using rule 27 (value -> NUM .)
+    GEQ             reduce using rule 27 (value -> NUM .)
+    LEQ             reduce using rule 27 (value -> NUM .)
+    EQ              reduce using rule 27 (value -> NUM .)
+    NEQ             reduce using rule 27 (value -> NUM .)
+    PLUS            reduce using rule 27 (value -> NUM .)
+    MINUS           reduce using rule 27 (value -> NUM .)
+    MULT            reduce using rule 27 (value -> NUM .)
+    DIV             reduce using rule 27 (value -> NUM .)
+    DO              reduce using rule 27 (value -> NUM .)
+    THEN            reduce using rule 27 (value -> NUM .)
 
 
 state 23
 
-    (11) command -> READ identifier . SEMICOLON
+    (28) value -> identifier .
 
-    SEMICOLON       shift and go to state 34
+    SEMICOLON       reduce using rule 28 (value -> identifier .)
+    GT              reduce using rule 28 (value -> identifier .)
+    LT              reduce using rule 28 (value -> identifier .)
+    GEQ             reduce using rule 28 (value -> identifier .)
+    LEQ             reduce using rule 28 (value -> identifier .)
+    EQ              reduce using rule 28 (value -> identifier .)
+    NEQ             reduce using rule 28 (value -> identifier .)
+    PLUS            reduce using rule 28 (value -> identifier .)
+    MINUS           reduce using rule 28 (value -> identifier .)
+    MULT            reduce using rule 28 (value -> identifier .)
+    DIV             reduce using rule 28 (value -> identifier .)
+    DO              reduce using rule 28 (value -> identifier .)
+    THEN            reduce using rule 28 (value -> identifier .)
 
 
 state 24
 
-    (12) command -> WHILE condition . DO commands ENDWHILE
+    (11) command -> READ identifier . SEMICOLON
 
-    DO              shift and go to state 35
+    SEMICOLON       shift and go to state 36
 
 
 state 25
 
-    (20) condition -> value . GT value
-    (21) condition -> value . LT value
-    (22) condition -> value . GEQ value
-    (23) condition -> value . LEQ value
-    (24) condition -> value . EQ value
-    (25) condition -> value . NEQ value
+    (12) command -> WHILE condition . DO commands ENDWHILE
 
-    GT              shift and go to state 36
-    LT              shift and go to state 37
-    GEQ             shift and go to state 38
-    LEQ             shift and go to state 39
-    EQ              shift and go to state 40
-    NEQ             shift and go to state 41
+    DO              shift and go to state 37
 
 
 state 26
 
-    (13) command -> IF condition . THEN commands ENDIF
-    (14) command -> IF condition . THEN commands ELSE commands ENDIF
+    (21) condition -> value . GT value
+    (22) condition -> value . LT value
+    (23) condition -> value . GEQ value
+    (24) condition -> value . LEQ value
+    (25) condition -> value . EQ value
+    (26) condition -> value . NEQ value
 
-    THEN            shift and go to state 42
+    GT              shift and go to state 38
+    LT              shift and go to state 39
+    GEQ             shift and go to state 40
+    LEQ             shift and go to state 41
+    EQ              shift and go to state 42
+    NEQ             shift and go to state 43
 
 
 state 27
 
-    (29) identifier -> ID LBR . ID RBR
-    (30) identifier -> ID LBR . NUM RBR
+    (13) command -> REPEAT commands . UNTIL condition SEMICOLON
+    (7) commands -> commands . command
+    (9) command -> . identifier ASSIGN expression SEMICOLON
+    (10) command -> . WRITE value SEMICOLON
+    (11) command -> . READ identifier SEMICOLON
+    (12) command -> . WHILE condition DO commands ENDWHILE
+    (13) command -> . REPEAT commands UNTIL condition SEMICOLON
+    (14) command -> . IF condition THEN commands ENDIF
+    (15) command -> . IF condition THEN commands ELSE commands ENDIF
+    (29) identifier -> . ID
+    (30) identifier -> . ID LBR ID RBR
+    (31) identifier -> . ID LBR NUM RBR
 
-    ID              shift and go to state 43
-    NUM             shift and go to state 44
+    UNTIL           shift and go to state 44
+    WRITE           shift and go to state 9
+    READ            shift and go to state 10
+    WHILE           shift and go to state 11
+    REPEAT          shift and go to state 12
+    IF              shift and go to state 13
+    ID              shift and go to state 14
 
+    command                        shift and go to state 19
+    identifier                     shift and go to state 8
 
 state 28
+
+    (14) command -> IF condition . THEN commands ENDIF
+    (15) command -> IF condition . THEN commands ELSE commands ENDIF
+
+    THEN            shift and go to state 45
+
+
+state 29
+
+    (30) identifier -> ID LBR . ID RBR
+    (31) identifier -> ID LBR . NUM RBR
+
+    ID              shift and go to state 46
+    NUM             shift and go to state 47
+
+
+state 30
 
     (1) program -> DECLARE declarations BEGIN commands . END
     (7) commands -> commands . command
@@ -498,62 +560,64 @@ state 28
     (10) command -> . WRITE value SEMICOLON
     (11) command -> . READ identifier SEMICOLON
     (12) command -> . WHILE condition DO commands ENDWHILE
-    (13) command -> . IF condition THEN commands ENDIF
-    (14) command -> . IF condition THEN commands ELSE commands ENDIF
-    (28) identifier -> . ID
-    (29) identifier -> . ID LBR ID RBR
-    (30) identifier -> . ID LBR NUM RBR
+    (13) command -> . REPEAT commands UNTIL condition SEMICOLON
+    (14) command -> . IF condition THEN commands ENDIF
+    (15) command -> . IF condition THEN commands ELSE commands ENDIF
+    (29) identifier -> . ID
+    (30) identifier -> . ID LBR ID RBR
+    (31) identifier -> . ID LBR NUM RBR
 
-    END             shift and go to state 45
+    END             shift and go to state 48
     WRITE           shift and go to state 9
     READ            shift and go to state 10
     WHILE           shift and go to state 11
-    IF              shift and go to state 12
-    ID              shift and go to state 13
+    REPEAT          shift and go to state 12
+    IF              shift and go to state 13
+    ID              shift and go to state 14
 
-    command                        shift and go to state 18
+    command                        shift and go to state 19
     identifier                     shift and go to state 8
 
-state 29
+state 31
 
     (3) declarations -> declarations COMMA ID .
     (4) declarations -> declarations COMMA ID . LBR NUM COLON NUM RBR
 
     BEGIN           reduce using rule 3 (declarations -> declarations COMMA ID .)
     COMMA           reduce using rule 3 (declarations -> declarations COMMA ID .)
-    LBR             shift and go to state 46
-
-
-state 30
-
-    (6) declarations -> ID LBR NUM . COLON NUM RBR
-
-    COLON           shift and go to state 47
-
-
-state 31
-
-    (9) command -> identifier ASSIGN expression . SEMICOLON
-
-    SEMICOLON       shift and go to state 48
+    LBR             shift and go to state 49
 
 
 state 32
 
-    (15) expression -> value .
-    (16) expression -> value . PLUS value
-    (17) expression -> value . MINUS value
-    (18) expression -> value . MULT value
-    (19) expression -> value . DIV value
+    (6) declarations -> ID LBR NUM . COLON NUM RBR
 
-    SEMICOLON       reduce using rule 15 (expression -> value .)
-    PLUS            shift and go to state 49
-    MINUS           shift and go to state 50
-    MULT            shift and go to state 51
-    DIV             shift and go to state 52
+    COLON           shift and go to state 50
 
 
 state 33
+
+    (9) command -> identifier ASSIGN expression . SEMICOLON
+
+    SEMICOLON       shift and go to state 51
+
+
+state 34
+
+    (16) expression -> value .
+    (17) expression -> value . PLUS value
+    (18) expression -> value . MINUS value
+    (19) expression -> value . MULT value
+    (20) expression -> value . DIV value
+
+    SEMICOLON       reduce using rule 16 (expression -> value .)
+    PLUS            shift and go to state 52
+    MINUS           shift and go to state 53
+    MULT            shift and go to state 54
+    DIV             shift and go to state 55
+
+
+state 35
 
     (10) command -> WRITE value SEMICOLON .
 
@@ -561,14 +625,16 @@ state 33
     WRITE           reduce using rule 10 (command -> WRITE value SEMICOLON .)
     READ            reduce using rule 10 (command -> WRITE value SEMICOLON .)
     WHILE           reduce using rule 10 (command -> WRITE value SEMICOLON .)
+    REPEAT          reduce using rule 10 (command -> WRITE value SEMICOLON .)
     IF              reduce using rule 10 (command -> WRITE value SEMICOLON .)
     ID              reduce using rule 10 (command -> WRITE value SEMICOLON .)
+    UNTIL           reduce using rule 10 (command -> WRITE value SEMICOLON .)
     ENDWHILE        reduce using rule 10 (command -> WRITE value SEMICOLON .)
     ENDIF           reduce using rule 10 (command -> WRITE value SEMICOLON .)
     ELSE            reduce using rule 10 (command -> WRITE value SEMICOLON .)
 
 
-state 34
+state 36
 
     (11) command -> READ identifier SEMICOLON .
 
@@ -576,14 +642,16 @@ state 34
     WRITE           reduce using rule 11 (command -> READ identifier SEMICOLON .)
     READ            reduce using rule 11 (command -> READ identifier SEMICOLON .)
     WHILE           reduce using rule 11 (command -> READ identifier SEMICOLON .)
+    REPEAT          reduce using rule 11 (command -> READ identifier SEMICOLON .)
     IF              reduce using rule 11 (command -> READ identifier SEMICOLON .)
     ID              reduce using rule 11 (command -> READ identifier SEMICOLON .)
+    UNTIL           reduce using rule 11 (command -> READ identifier SEMICOLON .)
     ENDWHILE        reduce using rule 11 (command -> READ identifier SEMICOLON .)
     ENDIF           reduce using rule 11 (command -> READ identifier SEMICOLON .)
     ELSE            reduce using rule 11 (command -> READ identifier SEMICOLON .)
 
 
-state 35
+state 37
 
     (12) command -> WHILE condition DO . commands ENDWHILE
     (7) commands -> . commands command
@@ -592,174 +660,200 @@ state 35
     (10) command -> . WRITE value SEMICOLON
     (11) command -> . READ identifier SEMICOLON
     (12) command -> . WHILE condition DO commands ENDWHILE
-    (13) command -> . IF condition THEN commands ENDIF
-    (14) command -> . IF condition THEN commands ELSE commands ENDIF
-    (28) identifier -> . ID
-    (29) identifier -> . ID LBR ID RBR
-    (30) identifier -> . ID LBR NUM RBR
+    (13) command -> . REPEAT commands UNTIL condition SEMICOLON
+    (14) command -> . IF condition THEN commands ENDIF
+    (15) command -> . IF condition THEN commands ELSE commands ENDIF
+    (29) identifier -> . ID
+    (30) identifier -> . ID LBR ID RBR
+    (31) identifier -> . ID LBR NUM RBR
 
     WRITE           shift and go to state 9
     READ            shift and go to state 10
     WHILE           shift and go to state 11
-    IF              shift and go to state 12
-    ID              shift and go to state 13
+    REPEAT          shift and go to state 12
+    IF              shift and go to state 13
+    ID              shift and go to state 14
 
-    commands                       shift and go to state 53
+    commands                       shift and go to state 56
     command                        shift and go to state 7
     identifier                     shift and go to state 8
 
-state 36
-
-    (20) condition -> value GT . value
-    (26) value -> . NUM
-    (27) value -> . identifier
-    (28) identifier -> . ID
-    (29) identifier -> . ID LBR ID RBR
-    (30) identifier -> . ID LBR NUM RBR
-
-    NUM             shift and go to state 21
-    ID              shift and go to state 13
-
-    value                          shift and go to state 54
-    identifier                     shift and go to state 22
-
-state 37
-
-    (21) condition -> value LT . value
-    (26) value -> . NUM
-    (27) value -> . identifier
-    (28) identifier -> . ID
-    (29) identifier -> . ID LBR ID RBR
-    (30) identifier -> . ID LBR NUM RBR
-
-    NUM             shift and go to state 21
-    ID              shift and go to state 13
-
-    value                          shift and go to state 55
-    identifier                     shift and go to state 22
-
 state 38
 
-    (22) condition -> value GEQ . value
-    (26) value -> . NUM
-    (27) value -> . identifier
-    (28) identifier -> . ID
-    (29) identifier -> . ID LBR ID RBR
-    (30) identifier -> . ID LBR NUM RBR
+    (21) condition -> value GT . value
+    (27) value -> . NUM
+    (28) value -> . identifier
+    (29) identifier -> . ID
+    (30) identifier -> . ID LBR ID RBR
+    (31) identifier -> . ID LBR NUM RBR
 
-    NUM             shift and go to state 21
-    ID              shift and go to state 13
+    NUM             shift and go to state 22
+    ID              shift and go to state 14
 
-    value                          shift and go to state 56
-    identifier                     shift and go to state 22
+    value                          shift and go to state 57
+    identifier                     shift and go to state 23
 
 state 39
 
-    (23) condition -> value LEQ . value
-    (26) value -> . NUM
-    (27) value -> . identifier
-    (28) identifier -> . ID
-    (29) identifier -> . ID LBR ID RBR
-    (30) identifier -> . ID LBR NUM RBR
+    (22) condition -> value LT . value
+    (27) value -> . NUM
+    (28) value -> . identifier
+    (29) identifier -> . ID
+    (30) identifier -> . ID LBR ID RBR
+    (31) identifier -> . ID LBR NUM RBR
 
-    NUM             shift and go to state 21
-    ID              shift and go to state 13
+    NUM             shift and go to state 22
+    ID              shift and go to state 14
 
-    value                          shift and go to state 57
-    identifier                     shift and go to state 22
+    value                          shift and go to state 58
+    identifier                     shift and go to state 23
 
 state 40
 
-    (24) condition -> value EQ . value
-    (26) value -> . NUM
-    (27) value -> . identifier
-    (28) identifier -> . ID
-    (29) identifier -> . ID LBR ID RBR
-    (30) identifier -> . ID LBR NUM RBR
+    (23) condition -> value GEQ . value
+    (27) value -> . NUM
+    (28) value -> . identifier
+    (29) identifier -> . ID
+    (30) identifier -> . ID LBR ID RBR
+    (31) identifier -> . ID LBR NUM RBR
 
-    NUM             shift and go to state 21
-    ID              shift and go to state 13
+    NUM             shift and go to state 22
+    ID              shift and go to state 14
 
-    value                          shift and go to state 58
-    identifier                     shift and go to state 22
+    value                          shift and go to state 59
+    identifier                     shift and go to state 23
 
 state 41
 
-    (25) condition -> value NEQ . value
-    (26) value -> . NUM
-    (27) value -> . identifier
-    (28) identifier -> . ID
-    (29) identifier -> . ID LBR ID RBR
-    (30) identifier -> . ID LBR NUM RBR
+    (24) condition -> value LEQ . value
+    (27) value -> . NUM
+    (28) value -> . identifier
+    (29) identifier -> . ID
+    (30) identifier -> . ID LBR ID RBR
+    (31) identifier -> . ID LBR NUM RBR
 
-    NUM             shift and go to state 21
-    ID              shift and go to state 13
+    NUM             shift and go to state 22
+    ID              shift and go to state 14
 
-    value                          shift and go to state 59
-    identifier                     shift and go to state 22
+    value                          shift and go to state 60
+    identifier                     shift and go to state 23
 
 state 42
 
-    (13) command -> IF condition THEN . commands ENDIF
-    (14) command -> IF condition THEN . commands ELSE commands ENDIF
+    (25) condition -> value EQ . value
+    (27) value -> . NUM
+    (28) value -> . identifier
+    (29) identifier -> . ID
+    (30) identifier -> . ID LBR ID RBR
+    (31) identifier -> . ID LBR NUM RBR
+
+    NUM             shift and go to state 22
+    ID              shift and go to state 14
+
+    value                          shift and go to state 61
+    identifier                     shift and go to state 23
+
+state 43
+
+    (26) condition -> value NEQ . value
+    (27) value -> . NUM
+    (28) value -> . identifier
+    (29) identifier -> . ID
+    (30) identifier -> . ID LBR ID RBR
+    (31) identifier -> . ID LBR NUM RBR
+
+    NUM             shift and go to state 22
+    ID              shift and go to state 14
+
+    value                          shift and go to state 62
+    identifier                     shift and go to state 23
+
+state 44
+
+    (13) command -> REPEAT commands UNTIL . condition SEMICOLON
+    (21) condition -> . value GT value
+    (22) condition -> . value LT value
+    (23) condition -> . value GEQ value
+    (24) condition -> . value LEQ value
+    (25) condition -> . value EQ value
+    (26) condition -> . value NEQ value
+    (27) value -> . NUM
+    (28) value -> . identifier
+    (29) identifier -> . ID
+    (30) identifier -> . ID LBR ID RBR
+    (31) identifier -> . ID LBR NUM RBR
+
+    NUM             shift and go to state 22
+    ID              shift and go to state 14
+
+    condition                      shift and go to state 63
+    value                          shift and go to state 26
+    identifier                     shift and go to state 23
+
+state 45
+
+    (14) command -> IF condition THEN . commands ENDIF
+    (15) command -> IF condition THEN . commands ELSE commands ENDIF
     (7) commands -> . commands command
     (8) commands -> . command
     (9) command -> . identifier ASSIGN expression SEMICOLON
     (10) command -> . WRITE value SEMICOLON
     (11) command -> . READ identifier SEMICOLON
     (12) command -> . WHILE condition DO commands ENDWHILE
-    (13) command -> . IF condition THEN commands ENDIF
-    (14) command -> . IF condition THEN commands ELSE commands ENDIF
-    (28) identifier -> . ID
-    (29) identifier -> . ID LBR ID RBR
-    (30) identifier -> . ID LBR NUM RBR
+    (13) command -> . REPEAT commands UNTIL condition SEMICOLON
+    (14) command -> . IF condition THEN commands ENDIF
+    (15) command -> . IF condition THEN commands ELSE commands ENDIF
+    (29) identifier -> . ID
+    (30) identifier -> . ID LBR ID RBR
+    (31) identifier -> . ID LBR NUM RBR
 
     WRITE           shift and go to state 9
     READ            shift and go to state 10
     WHILE           shift and go to state 11
-    IF              shift and go to state 12
-    ID              shift and go to state 13
+    REPEAT          shift and go to state 12
+    IF              shift and go to state 13
+    ID              shift and go to state 14
 
-    commands                       shift and go to state 60
+    commands                       shift and go to state 64
     command                        shift and go to state 7
     identifier                     shift and go to state 8
 
-state 43
+state 46
 
-    (29) identifier -> ID LBR ID . RBR
+    (30) identifier -> ID LBR ID . RBR
 
-    RBR             shift and go to state 61
-
-
-state 44
-
-    (30) identifier -> ID LBR NUM . RBR
-
-    RBR             shift and go to state 62
+    RBR             shift and go to state 65
 
 
-state 45
+state 47
+
+    (31) identifier -> ID LBR NUM . RBR
+
+    RBR             shift and go to state 66
+
+
+state 48
 
     (1) program -> DECLARE declarations BEGIN commands END .
 
     $end            reduce using rule 1 (program -> DECLARE declarations BEGIN commands END .)
 
 
-state 46
+state 49
 
     (4) declarations -> declarations COMMA ID LBR . NUM COLON NUM RBR
 
-    NUM             shift and go to state 63
+    NUM             shift and go to state 67
 
 
-state 47
+state 50
 
     (6) declarations -> ID LBR NUM COLON . NUM RBR
 
-    NUM             shift and go to state 64
+    NUM             shift and go to state 68
 
 
-state 48
+state 51
 
     (9) command -> identifier ASSIGN expression SEMICOLON .
 
@@ -767,74 +861,76 @@ state 48
     WRITE           reduce using rule 9 (command -> identifier ASSIGN expression SEMICOLON .)
     READ            reduce using rule 9 (command -> identifier ASSIGN expression SEMICOLON .)
     WHILE           reduce using rule 9 (command -> identifier ASSIGN expression SEMICOLON .)
+    REPEAT          reduce using rule 9 (command -> identifier ASSIGN expression SEMICOLON .)
     IF              reduce using rule 9 (command -> identifier ASSIGN expression SEMICOLON .)
     ID              reduce using rule 9 (command -> identifier ASSIGN expression SEMICOLON .)
+    UNTIL           reduce using rule 9 (command -> identifier ASSIGN expression SEMICOLON .)
     ENDWHILE        reduce using rule 9 (command -> identifier ASSIGN expression SEMICOLON .)
     ENDIF           reduce using rule 9 (command -> identifier ASSIGN expression SEMICOLON .)
     ELSE            reduce using rule 9 (command -> identifier ASSIGN expression SEMICOLON .)
 
 
-state 49
-
-    (16) expression -> value PLUS . value
-    (26) value -> . NUM
-    (27) value -> . identifier
-    (28) identifier -> . ID
-    (29) identifier -> . ID LBR ID RBR
-    (30) identifier -> . ID LBR NUM RBR
-
-    NUM             shift and go to state 21
-    ID              shift and go to state 13
-
-    value                          shift and go to state 65
-    identifier                     shift and go to state 22
-
-state 50
-
-    (17) expression -> value MINUS . value
-    (26) value -> . NUM
-    (27) value -> . identifier
-    (28) identifier -> . ID
-    (29) identifier -> . ID LBR ID RBR
-    (30) identifier -> . ID LBR NUM RBR
-
-    NUM             shift and go to state 21
-    ID              shift and go to state 13
-
-    value                          shift and go to state 66
-    identifier                     shift and go to state 22
-
-state 51
-
-    (18) expression -> value MULT . value
-    (26) value -> . NUM
-    (27) value -> . identifier
-    (28) identifier -> . ID
-    (29) identifier -> . ID LBR ID RBR
-    (30) identifier -> . ID LBR NUM RBR
-
-    NUM             shift and go to state 21
-    ID              shift and go to state 13
-
-    value                          shift and go to state 67
-    identifier                     shift and go to state 22
-
 state 52
 
-    (19) expression -> value DIV . value
-    (26) value -> . NUM
-    (27) value -> . identifier
-    (28) identifier -> . ID
-    (29) identifier -> . ID LBR ID RBR
-    (30) identifier -> . ID LBR NUM RBR
+    (17) expression -> value PLUS . value
+    (27) value -> . NUM
+    (28) value -> . identifier
+    (29) identifier -> . ID
+    (30) identifier -> . ID LBR ID RBR
+    (31) identifier -> . ID LBR NUM RBR
 
-    NUM             shift and go to state 21
-    ID              shift and go to state 13
+    NUM             shift and go to state 22
+    ID              shift and go to state 14
 
-    value                          shift and go to state 68
-    identifier                     shift and go to state 22
+    value                          shift and go to state 69
+    identifier                     shift and go to state 23
 
 state 53
+
+    (18) expression -> value MINUS . value
+    (27) value -> . NUM
+    (28) value -> . identifier
+    (29) identifier -> . ID
+    (30) identifier -> . ID LBR ID RBR
+    (31) identifier -> . ID LBR NUM RBR
+
+    NUM             shift and go to state 22
+    ID              shift and go to state 14
+
+    value                          shift and go to state 70
+    identifier                     shift and go to state 23
+
+state 54
+
+    (19) expression -> value MULT . value
+    (27) value -> . NUM
+    (28) value -> . identifier
+    (29) identifier -> . ID
+    (30) identifier -> . ID LBR ID RBR
+    (31) identifier -> . ID LBR NUM RBR
+
+    NUM             shift and go to state 22
+    ID              shift and go to state 14
+
+    value                          shift and go to state 71
+    identifier                     shift and go to state 23
+
+state 55
+
+    (20) expression -> value DIV . value
+    (27) value -> . NUM
+    (28) value -> . identifier
+    (29) identifier -> . ID
+    (30) identifier -> . ID LBR ID RBR
+    (31) identifier -> . ID LBR NUM RBR
+
+    NUM             shift and go to state 22
+    ID              shift and go to state 14
+
+    value                          shift and go to state 72
+    identifier                     shift and go to state 23
+
+state 56
 
     (12) command -> WHILE condition DO commands . ENDWHILE
     (7) commands -> commands . command
@@ -842,179 +938,196 @@ state 53
     (10) command -> . WRITE value SEMICOLON
     (11) command -> . READ identifier SEMICOLON
     (12) command -> . WHILE condition DO commands ENDWHILE
-    (13) command -> . IF condition THEN commands ENDIF
-    (14) command -> . IF condition THEN commands ELSE commands ENDIF
-    (28) identifier -> . ID
-    (29) identifier -> . ID LBR ID RBR
-    (30) identifier -> . ID LBR NUM RBR
+    (13) command -> . REPEAT commands UNTIL condition SEMICOLON
+    (14) command -> . IF condition THEN commands ENDIF
+    (15) command -> . IF condition THEN commands ELSE commands ENDIF
+    (29) identifier -> . ID
+    (30) identifier -> . ID LBR ID RBR
+    (31) identifier -> . ID LBR NUM RBR
 
-    ENDWHILE        shift and go to state 69
+    ENDWHILE        shift and go to state 73
     WRITE           shift and go to state 9
     READ            shift and go to state 10
     WHILE           shift and go to state 11
-    IF              shift and go to state 12
-    ID              shift and go to state 13
+    REPEAT          shift and go to state 12
+    IF              shift and go to state 13
+    ID              shift and go to state 14
 
-    command                        shift and go to state 18
+    command                        shift and go to state 19
     identifier                     shift and go to state 8
-
-state 54
-
-    (20) condition -> value GT value .
-
-    DO              reduce using rule 20 (condition -> value GT value .)
-    THEN            reduce using rule 20 (condition -> value GT value .)
-
-
-state 55
-
-    (21) condition -> value LT value .
-
-    DO              reduce using rule 21 (condition -> value LT value .)
-    THEN            reduce using rule 21 (condition -> value LT value .)
-
-
-state 56
-
-    (22) condition -> value GEQ value .
-
-    DO              reduce using rule 22 (condition -> value GEQ value .)
-    THEN            reduce using rule 22 (condition -> value GEQ value .)
-
 
 state 57
 
-    (23) condition -> value LEQ value .
+    (21) condition -> value GT value .
 
-    DO              reduce using rule 23 (condition -> value LEQ value .)
-    THEN            reduce using rule 23 (condition -> value LEQ value .)
+    DO              reduce using rule 21 (condition -> value GT value .)
+    THEN            reduce using rule 21 (condition -> value GT value .)
+    SEMICOLON       reduce using rule 21 (condition -> value GT value .)
 
 
 state 58
 
-    (24) condition -> value EQ value .
+    (22) condition -> value LT value .
 
-    DO              reduce using rule 24 (condition -> value EQ value .)
-    THEN            reduce using rule 24 (condition -> value EQ value .)
+    DO              reduce using rule 22 (condition -> value LT value .)
+    THEN            reduce using rule 22 (condition -> value LT value .)
+    SEMICOLON       reduce using rule 22 (condition -> value LT value .)
 
 
 state 59
 
-    (25) condition -> value NEQ value .
+    (23) condition -> value GEQ value .
 
-    DO              reduce using rule 25 (condition -> value NEQ value .)
-    THEN            reduce using rule 25 (condition -> value NEQ value .)
+    DO              reduce using rule 23 (condition -> value GEQ value .)
+    THEN            reduce using rule 23 (condition -> value GEQ value .)
+    SEMICOLON       reduce using rule 23 (condition -> value GEQ value .)
 
 
 state 60
 
-    (13) command -> IF condition THEN commands . ENDIF
-    (14) command -> IF condition THEN commands . ELSE commands ENDIF
+    (24) condition -> value LEQ value .
+
+    DO              reduce using rule 24 (condition -> value LEQ value .)
+    THEN            reduce using rule 24 (condition -> value LEQ value .)
+    SEMICOLON       reduce using rule 24 (condition -> value LEQ value .)
+
+
+state 61
+
+    (25) condition -> value EQ value .
+
+    DO              reduce using rule 25 (condition -> value EQ value .)
+    THEN            reduce using rule 25 (condition -> value EQ value .)
+    SEMICOLON       reduce using rule 25 (condition -> value EQ value .)
+
+
+state 62
+
+    (26) condition -> value NEQ value .
+
+    DO              reduce using rule 26 (condition -> value NEQ value .)
+    THEN            reduce using rule 26 (condition -> value NEQ value .)
+    SEMICOLON       reduce using rule 26 (condition -> value NEQ value .)
+
+
+state 63
+
+    (13) command -> REPEAT commands UNTIL condition . SEMICOLON
+
+    SEMICOLON       shift and go to state 74
+
+
+state 64
+
+    (14) command -> IF condition THEN commands . ENDIF
+    (15) command -> IF condition THEN commands . ELSE commands ENDIF
     (7) commands -> commands . command
     (9) command -> . identifier ASSIGN expression SEMICOLON
     (10) command -> . WRITE value SEMICOLON
     (11) command -> . READ identifier SEMICOLON
     (12) command -> . WHILE condition DO commands ENDWHILE
-    (13) command -> . IF condition THEN commands ENDIF
-    (14) command -> . IF condition THEN commands ELSE commands ENDIF
-    (28) identifier -> . ID
-    (29) identifier -> . ID LBR ID RBR
-    (30) identifier -> . ID LBR NUM RBR
+    (13) command -> . REPEAT commands UNTIL condition SEMICOLON
+    (14) command -> . IF condition THEN commands ENDIF
+    (15) command -> . IF condition THEN commands ELSE commands ENDIF
+    (29) identifier -> . ID
+    (30) identifier -> . ID LBR ID RBR
+    (31) identifier -> . ID LBR NUM RBR
 
-    ENDIF           shift and go to state 70
-    ELSE            shift and go to state 71
+    ENDIF           shift and go to state 75
+    ELSE            shift and go to state 76
     WRITE           shift and go to state 9
     READ            shift and go to state 10
     WHILE           shift and go to state 11
-    IF              shift and go to state 12
-    ID              shift and go to state 13
+    REPEAT          shift and go to state 12
+    IF              shift and go to state 13
+    ID              shift and go to state 14
 
-    command                        shift and go to state 18
+    command                        shift and go to state 19
     identifier                     shift and go to state 8
-
-state 61
-
-    (29) identifier -> ID LBR ID RBR .
-
-    ASSIGN          reduce using rule 29 (identifier -> ID LBR ID RBR .)
-    SEMICOLON       reduce using rule 29 (identifier -> ID LBR ID RBR .)
-    GT              reduce using rule 29 (identifier -> ID LBR ID RBR .)
-    LT              reduce using rule 29 (identifier -> ID LBR ID RBR .)
-    GEQ             reduce using rule 29 (identifier -> ID LBR ID RBR .)
-    LEQ             reduce using rule 29 (identifier -> ID LBR ID RBR .)
-    EQ              reduce using rule 29 (identifier -> ID LBR ID RBR .)
-    NEQ             reduce using rule 29 (identifier -> ID LBR ID RBR .)
-    PLUS            reduce using rule 29 (identifier -> ID LBR ID RBR .)
-    MINUS           reduce using rule 29 (identifier -> ID LBR ID RBR .)
-    MULT            reduce using rule 29 (identifier -> ID LBR ID RBR .)
-    DIV             reduce using rule 29 (identifier -> ID LBR ID RBR .)
-    DO              reduce using rule 29 (identifier -> ID LBR ID RBR .)
-    THEN            reduce using rule 29 (identifier -> ID LBR ID RBR .)
-
-
-state 62
-
-    (30) identifier -> ID LBR NUM RBR .
-
-    ASSIGN          reduce using rule 30 (identifier -> ID LBR NUM RBR .)
-    SEMICOLON       reduce using rule 30 (identifier -> ID LBR NUM RBR .)
-    GT              reduce using rule 30 (identifier -> ID LBR NUM RBR .)
-    LT              reduce using rule 30 (identifier -> ID LBR NUM RBR .)
-    GEQ             reduce using rule 30 (identifier -> ID LBR NUM RBR .)
-    LEQ             reduce using rule 30 (identifier -> ID LBR NUM RBR .)
-    EQ              reduce using rule 30 (identifier -> ID LBR NUM RBR .)
-    NEQ             reduce using rule 30 (identifier -> ID LBR NUM RBR .)
-    PLUS            reduce using rule 30 (identifier -> ID LBR NUM RBR .)
-    MINUS           reduce using rule 30 (identifier -> ID LBR NUM RBR .)
-    MULT            reduce using rule 30 (identifier -> ID LBR NUM RBR .)
-    DIV             reduce using rule 30 (identifier -> ID LBR NUM RBR .)
-    DO              reduce using rule 30 (identifier -> ID LBR NUM RBR .)
-    THEN            reduce using rule 30 (identifier -> ID LBR NUM RBR .)
-
-
-state 63
-
-    (4) declarations -> declarations COMMA ID LBR NUM . COLON NUM RBR
-
-    COLON           shift and go to state 72
-
-
-state 64
-
-    (6) declarations -> ID LBR NUM COLON NUM . RBR
-
-    RBR             shift and go to state 73
-
 
 state 65
 
-    (16) expression -> value PLUS value .
+    (30) identifier -> ID LBR ID RBR .
 
-    SEMICOLON       reduce using rule 16 (expression -> value PLUS value .)
+    ASSIGN          reduce using rule 30 (identifier -> ID LBR ID RBR .)
+    SEMICOLON       reduce using rule 30 (identifier -> ID LBR ID RBR .)
+    GT              reduce using rule 30 (identifier -> ID LBR ID RBR .)
+    LT              reduce using rule 30 (identifier -> ID LBR ID RBR .)
+    GEQ             reduce using rule 30 (identifier -> ID LBR ID RBR .)
+    LEQ             reduce using rule 30 (identifier -> ID LBR ID RBR .)
+    EQ              reduce using rule 30 (identifier -> ID LBR ID RBR .)
+    NEQ             reduce using rule 30 (identifier -> ID LBR ID RBR .)
+    PLUS            reduce using rule 30 (identifier -> ID LBR ID RBR .)
+    MINUS           reduce using rule 30 (identifier -> ID LBR ID RBR .)
+    MULT            reduce using rule 30 (identifier -> ID LBR ID RBR .)
+    DIV             reduce using rule 30 (identifier -> ID LBR ID RBR .)
+    DO              reduce using rule 30 (identifier -> ID LBR ID RBR .)
+    THEN            reduce using rule 30 (identifier -> ID LBR ID RBR .)
 
 
 state 66
 
-    (17) expression -> value MINUS value .
+    (31) identifier -> ID LBR NUM RBR .
 
-    SEMICOLON       reduce using rule 17 (expression -> value MINUS value .)
+    ASSIGN          reduce using rule 31 (identifier -> ID LBR NUM RBR .)
+    SEMICOLON       reduce using rule 31 (identifier -> ID LBR NUM RBR .)
+    GT              reduce using rule 31 (identifier -> ID LBR NUM RBR .)
+    LT              reduce using rule 31 (identifier -> ID LBR NUM RBR .)
+    GEQ             reduce using rule 31 (identifier -> ID LBR NUM RBR .)
+    LEQ             reduce using rule 31 (identifier -> ID LBR NUM RBR .)
+    EQ              reduce using rule 31 (identifier -> ID LBR NUM RBR .)
+    NEQ             reduce using rule 31 (identifier -> ID LBR NUM RBR .)
+    PLUS            reduce using rule 31 (identifier -> ID LBR NUM RBR .)
+    MINUS           reduce using rule 31 (identifier -> ID LBR NUM RBR .)
+    MULT            reduce using rule 31 (identifier -> ID LBR NUM RBR .)
+    DIV             reduce using rule 31 (identifier -> ID LBR NUM RBR .)
+    DO              reduce using rule 31 (identifier -> ID LBR NUM RBR .)
+    THEN            reduce using rule 31 (identifier -> ID LBR NUM RBR .)
 
 
 state 67
 
-    (18) expression -> value MULT value .
+    (4) declarations -> declarations COMMA ID LBR NUM . COLON NUM RBR
 
-    SEMICOLON       reduce using rule 18 (expression -> value MULT value .)
+    COLON           shift and go to state 77
 
 
 state 68
 
-    (19) expression -> value DIV value .
+    (6) declarations -> ID LBR NUM COLON NUM . RBR
 
-    SEMICOLON       reduce using rule 19 (expression -> value DIV value .)
+    RBR             shift and go to state 78
 
 
 state 69
+
+    (17) expression -> value PLUS value .
+
+    SEMICOLON       reduce using rule 17 (expression -> value PLUS value .)
+
+
+state 70
+
+    (18) expression -> value MINUS value .
+
+    SEMICOLON       reduce using rule 18 (expression -> value MINUS value .)
+
+
+state 71
+
+    (19) expression -> value MULT value .
+
+    SEMICOLON       reduce using rule 19 (expression -> value MULT value .)
+
+
+state 72
+
+    (20) expression -> value DIV value .
+
+    SEMICOLON       reduce using rule 20 (expression -> value DIV value .)
+
+
+state 73
 
     (12) command -> WHILE condition DO commands ENDWHILE .
 
@@ -1022,61 +1135,84 @@ state 69
     WRITE           reduce using rule 12 (command -> WHILE condition DO commands ENDWHILE .)
     READ            reduce using rule 12 (command -> WHILE condition DO commands ENDWHILE .)
     WHILE           reduce using rule 12 (command -> WHILE condition DO commands ENDWHILE .)
+    REPEAT          reduce using rule 12 (command -> WHILE condition DO commands ENDWHILE .)
     IF              reduce using rule 12 (command -> WHILE condition DO commands ENDWHILE .)
     ID              reduce using rule 12 (command -> WHILE condition DO commands ENDWHILE .)
+    UNTIL           reduce using rule 12 (command -> WHILE condition DO commands ENDWHILE .)
     ENDWHILE        reduce using rule 12 (command -> WHILE condition DO commands ENDWHILE .)
     ENDIF           reduce using rule 12 (command -> WHILE condition DO commands ENDWHILE .)
     ELSE            reduce using rule 12 (command -> WHILE condition DO commands ENDWHILE .)
 
 
-state 70
+state 74
 
-    (13) command -> IF condition THEN commands ENDIF .
+    (13) command -> REPEAT commands UNTIL condition SEMICOLON .
 
-    END             reduce using rule 13 (command -> IF condition THEN commands ENDIF .)
-    WRITE           reduce using rule 13 (command -> IF condition THEN commands ENDIF .)
-    READ            reduce using rule 13 (command -> IF condition THEN commands ENDIF .)
-    WHILE           reduce using rule 13 (command -> IF condition THEN commands ENDIF .)
-    IF              reduce using rule 13 (command -> IF condition THEN commands ENDIF .)
-    ID              reduce using rule 13 (command -> IF condition THEN commands ENDIF .)
-    ENDWHILE        reduce using rule 13 (command -> IF condition THEN commands ENDIF .)
-    ENDIF           reduce using rule 13 (command -> IF condition THEN commands ENDIF .)
-    ELSE            reduce using rule 13 (command -> IF condition THEN commands ENDIF .)
+    END             reduce using rule 13 (command -> REPEAT commands UNTIL condition SEMICOLON .)
+    WRITE           reduce using rule 13 (command -> REPEAT commands UNTIL condition SEMICOLON .)
+    READ            reduce using rule 13 (command -> REPEAT commands UNTIL condition SEMICOLON .)
+    WHILE           reduce using rule 13 (command -> REPEAT commands UNTIL condition SEMICOLON .)
+    REPEAT          reduce using rule 13 (command -> REPEAT commands UNTIL condition SEMICOLON .)
+    IF              reduce using rule 13 (command -> REPEAT commands UNTIL condition SEMICOLON .)
+    ID              reduce using rule 13 (command -> REPEAT commands UNTIL condition SEMICOLON .)
+    UNTIL           reduce using rule 13 (command -> REPEAT commands UNTIL condition SEMICOLON .)
+    ENDWHILE        reduce using rule 13 (command -> REPEAT commands UNTIL condition SEMICOLON .)
+    ENDIF           reduce using rule 13 (command -> REPEAT commands UNTIL condition SEMICOLON .)
+    ELSE            reduce using rule 13 (command -> REPEAT commands UNTIL condition SEMICOLON .)
 
 
-state 71
+state 75
 
-    (14) command -> IF condition THEN commands ELSE . commands ENDIF
+    (14) command -> IF condition THEN commands ENDIF .
+
+    END             reduce using rule 14 (command -> IF condition THEN commands ENDIF .)
+    WRITE           reduce using rule 14 (command -> IF condition THEN commands ENDIF .)
+    READ            reduce using rule 14 (command -> IF condition THEN commands ENDIF .)
+    WHILE           reduce using rule 14 (command -> IF condition THEN commands ENDIF .)
+    REPEAT          reduce using rule 14 (command -> IF condition THEN commands ENDIF .)
+    IF              reduce using rule 14 (command -> IF condition THEN commands ENDIF .)
+    ID              reduce using rule 14 (command -> IF condition THEN commands ENDIF .)
+    UNTIL           reduce using rule 14 (command -> IF condition THEN commands ENDIF .)
+    ENDWHILE        reduce using rule 14 (command -> IF condition THEN commands ENDIF .)
+    ENDIF           reduce using rule 14 (command -> IF condition THEN commands ENDIF .)
+    ELSE            reduce using rule 14 (command -> IF condition THEN commands ENDIF .)
+
+
+state 76
+
+    (15) command -> IF condition THEN commands ELSE . commands ENDIF
     (7) commands -> . commands command
     (8) commands -> . command
     (9) command -> . identifier ASSIGN expression SEMICOLON
     (10) command -> . WRITE value SEMICOLON
     (11) command -> . READ identifier SEMICOLON
     (12) command -> . WHILE condition DO commands ENDWHILE
-    (13) command -> . IF condition THEN commands ENDIF
-    (14) command -> . IF condition THEN commands ELSE commands ENDIF
-    (28) identifier -> . ID
-    (29) identifier -> . ID LBR ID RBR
-    (30) identifier -> . ID LBR NUM RBR
+    (13) command -> . REPEAT commands UNTIL condition SEMICOLON
+    (14) command -> . IF condition THEN commands ENDIF
+    (15) command -> . IF condition THEN commands ELSE commands ENDIF
+    (29) identifier -> . ID
+    (30) identifier -> . ID LBR ID RBR
+    (31) identifier -> . ID LBR NUM RBR
 
     WRITE           shift and go to state 9
     READ            shift and go to state 10
     WHILE           shift and go to state 11
-    IF              shift and go to state 12
-    ID              shift and go to state 13
+    REPEAT          shift and go to state 12
+    IF              shift and go to state 13
+    ID              shift and go to state 14
 
-    commands                       shift and go to state 74
+    commands                       shift and go to state 79
     command                        shift and go to state 7
     identifier                     shift and go to state 8
 
-state 72
+state 77
 
     (4) declarations -> declarations COMMA ID LBR NUM COLON . NUM RBR
 
-    NUM             shift and go to state 75
+    NUM             shift and go to state 80
 
 
-state 73
+state 78
 
     (6) declarations -> ID LBR NUM COLON NUM RBR .
 
@@ -1084,53 +1220,57 @@ state 73
     COMMA           reduce using rule 6 (declarations -> ID LBR NUM COLON NUM RBR .)
 
 
-state 74
+state 79
 
-    (14) command -> IF condition THEN commands ELSE commands . ENDIF
+    (15) command -> IF condition THEN commands ELSE commands . ENDIF
     (7) commands -> commands . command
     (9) command -> . identifier ASSIGN expression SEMICOLON
     (10) command -> . WRITE value SEMICOLON
     (11) command -> . READ identifier SEMICOLON
     (12) command -> . WHILE condition DO commands ENDWHILE
-    (13) command -> . IF condition THEN commands ENDIF
-    (14) command -> . IF condition THEN commands ELSE commands ENDIF
-    (28) identifier -> . ID
-    (29) identifier -> . ID LBR ID RBR
-    (30) identifier -> . ID LBR NUM RBR
+    (13) command -> . REPEAT commands UNTIL condition SEMICOLON
+    (14) command -> . IF condition THEN commands ENDIF
+    (15) command -> . IF condition THEN commands ELSE commands ENDIF
+    (29) identifier -> . ID
+    (30) identifier -> . ID LBR ID RBR
+    (31) identifier -> . ID LBR NUM RBR
 
-    ENDIF           shift and go to state 76
+    ENDIF           shift and go to state 81
     WRITE           shift and go to state 9
     READ            shift and go to state 10
     WHILE           shift and go to state 11
-    IF              shift and go to state 12
-    ID              shift and go to state 13
+    REPEAT          shift and go to state 12
+    IF              shift and go to state 13
+    ID              shift and go to state 14
 
-    command                        shift and go to state 18
+    command                        shift and go to state 19
     identifier                     shift and go to state 8
 
-state 75
+state 80
 
     (4) declarations -> declarations COMMA ID LBR NUM COLON NUM . RBR
 
-    RBR             shift and go to state 77
+    RBR             shift and go to state 82
 
 
-state 76
+state 81
 
-    (14) command -> IF condition THEN commands ELSE commands ENDIF .
+    (15) command -> IF condition THEN commands ELSE commands ENDIF .
 
-    END             reduce using rule 14 (command -> IF condition THEN commands ELSE commands ENDIF .)
-    WRITE           reduce using rule 14 (command -> IF condition THEN commands ELSE commands ENDIF .)
-    READ            reduce using rule 14 (command -> IF condition THEN commands ELSE commands ENDIF .)
-    WHILE           reduce using rule 14 (command -> IF condition THEN commands ELSE commands ENDIF .)
-    IF              reduce using rule 14 (command -> IF condition THEN commands ELSE commands ENDIF .)
-    ID              reduce using rule 14 (command -> IF condition THEN commands ELSE commands ENDIF .)
-    ENDWHILE        reduce using rule 14 (command -> IF condition THEN commands ELSE commands ENDIF .)
-    ENDIF           reduce using rule 14 (command -> IF condition THEN commands ELSE commands ENDIF .)
-    ELSE            reduce using rule 14 (command -> IF condition THEN commands ELSE commands ENDIF .)
+    END             reduce using rule 15 (command -> IF condition THEN commands ELSE commands ENDIF .)
+    WRITE           reduce using rule 15 (command -> IF condition THEN commands ELSE commands ENDIF .)
+    READ            reduce using rule 15 (command -> IF condition THEN commands ELSE commands ENDIF .)
+    WHILE           reduce using rule 15 (command -> IF condition THEN commands ELSE commands ENDIF .)
+    REPEAT          reduce using rule 15 (command -> IF condition THEN commands ELSE commands ENDIF .)
+    IF              reduce using rule 15 (command -> IF condition THEN commands ELSE commands ENDIF .)
+    ID              reduce using rule 15 (command -> IF condition THEN commands ELSE commands ENDIF .)
+    UNTIL           reduce using rule 15 (command -> IF condition THEN commands ELSE commands ENDIF .)
+    ENDWHILE        reduce using rule 15 (command -> IF condition THEN commands ELSE commands ENDIF .)
+    ENDIF           reduce using rule 15 (command -> IF condition THEN commands ELSE commands ENDIF .)
+    ELSE            reduce using rule 15 (command -> IF condition THEN commands ELSE commands ENDIF .)
 
 
-state 77
+state 82
 
     (4) declarations -> declarations COMMA ID LBR NUM COLON NUM RBR .
 
