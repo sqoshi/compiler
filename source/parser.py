@@ -67,20 +67,27 @@ def p_commands_single(p):
 
 def p_command_assign(p):
     """command  : identifier ASSIGN expression SEMICOLON"""
+    if p[1] in get_iterators():
+        raise Exception('Could not assign value to iterator')
     identifier, expression, line = p[1], p[3], str(p.lineno(1))
-    p[0] = pack(str(expression) + render_by_addr(identifier, line, "b") + "STORE a b" + nl(), '<<asg')
+    p[0] = pack(str(expression) + render_addr(identifier, line, "b") + "STORE a b" + nl(), '<<asg')
     initialized.add(identifier[1])
 
 
 def p_command_write(p):
     """command	: WRITE value SEMICOLON """
-    p[0] = pack(render_value(p[2], str(p.lineno(1)), "b") + 'PUT b' + nl(), '<<write')
+    if is_id(p[2]):
+        p[0] = pack(render_value(p[2], str(p.lineno(1)), "b") + 'PUT b' + nl(), '<<write')
+    if is_num(p[2]):
+        p[0] = pack(
+            render_value(p[2], str(p.lineno(1)), "a") + nl() + rs_reg('b') + nl() + 'STORE a b' + nl() + 'PUT b' + nl(),
+            '<<write')
 
 
 def p_command_read(p):
     """command	: READ identifier SEMICOLON """
     initialized.add(p[2][1])
-    p[0] = render_by_addr(p[2], str(p.lineno(1)), "b") + "GET b" + nl()
+    p[0] = render_addr(p[2], str(p.lineno(1)), "b") + "GET b" + nl()
 
 
 def p_command_while(p):
@@ -93,8 +100,7 @@ def p_command_while(p):
 def p_command_repeat_until(p):
     """command	: REPEAT commands UNTIL condition SEMICOLON"""
     m1 = mark(jump_label)
-    print(m1 + p[2] + nl() + p[4][0] + p[4][1] + "JUMP " + jump_label[m1] + nl())
-    p[0] = pack(m1 + p[2] + nl() + p[4][0] + "JUMP " + jump_label[m1] + nl() +p[4][1], '<<repeat_until')
+    p[0] = pack(m1 + p[2] + nl() + p[4][0] + "JUMP " + jump_label[m1] + nl() + p[4][1], '<<repeat_until')
 
 
 def p_command_if(p):
@@ -108,6 +114,28 @@ def p_command_if_else(p):
     p[0] = pack(p[2][0] + p[4] + nl()
                 + "JUMP " + jump_label[m1] + nl()
                 + p[2][1] + p[6] + m1, '<<if_else')
+
+
+def p_iterator(p):
+    '''iterator	: ID '''
+    id, lineno = p[1], str(p.lineno(1))
+    p[0] = ('id', p[1])
+    add_iterator(id, lineno)
+
+
+def p_command_for_to(p):
+    """command  : FOR iterator FROM value TO value DO commands ENDFOR"""
+    v1 = p[4]
+    v2 = p[6]
+    m1, m2 = get_marks(2)
+    prepared_regs = standard_render(v1, v2, 'e', 'f', str(p.lineno(4))) \
+                    + nl() + render_addr(p[2], str(p.lineno(2)), 'c') + nl() \
+                    + 'STORE e c' + nl() + "SUB f e" + nl()
+    loop = m2 + 'JZERO f ' + jump_label[m1] + nl() + 'DEC f' + nl() + 'INC e' + nl() \
+           + 'STORE e c' + nl() \
+           + p[8] + 'JUMP ' + jump_label[m2] + nl() + m1
+    p[0] = prepared_regs + loop
+    remove_iterator(p[2][1])
 
 
 ##################################################################
@@ -227,7 +255,6 @@ def p_condition_eq(p):
                  , '<<EQ'), m2)
 
 
-# TODO: NEQ
 def p_condition_neq(p):
     """condition   : value NEQ value"""
     command = standard_render(p[1], p[3], 'c', 'd', str(p.lineno(2)))
@@ -268,12 +295,12 @@ def p_identifier_id(p):
     p[0] = ("id", p[1])
 
 
-def p_identifier_table_id(p):
+def p_identifier_table_recursive(p):
     '''identifier   : ID LBR ID RBR '''
     p[0] = ("arr", p[1], ("id", p[3]))
 
 
-def p_identifier(p):
+def p_identifier_table_element(p):
     '''identifier	: ID LBR NUM RBR '''
     p[0] = ("arr", p[1], ("num", p[3]))
 
@@ -300,4 +327,5 @@ def test_compiler(f1='../my_tests/test', f2='result.mr'):
     os.system('../virtual_machine/maszyna-wirtualna result.mr')
 
 
-test_compiler(f1='../examples/tests/program0.imp')
+t0 = '../examples/tests/program0.imp'
+test_compiler()

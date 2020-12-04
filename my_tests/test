@@ -1,18 +1,14 @@
 DECLARE
     a,b(10:30),f,c,d,e
 BEGIN
-    a := 6;
-    c := 7;
-    IF
-        a>c
-    THEN
-        WRITE a;
-        WRITE c;
-    ELSE
-        WRITE c;
-    ENDIF
-    REPEAT
-        a := a-1;
-        WRITE a;
-    UNTIL a>c;
+    a:=10;
+    FOR
+        x
+    FROM
+        10
+    TO
+        15
+    DO
+        WRITE x;
+    ENDFOR
 END

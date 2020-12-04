@@ -8,6 +8,7 @@ arrays = dict()
 variables = dict()
 initialized = set()
 jump_label = dict()
+iterators_set = set()
 
 
 ################################################################################
@@ -40,6 +41,22 @@ def inc_memory_counter(val=1):
     """Increase memory counter by val(default=1)."""
     global memory_counter
     memory_counter += val
+
+
+def add_iterator(it, line):
+    global iterators_set
+    add_var(it, line)
+    iterators_set.add(it)
+    initialized.add(it)
+
+
+def remove_iterator(it):
+    initialized.remove(it)
+    del variables[it]
+
+
+def get_iterators():
+    return iterators_set
 
 
 ################################################################################
@@ -155,7 +172,7 @@ def generate_number(number, reg):
     return commands
 
 
-def render_by_addr(variable, line, reg="b") -> str:
+def render_addr(variable, line, reg="b") -> str:
     if variable[0] == "id":
         validate_var_addr(variable[1], line)
         return generate_number(get_variables()[variable[1]], reg)
@@ -166,13 +183,13 @@ def render_value(variable, line, reg="a") -> str:
         return generate_number(int(variable[1]), reg)
     elif is_id(variable):
         is_initialized(variable[1], line)
-    return render_by_addr(variable, line, reg)
+    return render_addr(variable, line, reg)
 
 
 def render_values_multiple(*args) -> str:
     result = ""
     for (pi, reg, lineno) in args:
-        result = result + render_value(pi, lineno, reg)
+        result = result + render_value(pi, str(int(lineno) + 2), reg)
     return result
 
 

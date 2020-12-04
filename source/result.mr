@@ -1,110 +1,51 @@
-RESET b 
-INC b 
-SHL b 
-GET b
-RESET b 
-INC b 
-SHL b 
-PUT b
-RESET d 
-INC d 
-SHL d 
-RESET c 
-INC c 
-SHL c 
-LOAD d d
-RESET e
-ADD e c
-SUB e d
-JZERO e 2
-JUMP 2
-JUMP -5
-RESET b 
-INC b 
-SHL b 
-INC b 
-STORE a b
-RESET d 
-INC d 
-SHL d 
-RESET c 
-INC c 
-SHL c 
-INC c 
-LOAD c c
-RESET a
-JZERO d 7
-JODD d 3
-SHL c
-SHR d
-ADD a c
-DEC d
-JUMP -6
-RESET b 
-INC b 
-SHL b 
-INC b 
-STORE a b
-RESET b 
-INC b 
-SHL b 
-PUT b
-RESET c 
-INC c 
-SHL c 
-RESET d 
-INC d 
-SHL d 
-INC d 
-LOAD c c
-LOAD d d
-SUB c d
-JZERO c 5
-RESET b 
-INC b 
-PUT b
-JUMP 3
-RESET b 
-PUT b
-RESET b 
-INC b 
-SHL b 
-PUT b
-RESET d 
-INC d 
-SHL d 
-RESET c 
-INC c 
-SHL c 
-LOAD d d
-RESET e
-ADD e c
-SUB e d
-JZERO e 2
-JUMP 2
-JUMP -5
+RESET a 
+INC a 
+SHL a 
+SHL a 
+INC a 
+SHL a 
 RESET b 
 INC b 
 SHL b 
 STORE a b
+RESET e 
+INC e 
+SHL e 
+SHL e 
+INC e 
+SHL e 
+RESET f 
+INC f 
+SHL f 
+INC f 
+SHL f 
+INC f 
+SHL f 
+INC f 
+
 RESET c 
 INC c 
 SHL c 
-RESET d 
-LOAD c c
-RESET e
-ADD e c
-RESET f
-ADD f d
-SUB e d
-SUB f c
-JZERO e 2
-JUMP 4
-JZERO f 2
-JUMP 2
-JUMP -100
+INC c 
+SHL c 
+INC c 
+SHL c 
+SHL c 
+
+STORE e c
+SUB f e
+JZERO f 14
+DEC f
+INC e
+STORE e c
 RESET b 
 INC b 
 SHL b 
+INC b 
+SHL b 
+INC b 
+SHL b 
+SHL b 
 PUT b
+JUMP -13
 HALT

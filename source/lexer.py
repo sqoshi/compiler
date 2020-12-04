@@ -4,7 +4,7 @@ tokens = ('DECLARE', 'BEGIN', 'END',
           'PLUS', 'MINUS', 'DIV', 'MULT', 'MOD',
           'NUM', 'ID', 'ASSIGN',
           'EQ', 'NEQ', 'LEQ', 'GEQ', 'LT', 'GT',
-          'LBR', 'RBR', 'COLON', 'SEMICOLON','COMMA',
+          'LBR', 'RBR', 'COLON', 'SEMICOLON', 'COMMA',
           'READ', 'WRITE',
           'IF', 'THEN', 'ELSE', 'ENDIF',
           'WHILE', 'DO', 'ENDWHILE',
@@ -24,9 +24,6 @@ def t_NUM(t):
     t.value = int(t.value)
     return t
 
-
-t_READ = r'READ'
-t_WRITE = r'WRITE'
 
 t_PLUS = r'\+'
 t_MINUS = r'\-'
@@ -52,6 +49,7 @@ t_IF = r'IF'
 t_THEN = r'THEN'
 t_ELSE = r'ELSE'
 t_ENDIF = r'ENDIF'
+
 t_DO = r'DO'
 t_FOR = r'FOR'
 t_FROM = r'FROM'
@@ -63,6 +61,11 @@ t_REPEAT = r'REPEAT'
 t_UNTIL = r'UNTIL'
 t_ENDWHILE = r'ENDWHILE'
 
+t_READ = r'READ'
+t_WRITE = r'WRITE'
+
+t_ID = r'[_a-z]+'
+
 
 def t_newline(t):
     r'\r?\n+'
@@ -73,7 +76,5 @@ def t_error(t):
     print("Wrong char {}".format(t.value[0]))
     t.lexer.skip(1)
 
-
-t_ID = r'[_a-z]+'
 
 lexer = ply.lex.lex()
