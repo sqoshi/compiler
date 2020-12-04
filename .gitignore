@@ -1,4 +1,6 @@
+__pycache__/
+__pycache__
 venv/
-*.o
-*.cc
-
+parser.out
+parsetab.py
+.idea/
