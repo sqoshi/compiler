@@ -67,7 +67,7 @@ def p_commands_single(p):
 
 def p_command_assign(p):
     """command  : identifier ASSIGN expression SEMICOLON"""
-    if p[1] in get_iterators():
+    if p[1][1] in get_iterators():
         raise Exception('Could not assign value to iterator')
     identifier, expression, line = p[1], p[3], str(p.lineno(1))
     p[0] = pack(str(expression) + render_addr(identifier, line, "b") + "STORE a b" + nl(), '<<asg')
@@ -118,9 +118,8 @@ def p_command_if_else(p):
 
 def p_iterator(p):
     '''iterator	: ID '''
-    id, lineno = p[1], str(p.lineno(1))
     p[0] = ('id', p[1])
-    add_iterator(id, lineno)
+    add_iterator(p[1], str(p.lineno(1)))
 
 
 def p_command_for_to(p):
@@ -131,9 +130,23 @@ def p_command_for_to(p):
     prepared_regs = standard_render(v1, v2, 'e', 'f', str(p.lineno(4))) \
                     + nl() + render_addr(p[2], str(p.lineno(2)), 'c') + nl() \
                     + 'STORE e c' + nl() + "SUB f e" + nl()
-    loop = m2 + 'JZERO f ' + jump_label[m1] + nl() + 'DEC f' + nl() + 'INC e' + nl() \
-           + 'STORE e c' + nl() \
-           + p[8] + 'JUMP ' + jump_label[m2] + nl() + m1
+    loop = m2 + 'JZERO f ' + jump_label[m1] + nl() + 'DEC f' + nl() \
+           + p[8] + 'INC e' + nl() \
+           + 'STORE e c' + nl() + 'JUMP ' + jump_label[m2] + nl() + m1
+    p[0] = prepared_regs + loop
+    remove_iterator(p[2][1])
+
+
+def p_command_for_downto(p):
+    """command  : FOR iterator FROM value DOWNTO value DO commands ENDFOR"""
+    v1 = p[4]
+    v2 = p[6]
+    m1, m2 = get_marks(2)
+    prepared_regs = standard_render(v1, v2, 'e', 'f', str(p.lineno(4))) \
+                    + nl() + render_addr(p[2], str(p.lineno(2)), 'c') + nl() \
+                    + 'STORE e c' + nl() + "SUB e f" + nl() + rs_reg('f') + nl() + 'LOAD f c' + nl()
+    loop = m2 + 'JZERO e ' + jump_label[m1] + nl() + 'DEC e' + nl() \
+           + p[8] + nl() + 'DEC f' + nl() + 'STORE f c' + nl() + 'JUMP ' + jump_label[m2] + nl() + m1
     p[0] = prepared_regs + loop
     remove_iterator(p[2][1])
 

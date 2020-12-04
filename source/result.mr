@@ -17,9 +17,6 @@ SHL e
 RESET f 
 INC f 
 SHL f 
-INC f 
-SHL f 
-INC f 
 SHL f 
 INC f 
 
@@ -33,11 +30,11 @@ SHL c
 SHL c 
 
 STORE e c
-SUB f e
-JZERO f 14
-DEC f
-INC e
-STORE e c
+SUB e f
+RESET f
+LOAD f c
+JZERO e 14
+DEC e
 RESET b 
 INC b 
 SHL b 
@@ -47,5 +44,7 @@ INC b
 SHL b 
 SHL b 
 PUT b
+DEC f
+STORE f c
 JUMP -13
 HALT

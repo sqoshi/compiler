@@ -6,8 +6,8 @@ BEGIN
         x
     FROM
         10
-    TO
-        15
+    DOWNTO
+        5
     DO
         WRITE x;
     ENDFOR
