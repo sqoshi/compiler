@@ -1,14 +1,6 @@
 DECLARE
-    a,b(10:30),f,c,d,e
+    a
 BEGIN
-    a:=10;
-    FOR
-        x
-    FROM
-        10
-    DOWNTO
-        5
-    DO
-        WRITE x;
-    ENDFOR
+    a:=765435/1546;
+    WRITE a;
 END

@@ -173,7 +173,7 @@ def generate_number(number, reg):
 
 
 def render_addr(variable, line, reg="b") -> str:
-    if variable[0] == "id":
+    if is_id(variable):
         validate_var_addr(variable[1], line)
         return generate_number(get_variables()[variable[1]], reg)
 

@@ -1,9 +1,5 @@
 Created by PLY version 3.11 (http://www.dabeaz.com/ply)
 
-Unused terminals:
-
-    MOD
-
 Grammar
 
 Rule 0     S' -> program
@@ -30,17 +26,18 @@ Rule 20    expression -> value PLUS value
 Rule 21    expression -> value MINUS value
 Rule 22    expression -> value MULT value
 Rule 23    expression -> value DIV value
-Rule 24    condition -> value GT value
-Rule 25    condition -> value LT value
-Rule 26    condition -> value GEQ value
-Rule 27    condition -> value LEQ value
-Rule 28    condition -> value EQ value
-Rule 29    condition -> value NEQ value
-Rule 30    value -> NUM
-Rule 31    value -> identifier
-Rule 32    identifier -> ID
-Rule 33    identifier -> ID LBR ID RBR
-Rule 34    identifier -> ID LBR NUM RBR
+Rule 24    expression -> value MOD value
+Rule 25    condition -> value GT value
+Rule 26    condition -> value LT value
+Rule 27    condition -> value GEQ value
+Rule 28    condition -> value LEQ value
+Rule 29    condition -> value EQ value
+Rule 30    condition -> value NEQ value
+Rule 31    value -> NUM
+Rule 32    value -> identifier
+Rule 33    identifier -> ID
+Rule 34    identifier -> ID LBR ID RBR
+Rule 35    identifier -> ID LBR NUM RBR
 
 Terminals, with rules where they appear
 
@@ -57,23 +54,23 @@ END                  : 1 2
 ENDFOR               : 17 18
 ENDIF                : 14 15
 ENDWHILE             : 12
-EQ                   : 28
+EQ                   : 29
 FOR                  : 17 18
 FROM                 : 17 18
-GEQ                  : 26
-GT                   : 24
-ID                   : 3 4 5 6 16 32 33 33 34
+GEQ                  : 27
+GT                   : 25
+ID                   : 3 4 5 6 16 33 34 34 35
 IF                   : 14 15
-LBR                  : 4 6 33 34
-LEQ                  : 27
-LT                   : 25
+LBR                  : 4 6 34 35
+LEQ                  : 28
+LT                   : 26
 MINUS                : 21
-MOD                  : 
+MOD                  : 24
 MULT                 : 22
-NEQ                  : 29
-NUM                  : 4 4 6 6 30 34
+NEQ                  : 30
+NUM                  : 4 4 6 6 31 35
 PLUS                 : 20
-RBR                  : 4 6 33 34
+RBR                  : 4 6 34 35
 READ                 : 11
 REPEAT               : 13
 SEMICOLON            : 9 10 11 13
@@ -91,10 +88,10 @@ commands             : 1 2 7 12 13 14 15 15 17 18
 condition            : 12 13 14 15
 declarations         : 1 3 4
 expression           : 9
-identifier           : 9 11 31
+identifier           : 9 11 32
 iterator             : 17 18
 program              : 0
-value                : 10 17 17 18 18 19 20 20 21 21 22 22 23 23 24 24 25 25 26 26 27 27 28 28 29 29
+value                : 10 17 17 18 18 19 20 20 21 21 22 22 23 23 24 24 25 25 26 26 27 27 28 28 29 29 30 30
 
 Parsing method: LALR
 
@@ -141,9 +138,9 @@ state 3
     (15) command -> . IF condition THEN commands ELSE commands ENDIF
     (17) command -> . FOR iterator FROM value TO value DO commands ENDFOR
     (18) command -> . FOR iterator FROM value DOWNTO value DO commands ENDFOR
-    (32) identifier -> . ID
-    (33) identifier -> . ID LBR ID RBR
-    (34) identifier -> . ID LBR NUM RBR
+    (33) identifier -> . ID
+    (34) identifier -> . ID LBR ID RBR
+    (35) identifier -> . ID LBR NUM RBR
 
     WRITE           shift and go to state 9
     READ            shift and go to state 10
@@ -190,9 +187,9 @@ state 6
     (15) command -> . IF condition THEN commands ELSE commands ENDIF
     (17) command -> . FOR iterator FROM value TO value DO commands ENDFOR
     (18) command -> . FOR iterator FROM value DOWNTO value DO commands ENDFOR
-    (32) identifier -> . ID
-    (33) identifier -> . ID LBR ID RBR
-    (34) identifier -> . ID LBR NUM RBR
+    (33) identifier -> . ID
+    (34) identifier -> . ID LBR ID RBR
+    (35) identifier -> . ID LBR NUM RBR
 
     END             shift and go to state 19
     WRITE           shift and go to state 9
@@ -235,11 +232,11 @@ state 8
 state 9
 
     (10) command -> WRITE . value SEMICOLON
-    (30) value -> . NUM
-    (31) value -> . identifier
-    (32) identifier -> . ID
-    (33) identifier -> . ID LBR ID RBR
-    (34) identifier -> . ID LBR NUM RBR
+    (31) value -> . NUM
+    (32) value -> . identifier
+    (33) identifier -> . ID
+    (34) identifier -> . ID LBR ID RBR
+    (35) identifier -> . ID LBR NUM RBR
 
     NUM             shift and go to state 23
     ID              shift and go to state 15
@@ -250,9 +247,9 @@ state 9
 state 10
 
     (11) command -> READ . identifier SEMICOLON
-    (32) identifier -> . ID
-    (33) identifier -> . ID LBR ID RBR
-    (34) identifier -> . ID LBR NUM RBR
+    (33) identifier -> . ID
+    (34) identifier -> . ID LBR ID RBR
+    (35) identifier -> . ID LBR NUM RBR
 
     ID              shift and go to state 15
 
@@ -261,17 +258,17 @@ state 10
 state 11
 
     (12) command -> WHILE . condition DO commands ENDWHILE
-    (24) condition -> . value GT value
-    (25) condition -> . value LT value
-    (26) condition -> . value GEQ value
-    (27) condition -> . value LEQ value
-    (28) condition -> . value EQ value
-    (29) condition -> . value NEQ value
-    (30) value -> . NUM
-    (31) value -> . identifier
-    (32) identifier -> . ID
-    (33) identifier -> . ID LBR ID RBR
-    (34) identifier -> . ID LBR NUM RBR
+    (25) condition -> . value GT value
+    (26) condition -> . value LT value
+    (27) condition -> . value GEQ value
+    (28) condition -> . value LEQ value
+    (29) condition -> . value EQ value
+    (30) condition -> . value NEQ value
+    (31) value -> . NUM
+    (32) value -> . identifier
+    (33) identifier -> . ID
+    (34) identifier -> . ID LBR ID RBR
+    (35) identifier -> . ID LBR NUM RBR
 
     NUM             shift and go to state 23
     ID              shift and go to state 15
@@ -294,9 +291,9 @@ state 12
     (15) command -> . IF condition THEN commands ELSE commands ENDIF
     (17) command -> . FOR iterator FROM value TO value DO commands ENDFOR
     (18) command -> . FOR iterator FROM value DOWNTO value DO commands ENDFOR
-    (32) identifier -> . ID
-    (33) identifier -> . ID LBR ID RBR
-    (34) identifier -> . ID LBR NUM RBR
+    (33) identifier -> . ID
+    (34) identifier -> . ID LBR ID RBR
+    (35) identifier -> . ID LBR NUM RBR
 
     WRITE           shift and go to state 9
     READ            shift and go to state 10
@@ -314,17 +311,17 @@ state 13
 
     (14) command -> IF . condition THEN commands ENDIF
     (15) command -> IF . condition THEN commands ELSE commands ENDIF
-    (24) condition -> . value GT value
-    (25) condition -> . value LT value
-    (26) condition -> . value GEQ value
-    (27) condition -> . value LEQ value
-    (28) condition -> . value EQ value
-    (29) condition -> . value NEQ value
-    (30) value -> . NUM
-    (31) value -> . identifier
-    (32) identifier -> . ID
-    (33) identifier -> . ID LBR ID RBR
-    (34) identifier -> . ID LBR NUM RBR
+    (25) condition -> . value GT value
+    (26) condition -> . value LT value
+    (27) condition -> . value GEQ value
+    (28) condition -> . value LEQ value
+    (29) condition -> . value EQ value
+    (30) condition -> . value NEQ value
+    (31) value -> . NUM
+    (32) value -> . identifier
+    (33) identifier -> . ID
+    (34) identifier -> . ID LBR ID RBR
+    (35) identifier -> . ID LBR NUM RBR
 
     NUM             shift and go to state 23
     ID              shift and go to state 15
@@ -345,26 +342,27 @@ state 14
 
 state 15
 
-    (32) identifier -> ID .
-    (33) identifier -> ID . LBR ID RBR
-    (34) identifier -> ID . LBR NUM RBR
+    (33) identifier -> ID .
+    (34) identifier -> ID . LBR ID RBR
+    (35) identifier -> ID . LBR NUM RBR
 
-    ASSIGN          reduce using rule 32 (identifier -> ID .)
-    SEMICOLON       reduce using rule 32 (identifier -> ID .)
-    GT              reduce using rule 32 (identifier -> ID .)
-    LT              reduce using rule 32 (identifier -> ID .)
-    GEQ             reduce using rule 32 (identifier -> ID .)
-    LEQ             reduce using rule 32 (identifier -> ID .)
-    EQ              reduce using rule 32 (identifier -> ID .)
-    NEQ             reduce using rule 32 (identifier -> ID .)
-    PLUS            reduce using rule 32 (identifier -> ID .)
-    MINUS           reduce using rule 32 (identifier -> ID .)
-    MULT            reduce using rule 32 (identifier -> ID .)
-    DIV             reduce using rule 32 (identifier -> ID .)
-    DO              reduce using rule 32 (identifier -> ID .)
-    THEN            reduce using rule 32 (identifier -> ID .)
-    TO              reduce using rule 32 (identifier -> ID .)
-    DOWNTO          reduce using rule 32 (identifier -> ID .)
+    ASSIGN          reduce using rule 33 (identifier -> ID .)
+    SEMICOLON       reduce using rule 33 (identifier -> ID .)
+    GT              reduce using rule 33 (identifier -> ID .)
+    LT              reduce using rule 33 (identifier -> ID .)
+    GEQ             reduce using rule 33 (identifier -> ID .)
+    LEQ             reduce using rule 33 (identifier -> ID .)
+    EQ              reduce using rule 33 (identifier -> ID .)
+    NEQ             reduce using rule 33 (identifier -> ID .)
+    PLUS            reduce using rule 33 (identifier -> ID .)
+    MINUS           reduce using rule 33 (identifier -> ID .)
+    MULT            reduce using rule 33 (identifier -> ID .)
+    DIV             reduce using rule 33 (identifier -> ID .)
+    MOD             reduce using rule 33 (identifier -> ID .)
+    DO              reduce using rule 33 (identifier -> ID .)
+    THEN            reduce using rule 33 (identifier -> ID .)
+    TO              reduce using rule 33 (identifier -> ID .)
+    DOWNTO          reduce using rule 33 (identifier -> ID .)
     LBR             shift and go to state 32
 
 
@@ -382,9 +380,9 @@ state 16
     (15) command -> . IF condition THEN commands ELSE commands ENDIF
     (17) command -> . FOR iterator FROM value TO value DO commands ENDFOR
     (18) command -> . FOR iterator FROM value DOWNTO value DO commands ENDFOR
-    (32) identifier -> . ID
-    (33) identifier -> . ID LBR ID RBR
-    (34) identifier -> . ID LBR NUM RBR
+    (33) identifier -> . ID
+    (34) identifier -> . ID LBR ID RBR
+    (35) identifier -> . ID LBR NUM RBR
 
     WRITE           shift and go to state 9
     READ            shift and go to state 10
@@ -447,11 +445,12 @@ state 21
     (21) expression -> . value MINUS value
     (22) expression -> . value MULT value
     (23) expression -> . value DIV value
-    (30) value -> . NUM
-    (31) value -> . identifier
-    (32) identifier -> . ID
-    (33) identifier -> . ID LBR ID RBR
-    (34) identifier -> . ID LBR NUM RBR
+    (24) expression -> . value MOD value
+    (31) value -> . NUM
+    (32) value -> . identifier
+    (33) identifier -> . ID
+    (34) identifier -> . ID LBR ID RBR
+    (35) identifier -> . ID LBR NUM RBR
 
     NUM             shift and go to state 23
     ID              shift and go to state 15
@@ -469,44 +468,46 @@ state 22
 
 state 23
 
-    (30) value -> NUM .
+    (31) value -> NUM .
 
-    SEMICOLON       reduce using rule 30 (value -> NUM .)
-    GT              reduce using rule 30 (value -> NUM .)
-    LT              reduce using rule 30 (value -> NUM .)
-    GEQ             reduce using rule 30 (value -> NUM .)
-    LEQ             reduce using rule 30 (value -> NUM .)
-    EQ              reduce using rule 30 (value -> NUM .)
-    NEQ             reduce using rule 30 (value -> NUM .)
-    PLUS            reduce using rule 30 (value -> NUM .)
-    MINUS           reduce using rule 30 (value -> NUM .)
-    MULT            reduce using rule 30 (value -> NUM .)
-    DIV             reduce using rule 30 (value -> NUM .)
-    DO              reduce using rule 30 (value -> NUM .)
-    THEN            reduce using rule 30 (value -> NUM .)
-    TO              reduce using rule 30 (value -> NUM .)
-    DOWNTO          reduce using rule 30 (value -> NUM .)
+    SEMICOLON       reduce using rule 31 (value -> NUM .)
+    GT              reduce using rule 31 (value -> NUM .)
+    LT              reduce using rule 31 (value -> NUM .)
+    GEQ             reduce using rule 31 (value -> NUM .)
+    LEQ             reduce using rule 31 (value -> NUM .)
+    EQ              reduce using rule 31 (value -> NUM .)
+    NEQ             reduce using rule 31 (value -> NUM .)
+    PLUS            reduce using rule 31 (value -> NUM .)
+    MINUS           reduce using rule 31 (value -> NUM .)
+    MULT            reduce using rule 31 (value -> NUM .)
+    DIV             reduce using rule 31 (value -> NUM .)
+    MOD             reduce using rule 31 (value -> NUM .)
+    DO              reduce using rule 31 (value -> NUM .)
+    THEN            reduce using rule 31 (value -> NUM .)
+    TO              reduce using rule 31 (value -> NUM .)
+    DOWNTO          reduce using rule 31 (value -> NUM .)
 
 
 state 24
 
-    (31) value -> identifier .
+    (32) value -> identifier .
 
-    SEMICOLON       reduce using rule 31 (value -> identifier .)
-    GT              reduce using rule 31 (value -> identifier .)
-    LT              reduce using rule 31 (value -> identifier .)
-    GEQ             reduce using rule 31 (value -> identifier .)
-    LEQ             reduce using rule 31 (value -> identifier .)
-    EQ              reduce using rule 31 (value -> identifier .)
-    NEQ             reduce using rule 31 (value -> identifier .)
-    PLUS            reduce using rule 31 (value -> identifier .)
-    MINUS           reduce using rule 31 (value -> identifier .)
-    MULT            reduce using rule 31 (value -> identifier .)
-    DIV             reduce using rule 31 (value -> identifier .)
-    DO              reduce using rule 31 (value -> identifier .)
-    THEN            reduce using rule 31 (value -> identifier .)
-    TO              reduce using rule 31 (value -> identifier .)
-    DOWNTO          reduce using rule 31 (value -> identifier .)
+    SEMICOLON       reduce using rule 32 (value -> identifier .)
+    GT              reduce using rule 32 (value -> identifier .)
+    LT              reduce using rule 32 (value -> identifier .)
+    GEQ             reduce using rule 32 (value -> identifier .)
+    LEQ             reduce using rule 32 (value -> identifier .)
+    EQ              reduce using rule 32 (value -> identifier .)
+    NEQ             reduce using rule 32 (value -> identifier .)
+    PLUS            reduce using rule 32 (value -> identifier .)
+    MINUS           reduce using rule 32 (value -> identifier .)
+    MULT            reduce using rule 32 (value -> identifier .)
+    DIV             reduce using rule 32 (value -> identifier .)
+    MOD             reduce using rule 32 (value -> identifier .)
+    DO              reduce using rule 32 (value -> identifier .)
+    THEN            reduce using rule 32 (value -> identifier .)
+    TO              reduce using rule 32 (value -> identifier .)
+    DOWNTO          reduce using rule 32 (value -> identifier .)
 
 
 state 25
@@ -525,12 +526,12 @@ state 26
 
 state 27
 
-    (24) condition -> value . GT value
-    (25) condition -> value . LT value
-    (26) condition -> value . GEQ value
-    (27) condition -> value . LEQ value
-    (28) condition -> value . EQ value
-    (29) condition -> value . NEQ value
+    (25) condition -> value . GT value
+    (26) condition -> value . LT value
+    (27) condition -> value . GEQ value
+    (28) condition -> value . LEQ value
+    (29) condition -> value . EQ value
+    (30) condition -> value . NEQ value
 
     GT              shift and go to state 41
     LT              shift and go to state 42
@@ -553,9 +554,9 @@ state 28
     (15) command -> . IF condition THEN commands ELSE commands ENDIF
     (17) command -> . FOR iterator FROM value TO value DO commands ENDFOR
     (18) command -> . FOR iterator FROM value DOWNTO value DO commands ENDFOR
-    (32) identifier -> . ID
-    (33) identifier -> . ID LBR ID RBR
-    (34) identifier -> . ID LBR NUM RBR
+    (33) identifier -> . ID
+    (34) identifier -> . ID LBR ID RBR
+    (35) identifier -> . ID LBR NUM RBR
 
     UNTIL           shift and go to state 47
     WRITE           shift and go to state 9
@@ -594,8 +595,8 @@ state 31
 
 state 32
 
-    (33) identifier -> ID LBR . ID RBR
-    (34) identifier -> ID LBR . NUM RBR
+    (34) identifier -> ID LBR . ID RBR
+    (35) identifier -> ID LBR . NUM RBR
 
     ID              shift and go to state 50
     NUM             shift and go to state 51
@@ -614,9 +615,9 @@ state 33
     (15) command -> . IF condition THEN commands ELSE commands ENDIF
     (17) command -> . FOR iterator FROM value TO value DO commands ENDFOR
     (18) command -> . FOR iterator FROM value DOWNTO value DO commands ENDFOR
-    (32) identifier -> . ID
-    (33) identifier -> . ID LBR ID RBR
-    (34) identifier -> . ID LBR NUM RBR
+    (33) identifier -> . ID
+    (34) identifier -> . ID LBR ID RBR
+    (35) identifier -> . ID LBR NUM RBR
 
     END             shift and go to state 52
     WRITE           shift and go to state 9
@@ -661,12 +662,14 @@ state 37
     (21) expression -> value . MINUS value
     (22) expression -> value . MULT value
     (23) expression -> value . DIV value
+    (24) expression -> value . MOD value
 
     SEMICOLON       reduce using rule 19 (expression -> value .)
     PLUS            shift and go to state 56
     MINUS           shift and go to state 57
     MULT            shift and go to state 58
     DIV             shift and go to state 59
+    MOD             shift and go to state 60
 
 
 state 38
@@ -721,9 +724,9 @@ state 40
     (15) command -> . IF condition THEN commands ELSE commands ENDIF
     (17) command -> . FOR iterator FROM value TO value DO commands ENDFOR
     (18) command -> . FOR iterator FROM value DOWNTO value DO commands ENDFOR
-    (32) identifier -> . ID
-    (33) identifier -> . ID LBR ID RBR
-    (34) identifier -> . ID LBR NUM RBR
+    (33) identifier -> . ID
+    (34) identifier -> . ID LBR ID RBR
+    (35) identifier -> . ID LBR NUM RBR
 
     WRITE           shift and go to state 9
     READ            shift and go to state 10
@@ -733,33 +736,18 @@ state 40
     FOR             shift and go to state 14
     ID              shift and go to state 15
 
-    commands                       shift and go to state 60
+    commands                       shift and go to state 61
     command                        shift and go to state 7
     identifier                     shift and go to state 8
 
 state 41
 
-    (24) condition -> value GT . value
-    (30) value -> . NUM
-    (31) value -> . identifier
-    (32) identifier -> . ID
-    (33) identifier -> . ID LBR ID RBR
-    (34) identifier -> . ID LBR NUM RBR
-
-    NUM             shift and go to state 23
-    ID              shift and go to state 15
-
-    value                          shift and go to state 61
-    identifier                     shift and go to state 24
-
-state 42
-
-    (25) condition -> value LT . value
-    (30) value -> . NUM
-    (31) value -> . identifier
-    (32) identifier -> . ID
-    (33) identifier -> . ID LBR ID RBR
-    (34) identifier -> . ID LBR NUM RBR
+    (25) condition -> value GT . value
+    (31) value -> . NUM
+    (32) value -> . identifier
+    (33) identifier -> . ID
+    (34) identifier -> . ID LBR ID RBR
+    (35) identifier -> . ID LBR NUM RBR
 
     NUM             shift and go to state 23
     ID              shift and go to state 15
@@ -767,14 +755,14 @@ state 42
     value                          shift and go to state 62
     identifier                     shift and go to state 24
 
-state 43
+state 42
 
-    (26) condition -> value GEQ . value
-    (30) value -> . NUM
-    (31) value -> . identifier
-    (32) identifier -> . ID
-    (33) identifier -> . ID LBR ID RBR
-    (34) identifier -> . ID LBR NUM RBR
+    (26) condition -> value LT . value
+    (31) value -> . NUM
+    (32) value -> . identifier
+    (33) identifier -> . ID
+    (34) identifier -> . ID LBR ID RBR
+    (35) identifier -> . ID LBR NUM RBR
 
     NUM             shift and go to state 23
     ID              shift and go to state 15
@@ -782,14 +770,14 @@ state 43
     value                          shift and go to state 63
     identifier                     shift and go to state 24
 
-state 44
+state 43
 
-    (27) condition -> value LEQ . value
-    (30) value -> . NUM
-    (31) value -> . identifier
-    (32) identifier -> . ID
-    (33) identifier -> . ID LBR ID RBR
-    (34) identifier -> . ID LBR NUM RBR
+    (27) condition -> value GEQ . value
+    (31) value -> . NUM
+    (32) value -> . identifier
+    (33) identifier -> . ID
+    (34) identifier -> . ID LBR ID RBR
+    (35) identifier -> . ID LBR NUM RBR
 
     NUM             shift and go to state 23
     ID              shift and go to state 15
@@ -797,14 +785,14 @@ state 44
     value                          shift and go to state 64
     identifier                     shift and go to state 24
 
-state 45
+state 44
 
-    (28) condition -> value EQ . value
-    (30) value -> . NUM
-    (31) value -> . identifier
-    (32) identifier -> . ID
-    (33) identifier -> . ID LBR ID RBR
-    (34) identifier -> . ID LBR NUM RBR
+    (28) condition -> value LEQ . value
+    (31) value -> . NUM
+    (32) value -> . identifier
+    (33) identifier -> . ID
+    (34) identifier -> . ID LBR ID RBR
+    (35) identifier -> . ID LBR NUM RBR
 
     NUM             shift and go to state 23
     ID              shift and go to state 15
@@ -812,14 +800,14 @@ state 45
     value                          shift and go to state 65
     identifier                     shift and go to state 24
 
-state 46
+state 45
 
-    (29) condition -> value NEQ . value
-    (30) value -> . NUM
-    (31) value -> . identifier
-    (32) identifier -> . ID
-    (33) identifier -> . ID LBR ID RBR
-    (34) identifier -> . ID LBR NUM RBR
+    (29) condition -> value EQ . value
+    (31) value -> . NUM
+    (32) value -> . identifier
+    (33) identifier -> . ID
+    (34) identifier -> . ID LBR ID RBR
+    (35) identifier -> . ID LBR NUM RBR
 
     NUM             shift and go to state 23
     ID              shift and go to state 15
@@ -827,25 +815,40 @@ state 46
     value                          shift and go to state 66
     identifier                     shift and go to state 24
 
-state 47
+state 46
 
-    (13) command -> REPEAT commands UNTIL . condition SEMICOLON
-    (24) condition -> . value GT value
-    (25) condition -> . value LT value
-    (26) condition -> . value GEQ value
-    (27) condition -> . value LEQ value
-    (28) condition -> . value EQ value
-    (29) condition -> . value NEQ value
-    (30) value -> . NUM
-    (31) value -> . identifier
-    (32) identifier -> . ID
-    (33) identifier -> . ID LBR ID RBR
-    (34) identifier -> . ID LBR NUM RBR
+    (30) condition -> value NEQ . value
+    (31) value -> . NUM
+    (32) value -> . identifier
+    (33) identifier -> . ID
+    (34) identifier -> . ID LBR ID RBR
+    (35) identifier -> . ID LBR NUM RBR
 
     NUM             shift and go to state 23
     ID              shift and go to state 15
 
-    condition                      shift and go to state 67
+    value                          shift and go to state 67
+    identifier                     shift and go to state 24
+
+state 47
+
+    (13) command -> REPEAT commands UNTIL . condition SEMICOLON
+    (25) condition -> . value GT value
+    (26) condition -> . value LT value
+    (27) condition -> . value GEQ value
+    (28) condition -> . value LEQ value
+    (29) condition -> . value EQ value
+    (30) condition -> . value NEQ value
+    (31) value -> . NUM
+    (32) value -> . identifier
+    (33) identifier -> . ID
+    (34) identifier -> . ID LBR ID RBR
+    (35) identifier -> . ID LBR NUM RBR
+
+    NUM             shift and go to state 23
+    ID              shift and go to state 15
+
+    condition                      shift and go to state 68
     value                          shift and go to state 27
     identifier                     shift and go to state 24
 
@@ -864,9 +867,9 @@ state 48
     (15) command -> . IF condition THEN commands ELSE commands ENDIF
     (17) command -> . FOR iterator FROM value TO value DO commands ENDFOR
     (18) command -> . FOR iterator FROM value DOWNTO value DO commands ENDFOR
-    (32) identifier -> . ID
-    (33) identifier -> . ID LBR ID RBR
-    (34) identifier -> . ID LBR NUM RBR
+    (33) identifier -> . ID
+    (34) identifier -> . ID LBR ID RBR
+    (35) identifier -> . ID LBR NUM RBR
 
     WRITE           shift and go to state 9
     READ            shift and go to state 10
@@ -876,7 +879,7 @@ state 48
     FOR             shift and go to state 14
     ID              shift and go to state 15
 
-    commands                       shift and go to state 68
+    commands                       shift and go to state 69
     command                        shift and go to state 7
     identifier                     shift and go to state 8
 
@@ -884,30 +887,30 @@ state 49
 
     (17) command -> FOR iterator FROM . value TO value DO commands ENDFOR
     (18) command -> FOR iterator FROM . value DOWNTO value DO commands ENDFOR
-    (30) value -> . NUM
-    (31) value -> . identifier
-    (32) identifier -> . ID
-    (33) identifier -> . ID LBR ID RBR
-    (34) identifier -> . ID LBR NUM RBR
+    (31) value -> . NUM
+    (32) value -> . identifier
+    (33) identifier -> . ID
+    (34) identifier -> . ID LBR ID RBR
+    (35) identifier -> . ID LBR NUM RBR
 
     NUM             shift and go to state 23
     ID              shift and go to state 15
 
-    value                          shift and go to state 69
+    value                          shift and go to state 70
     identifier                     shift and go to state 24
 
 state 50
 
-    (33) identifier -> ID LBR ID . RBR
+    (34) identifier -> ID LBR ID . RBR
 
-    RBR             shift and go to state 70
+    RBR             shift and go to state 71
 
 
 state 51
 
-    (34) identifier -> ID LBR NUM . RBR
+    (35) identifier -> ID LBR NUM . RBR
 
-    RBR             shift and go to state 71
+    RBR             shift and go to state 72
 
 
 state 52
@@ -921,14 +924,14 @@ state 53
 
     (4) declarations -> declarations COMMA ID LBR . NUM COLON NUM RBR
 
-    NUM             shift and go to state 72
+    NUM             shift and go to state 73
 
 
 state 54
 
     (6) declarations -> ID LBR NUM COLON . NUM RBR
 
-    NUM             shift and go to state 73
+    NUM             shift and go to state 74
 
 
 state 55
@@ -953,26 +956,11 @@ state 55
 state 56
 
     (20) expression -> value PLUS . value
-    (30) value -> . NUM
-    (31) value -> . identifier
-    (32) identifier -> . ID
-    (33) identifier -> . ID LBR ID RBR
-    (34) identifier -> . ID LBR NUM RBR
-
-    NUM             shift and go to state 23
-    ID              shift and go to state 15
-
-    value                          shift and go to state 74
-    identifier                     shift and go to state 24
-
-state 57
-
-    (21) expression -> value MINUS . value
-    (30) value -> . NUM
-    (31) value -> . identifier
-    (32) identifier -> . ID
-    (33) identifier -> . ID LBR ID RBR
-    (34) identifier -> . ID LBR NUM RBR
+    (31) value -> . NUM
+    (32) value -> . identifier
+    (33) identifier -> . ID
+    (34) identifier -> . ID LBR ID RBR
+    (35) identifier -> . ID LBR NUM RBR
 
     NUM             shift and go to state 23
     ID              shift and go to state 15
@@ -980,14 +968,14 @@ state 57
     value                          shift and go to state 75
     identifier                     shift and go to state 24
 
-state 58
+state 57
 
-    (22) expression -> value MULT . value
-    (30) value -> . NUM
-    (31) value -> . identifier
-    (32) identifier -> . ID
-    (33) identifier -> . ID LBR ID RBR
-    (34) identifier -> . ID LBR NUM RBR
+    (21) expression -> value MINUS . value
+    (31) value -> . NUM
+    (32) value -> . identifier
+    (33) identifier -> . ID
+    (34) identifier -> . ID LBR ID RBR
+    (35) identifier -> . ID LBR NUM RBR
 
     NUM             shift and go to state 23
     ID              shift and go to state 15
@@ -995,14 +983,14 @@ state 58
     value                          shift and go to state 76
     identifier                     shift and go to state 24
 
-state 59
+state 58
 
-    (23) expression -> value DIV . value
-    (30) value -> . NUM
-    (31) value -> . identifier
-    (32) identifier -> . ID
-    (33) identifier -> . ID LBR ID RBR
-    (34) identifier -> . ID LBR NUM RBR
+    (22) expression -> value MULT . value
+    (31) value -> . NUM
+    (32) value -> . identifier
+    (33) identifier -> . ID
+    (34) identifier -> . ID LBR ID RBR
+    (35) identifier -> . ID LBR NUM RBR
 
     NUM             shift and go to state 23
     ID              shift and go to state 15
@@ -1010,7 +998,37 @@ state 59
     value                          shift and go to state 77
     identifier                     shift and go to state 24
 
+state 59
+
+    (23) expression -> value DIV . value
+    (31) value -> . NUM
+    (32) value -> . identifier
+    (33) identifier -> . ID
+    (34) identifier -> . ID LBR ID RBR
+    (35) identifier -> . ID LBR NUM RBR
+
+    NUM             shift and go to state 23
+    ID              shift and go to state 15
+
+    value                          shift and go to state 78
+    identifier                     shift and go to state 24
+
 state 60
+
+    (24) expression -> value MOD . value
+    (31) value -> . NUM
+    (32) value -> . identifier
+    (33) identifier -> . ID
+    (34) identifier -> . ID LBR ID RBR
+    (35) identifier -> . ID LBR NUM RBR
+
+    NUM             shift and go to state 23
+    ID              shift and go to state 15
+
+    value                          shift and go to state 79
+    identifier                     shift and go to state 24
+
+state 61
 
     (12) command -> WHILE condition DO commands . ENDWHILE
     (7) commands -> commands . command
@@ -1023,11 +1041,11 @@ state 60
     (15) command -> . IF condition THEN commands ELSE commands ENDIF
     (17) command -> . FOR iterator FROM value TO value DO commands ENDFOR
     (18) command -> . FOR iterator FROM value DOWNTO value DO commands ENDFOR
-    (32) identifier -> . ID
-    (33) identifier -> . ID LBR ID RBR
-    (34) identifier -> . ID LBR NUM RBR
+    (33) identifier -> . ID
+    (34) identifier -> . ID LBR ID RBR
+    (35) identifier -> . ID LBR NUM RBR
 
-    ENDWHILE        shift and go to state 78
+    ENDWHILE        shift and go to state 80
     WRITE           shift and go to state 9
     READ            shift and go to state 10
     WHILE           shift and go to state 11
@@ -1039,68 +1057,68 @@ state 60
     command                        shift and go to state 20
     identifier                     shift and go to state 8
 
-state 61
-
-    (24) condition -> value GT value .
-
-    DO              reduce using rule 24 (condition -> value GT value .)
-    THEN            reduce using rule 24 (condition -> value GT value .)
-    SEMICOLON       reduce using rule 24 (condition -> value GT value .)
-
-
 state 62
 
-    (25) condition -> value LT value .
+    (25) condition -> value GT value .
 
-    DO              reduce using rule 25 (condition -> value LT value .)
-    THEN            reduce using rule 25 (condition -> value LT value .)
-    SEMICOLON       reduce using rule 25 (condition -> value LT value .)
+    DO              reduce using rule 25 (condition -> value GT value .)
+    THEN            reduce using rule 25 (condition -> value GT value .)
+    SEMICOLON       reduce using rule 25 (condition -> value GT value .)
 
 
 state 63
 
-    (26) condition -> value GEQ value .
+    (26) condition -> value LT value .
 
-    DO              reduce using rule 26 (condition -> value GEQ value .)
-    THEN            reduce using rule 26 (condition -> value GEQ value .)
-    SEMICOLON       reduce using rule 26 (condition -> value GEQ value .)
+    DO              reduce using rule 26 (condition -> value LT value .)
+    THEN            reduce using rule 26 (condition -> value LT value .)
+    SEMICOLON       reduce using rule 26 (condition -> value LT value .)
 
 
 state 64
 
-    (27) condition -> value LEQ value .
+    (27) condition -> value GEQ value .
 
-    DO              reduce using rule 27 (condition -> value LEQ value .)
-    THEN            reduce using rule 27 (condition -> value LEQ value .)
-    SEMICOLON       reduce using rule 27 (condition -> value LEQ value .)
+    DO              reduce using rule 27 (condition -> value GEQ value .)
+    THEN            reduce using rule 27 (condition -> value GEQ value .)
+    SEMICOLON       reduce using rule 27 (condition -> value GEQ value .)
 
 
 state 65
 
-    (28) condition -> value EQ value .
+    (28) condition -> value LEQ value .
 
-    DO              reduce using rule 28 (condition -> value EQ value .)
-    THEN            reduce using rule 28 (condition -> value EQ value .)
-    SEMICOLON       reduce using rule 28 (condition -> value EQ value .)
+    DO              reduce using rule 28 (condition -> value LEQ value .)
+    THEN            reduce using rule 28 (condition -> value LEQ value .)
+    SEMICOLON       reduce using rule 28 (condition -> value LEQ value .)
 
 
 state 66
 
-    (29) condition -> value NEQ value .
+    (29) condition -> value EQ value .
 
-    DO              reduce using rule 29 (condition -> value NEQ value .)
-    THEN            reduce using rule 29 (condition -> value NEQ value .)
-    SEMICOLON       reduce using rule 29 (condition -> value NEQ value .)
+    DO              reduce using rule 29 (condition -> value EQ value .)
+    THEN            reduce using rule 29 (condition -> value EQ value .)
+    SEMICOLON       reduce using rule 29 (condition -> value EQ value .)
 
 
 state 67
 
-    (13) command -> REPEAT commands UNTIL condition . SEMICOLON
+    (30) condition -> value NEQ value .
 
-    SEMICOLON       shift and go to state 79
+    DO              reduce using rule 30 (condition -> value NEQ value .)
+    THEN            reduce using rule 30 (condition -> value NEQ value .)
+    SEMICOLON       reduce using rule 30 (condition -> value NEQ value .)
 
 
 state 68
+
+    (13) command -> REPEAT commands UNTIL condition . SEMICOLON
+
+    SEMICOLON       shift and go to state 81
+
+
+state 69
 
     (14) command -> IF condition THEN commands . ENDIF
     (15) command -> IF condition THEN commands . ELSE commands ENDIF
@@ -1114,12 +1132,12 @@ state 68
     (15) command -> . IF condition THEN commands ELSE commands ENDIF
     (17) command -> . FOR iterator FROM value TO value DO commands ENDFOR
     (18) command -> . FOR iterator FROM value DOWNTO value DO commands ENDFOR
-    (32) identifier -> . ID
-    (33) identifier -> . ID LBR ID RBR
-    (34) identifier -> . ID LBR NUM RBR
+    (33) identifier -> . ID
+    (34) identifier -> . ID LBR ID RBR
+    (35) identifier -> . ID LBR NUM RBR
 
-    ENDIF           shift and go to state 80
-    ELSE            shift and go to state 81
+    ENDIF           shift and go to state 82
+    ELSE            shift and go to state 83
     WRITE           shift and go to state 9
     READ            shift and go to state 10
     WHILE           shift and go to state 11
@@ -1131,102 +1149,111 @@ state 68
     command                        shift and go to state 20
     identifier                     shift and go to state 8
 
-state 69
+state 70
 
     (17) command -> FOR iterator FROM value . TO value DO commands ENDFOR
     (18) command -> FOR iterator FROM value . DOWNTO value DO commands ENDFOR
 
-    TO              shift and go to state 82
-    DOWNTO          shift and go to state 83
-
-
-state 70
-
-    (33) identifier -> ID LBR ID RBR .
-
-    ASSIGN          reduce using rule 33 (identifier -> ID LBR ID RBR .)
-    SEMICOLON       reduce using rule 33 (identifier -> ID LBR ID RBR .)
-    GT              reduce using rule 33 (identifier -> ID LBR ID RBR .)
-    LT              reduce using rule 33 (identifier -> ID LBR ID RBR .)
-    GEQ             reduce using rule 33 (identifier -> ID LBR ID RBR .)
-    LEQ             reduce using rule 33 (identifier -> ID LBR ID RBR .)
-    EQ              reduce using rule 33 (identifier -> ID LBR ID RBR .)
-    NEQ             reduce using rule 33 (identifier -> ID LBR ID RBR .)
-    PLUS            reduce using rule 33 (identifier -> ID LBR ID RBR .)
-    MINUS           reduce using rule 33 (identifier -> ID LBR ID RBR .)
-    MULT            reduce using rule 33 (identifier -> ID LBR ID RBR .)
-    DIV             reduce using rule 33 (identifier -> ID LBR ID RBR .)
-    DO              reduce using rule 33 (identifier -> ID LBR ID RBR .)
-    THEN            reduce using rule 33 (identifier -> ID LBR ID RBR .)
-    TO              reduce using rule 33 (identifier -> ID LBR ID RBR .)
-    DOWNTO          reduce using rule 33 (identifier -> ID LBR ID RBR .)
+    TO              shift and go to state 84
+    DOWNTO          shift and go to state 85
 
 
 state 71
 
-    (34) identifier -> ID LBR NUM RBR .
+    (34) identifier -> ID LBR ID RBR .
 
-    ASSIGN          reduce using rule 34 (identifier -> ID LBR NUM RBR .)
-    SEMICOLON       reduce using rule 34 (identifier -> ID LBR NUM RBR .)
-    GT              reduce using rule 34 (identifier -> ID LBR NUM RBR .)
-    LT              reduce using rule 34 (identifier -> ID LBR NUM RBR .)
-    GEQ             reduce using rule 34 (identifier -> ID LBR NUM RBR .)
-    LEQ             reduce using rule 34 (identifier -> ID LBR NUM RBR .)
-    EQ              reduce using rule 34 (identifier -> ID LBR NUM RBR .)
-    NEQ             reduce using rule 34 (identifier -> ID LBR NUM RBR .)
-    PLUS            reduce using rule 34 (identifier -> ID LBR NUM RBR .)
-    MINUS           reduce using rule 34 (identifier -> ID LBR NUM RBR .)
-    MULT            reduce using rule 34 (identifier -> ID LBR NUM RBR .)
-    DIV             reduce using rule 34 (identifier -> ID LBR NUM RBR .)
-    DO              reduce using rule 34 (identifier -> ID LBR NUM RBR .)
-    THEN            reduce using rule 34 (identifier -> ID LBR NUM RBR .)
-    TO              reduce using rule 34 (identifier -> ID LBR NUM RBR .)
-    DOWNTO          reduce using rule 34 (identifier -> ID LBR NUM RBR .)
+    ASSIGN          reduce using rule 34 (identifier -> ID LBR ID RBR .)
+    SEMICOLON       reduce using rule 34 (identifier -> ID LBR ID RBR .)
+    GT              reduce using rule 34 (identifier -> ID LBR ID RBR .)
+    LT              reduce using rule 34 (identifier -> ID LBR ID RBR .)
+    GEQ             reduce using rule 34 (identifier -> ID LBR ID RBR .)
+    LEQ             reduce using rule 34 (identifier -> ID LBR ID RBR .)
+    EQ              reduce using rule 34 (identifier -> ID LBR ID RBR .)
+    NEQ             reduce using rule 34 (identifier -> ID LBR ID RBR .)
+    PLUS            reduce using rule 34 (identifier -> ID LBR ID RBR .)
+    MINUS           reduce using rule 34 (identifier -> ID LBR ID RBR .)
+    MULT            reduce using rule 34 (identifier -> ID LBR ID RBR .)
+    DIV             reduce using rule 34 (identifier -> ID LBR ID RBR .)
+    MOD             reduce using rule 34 (identifier -> ID LBR ID RBR .)
+    DO              reduce using rule 34 (identifier -> ID LBR ID RBR .)
+    THEN            reduce using rule 34 (identifier -> ID LBR ID RBR .)
+    TO              reduce using rule 34 (identifier -> ID LBR ID RBR .)
+    DOWNTO          reduce using rule 34 (identifier -> ID LBR ID RBR .)
 
 
 state 72
 
-    (4) declarations -> declarations COMMA ID LBR NUM . COLON NUM RBR
+    (35) identifier -> ID LBR NUM RBR .
 
-    COLON           shift and go to state 84
+    ASSIGN          reduce using rule 35 (identifier -> ID LBR NUM RBR .)
+    SEMICOLON       reduce using rule 35 (identifier -> ID LBR NUM RBR .)
+    GT              reduce using rule 35 (identifier -> ID LBR NUM RBR .)
+    LT              reduce using rule 35 (identifier -> ID LBR NUM RBR .)
+    GEQ             reduce using rule 35 (identifier -> ID LBR NUM RBR .)
+    LEQ             reduce using rule 35 (identifier -> ID LBR NUM RBR .)
+    EQ              reduce using rule 35 (identifier -> ID LBR NUM RBR .)
+    NEQ             reduce using rule 35 (identifier -> ID LBR NUM RBR .)
+    PLUS            reduce using rule 35 (identifier -> ID LBR NUM RBR .)
+    MINUS           reduce using rule 35 (identifier -> ID LBR NUM RBR .)
+    MULT            reduce using rule 35 (identifier -> ID LBR NUM RBR .)
+    DIV             reduce using rule 35 (identifier -> ID LBR NUM RBR .)
+    MOD             reduce using rule 35 (identifier -> ID LBR NUM RBR .)
+    DO              reduce using rule 35 (identifier -> ID LBR NUM RBR .)
+    THEN            reduce using rule 35 (identifier -> ID LBR NUM RBR .)
+    TO              reduce using rule 35 (identifier -> ID LBR NUM RBR .)
+    DOWNTO          reduce using rule 35 (identifier -> ID LBR NUM RBR .)
 
 
 state 73
 
-    (6) declarations -> ID LBR NUM COLON NUM . RBR
+    (4) declarations -> declarations COMMA ID LBR NUM . COLON NUM RBR
 
-    RBR             shift and go to state 85
+    COLON           shift and go to state 86
 
 
 state 74
+
+    (6) declarations -> ID LBR NUM COLON NUM . RBR
+
+    RBR             shift and go to state 87
+
+
+state 75
 
     (20) expression -> value PLUS value .
 
     SEMICOLON       reduce using rule 20 (expression -> value PLUS value .)
 
 
-state 75
+state 76
 
     (21) expression -> value MINUS value .
 
     SEMICOLON       reduce using rule 21 (expression -> value MINUS value .)
 
 
-state 76
+state 77
 
     (22) expression -> value MULT value .
 
     SEMICOLON       reduce using rule 22 (expression -> value MULT value .)
 
 
-state 77
+state 78
 
     (23) expression -> value DIV value .
 
     SEMICOLON       reduce using rule 23 (expression -> value DIV value .)
 
 
-state 78
+state 79
+
+    (24) expression -> value MOD value .
+
+    SEMICOLON       reduce using rule 24 (expression -> value MOD value .)
+
+
+state 80
 
     (12) command -> WHILE condition DO commands ENDWHILE .
 
@@ -1245,7 +1272,7 @@ state 78
     ENDFOR          reduce using rule 12 (command -> WHILE condition DO commands ENDWHILE .)
 
 
-state 79
+state 81
 
     (13) command -> REPEAT commands UNTIL condition SEMICOLON .
 
@@ -1264,7 +1291,7 @@ state 79
     ENDFOR          reduce using rule 13 (command -> REPEAT commands UNTIL condition SEMICOLON .)
 
 
-state 80
+state 82
 
     (14) command -> IF condition THEN commands ENDIF .
 
@@ -1283,7 +1310,7 @@ state 80
     ENDFOR          reduce using rule 14 (command -> IF condition THEN commands ENDIF .)
 
 
-state 81
+state 83
 
     (15) command -> IF condition THEN commands ELSE . commands ENDIF
     (7) commands -> . commands command
@@ -1297,9 +1324,9 @@ state 81
     (15) command -> . IF condition THEN commands ELSE commands ENDIF
     (17) command -> . FOR iterator FROM value TO value DO commands ENDFOR
     (18) command -> . FOR iterator FROM value DOWNTO value DO commands ENDFOR
-    (32) identifier -> . ID
-    (33) identifier -> . ID LBR ID RBR
-    (34) identifier -> . ID LBR NUM RBR
+    (33) identifier -> . ID
+    (34) identifier -> . ID LBR ID RBR
+    (35) identifier -> . ID LBR NUM RBR
 
     WRITE           shift and go to state 9
     READ            shift and go to state 10
@@ -1309,48 +1336,48 @@ state 81
     FOR             shift and go to state 14
     ID              shift and go to state 15
 
-    commands                       shift and go to state 86
+    commands                       shift and go to state 88
     command                        shift and go to state 7
     identifier                     shift and go to state 8
 
-state 82
+state 84
 
     (17) command -> FOR iterator FROM value TO . value DO commands ENDFOR
-    (30) value -> . NUM
-    (31) value -> . identifier
-    (32) identifier -> . ID
-    (33) identifier -> . ID LBR ID RBR
-    (34) identifier -> . ID LBR NUM RBR
+    (31) value -> . NUM
+    (32) value -> . identifier
+    (33) identifier -> . ID
+    (34) identifier -> . ID LBR ID RBR
+    (35) identifier -> . ID LBR NUM RBR
 
     NUM             shift and go to state 23
     ID              shift and go to state 15
 
-    value                          shift and go to state 87
+    value                          shift and go to state 89
     identifier                     shift and go to state 24
 
-state 83
+state 85
 
     (18) command -> FOR iterator FROM value DOWNTO . value DO commands ENDFOR
-    (30) value -> . NUM
-    (31) value -> . identifier
-    (32) identifier -> . ID
-    (33) identifier -> . ID LBR ID RBR
-    (34) identifier -> . ID LBR NUM RBR
+    (31) value -> . NUM
+    (32) value -> . identifier
+    (33) identifier -> . ID
+    (34) identifier -> . ID LBR ID RBR
+    (35) identifier -> . ID LBR NUM RBR
 
     NUM             shift and go to state 23
     ID              shift and go to state 15
 
-    value                          shift and go to state 88
+    value                          shift and go to state 90
     identifier                     shift and go to state 24
 
-state 84
+state 86
 
     (4) declarations -> declarations COMMA ID LBR NUM COLON . NUM RBR
 
-    NUM             shift and go to state 89
+    NUM             shift and go to state 91
 
 
-state 85
+state 87
 
     (6) declarations -> ID LBR NUM COLON NUM RBR .
 
@@ -1358,7 +1385,7 @@ state 85
     COMMA           reduce using rule 6 (declarations -> ID LBR NUM COLON NUM RBR .)
 
 
-state 86
+state 88
 
     (15) command -> IF condition THEN commands ELSE commands . ENDIF
     (7) commands -> commands . command
@@ -1371,11 +1398,11 @@ state 86
     (15) command -> . IF condition THEN commands ELSE commands ENDIF
     (17) command -> . FOR iterator FROM value TO value DO commands ENDFOR
     (18) command -> . FOR iterator FROM value DOWNTO value DO commands ENDFOR
-    (32) identifier -> . ID
-    (33) identifier -> . ID LBR ID RBR
-    (34) identifier -> . ID LBR NUM RBR
+    (33) identifier -> . ID
+    (34) identifier -> . ID LBR ID RBR
+    (35) identifier -> . ID LBR NUM RBR
 
-    ENDIF           shift and go to state 90
+    ENDIF           shift and go to state 92
     WRITE           shift and go to state 9
     READ            shift and go to state 10
     WHILE           shift and go to state 11
@@ -1387,28 +1414,28 @@ state 86
     command                        shift and go to state 20
     identifier                     shift and go to state 8
 
-state 87
+state 89
 
     (17) command -> FOR iterator FROM value TO value . DO commands ENDFOR
 
-    DO              shift and go to state 91
-
-
-state 88
-
-    (18) command -> FOR iterator FROM value DOWNTO value . DO commands ENDFOR
-
-    DO              shift and go to state 92
-
-
-state 89
-
-    (4) declarations -> declarations COMMA ID LBR NUM COLON NUM . RBR
-
-    RBR             shift and go to state 93
+    DO              shift and go to state 93
 
 
 state 90
+
+    (18) command -> FOR iterator FROM value DOWNTO value . DO commands ENDFOR
+
+    DO              shift and go to state 94
+
+
+state 91
+
+    (4) declarations -> declarations COMMA ID LBR NUM COLON NUM . RBR
+
+    RBR             shift and go to state 95
+
+
+state 92
 
     (15) command -> IF condition THEN commands ELSE commands ENDIF .
 
@@ -1427,7 +1454,7 @@ state 90
     ENDFOR          reduce using rule 15 (command -> IF condition THEN commands ELSE commands ENDIF .)
 
 
-state 91
+state 93
 
     (17) command -> FOR iterator FROM value TO value DO . commands ENDFOR
     (7) commands -> . commands command
@@ -1441,9 +1468,9 @@ state 91
     (15) command -> . IF condition THEN commands ELSE commands ENDIF
     (17) command -> . FOR iterator FROM value TO value DO commands ENDFOR
     (18) command -> . FOR iterator FROM value DOWNTO value DO commands ENDFOR
-    (32) identifier -> . ID
-    (33) identifier -> . ID LBR ID RBR
-    (34) identifier -> . ID LBR NUM RBR
+    (33) identifier -> . ID
+    (34) identifier -> . ID LBR ID RBR
+    (35) identifier -> . ID LBR NUM RBR
 
     WRITE           shift and go to state 9
     READ            shift and go to state 10
@@ -1453,11 +1480,11 @@ state 91
     FOR             shift and go to state 14
     ID              shift and go to state 15
 
-    commands                       shift and go to state 94
+    commands                       shift and go to state 96
     command                        shift and go to state 7
     identifier                     shift and go to state 8
 
-state 92
+state 94
 
     (18) command -> FOR iterator FROM value DOWNTO value DO . commands ENDFOR
     (7) commands -> . commands command
@@ -1471,9 +1498,9 @@ state 92
     (15) command -> . IF condition THEN commands ELSE commands ENDIF
     (17) command -> . FOR iterator FROM value TO value DO commands ENDFOR
     (18) command -> . FOR iterator FROM value DOWNTO value DO commands ENDFOR
-    (32) identifier -> . ID
-    (33) identifier -> . ID LBR ID RBR
-    (34) identifier -> . ID LBR NUM RBR
+    (33) identifier -> . ID
+    (34) identifier -> . ID LBR ID RBR
+    (35) identifier -> . ID LBR NUM RBR
 
     WRITE           shift and go to state 9
     READ            shift and go to state 10
@@ -1483,11 +1510,11 @@ state 92
     FOR             shift and go to state 14
     ID              shift and go to state 15
 
-    commands                       shift and go to state 95
+    commands                       shift and go to state 97
     command                        shift and go to state 7
     identifier                     shift and go to state 8
 
-state 93
+state 95
 
     (4) declarations -> declarations COMMA ID LBR NUM COLON NUM RBR .
 
@@ -1495,7 +1522,7 @@ state 93
     COMMA           reduce using rule 4 (declarations -> declarations COMMA ID LBR NUM COLON NUM RBR .)
 
 
-state 94
+state 96
 
     (17) command -> FOR iterator FROM value TO value DO commands . ENDFOR
     (7) commands -> commands . command
@@ -1508,11 +1535,11 @@ state 94
     (15) command -> . IF condition THEN commands ELSE commands ENDIF
     (17) command -> . FOR iterator FROM value TO value DO commands ENDFOR
     (18) command -> . FOR iterator FROM value DOWNTO value DO commands ENDFOR
-    (32) identifier -> . ID
-    (33) identifier -> . ID LBR ID RBR
-    (34) identifier -> . ID LBR NUM RBR
+    (33) identifier -> . ID
+    (34) identifier -> . ID LBR ID RBR
+    (35) identifier -> . ID LBR NUM RBR
 
-    ENDFOR          shift and go to state 96
+    ENDFOR          shift and go to state 98
     WRITE           shift and go to state 9
     READ            shift and go to state 10
     WHILE           shift and go to state 11
@@ -1524,7 +1551,7 @@ state 94
     command                        shift and go to state 20
     identifier                     shift and go to state 8
 
-state 95
+state 97
 
     (18) command -> FOR iterator FROM value DOWNTO value DO commands . ENDFOR
     (7) commands -> commands . command
@@ -1537,11 +1564,11 @@ state 95
     (15) command -> . IF condition THEN commands ELSE commands ENDIF
     (17) command -> . FOR iterator FROM value TO value DO commands ENDFOR
     (18) command -> . FOR iterator FROM value DOWNTO value DO commands ENDFOR
-    (32) identifier -> . ID
-    (33) identifier -> . ID LBR ID RBR
-    (34) identifier -> . ID LBR NUM RBR
+    (33) identifier -> . ID
+    (34) identifier -> . ID LBR ID RBR
+    (35) identifier -> . ID LBR NUM RBR
 
-    ENDFOR          shift and go to state 97
+    ENDFOR          shift and go to state 99
     WRITE           shift and go to state 9
     READ            shift and go to state 10
     WHILE           shift and go to state 11
@@ -1553,7 +1580,7 @@ state 95
     command                        shift and go to state 20
     identifier                     shift and go to state 8
 
-state 96
+state 98
 
     (17) command -> FOR iterator FROM value TO value DO commands ENDFOR .
 
@@ -1572,7 +1599,7 @@ state 96
     ENDFOR          reduce using rule 17 (command -> FOR iterator FROM value TO value DO commands ENDFOR .)
 
 
-state 97
+state 99
 
     (18) command -> FOR iterator FROM value DOWNTO value DO commands ENDFOR .
 

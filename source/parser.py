@@ -127,13 +127,11 @@ def p_command_for_to(p):
     v1 = p[4]
     v2 = p[6]
     m1, m2 = get_marks(2)
-    prepared_regs = standard_render(v1, v2, 'e', 'f', str(p.lineno(4))) \
-                    + nl() + render_addr(p[2], str(p.lineno(2)), 'c') + nl() \
-                    + 'STORE e c' + nl() + "SUB f e" + nl()
-    loop = m2 + 'JZERO f ' + jump_label[m1] + nl() + 'DEC f' + nl() \
-           + p[8] + 'INC e' + nl() \
-           + 'STORE e c' + nl() + 'JUMP ' + jump_label[m2] + nl() + m1
-    p[0] = prepared_regs + loop
+    prepared_regs = standard_render(v1, v2, 'e', 'f', str(p.lineno(4))) + render_addr(p[2], str(p.lineno(2)), 'c')
+    save_get_diff = 'STORE e c' + nl() + "SUB f e" + nl()
+    update_regs = nl() + 'DEC f' + nl() + p[8] + 'INC e' + nl()
+    loop = m2 + 'JZERO f ' + jump_label[m1] + update_regs + 'STORE e c' + nl() + 'JUMP ' + jump_label[m2] + nl() + m1
+    p[0] = prepared_regs + save_get_diff + loop
     remove_iterator(p[2][1])
 
 
@@ -143,7 +141,7 @@ def p_command_for_downto(p):
     v2 = p[6]
     m1, m2 = get_marks(2)
     prepared_regs = standard_render(v1, v2, 'e', 'f', str(p.lineno(4))) \
-                    + nl() + render_addr(p[2], str(p.lineno(2)), 'c') + nl() \
+                    + render_addr(p[2], str(p.lineno(2)), 'c') \
                     + 'STORE e c' + nl() + "SUB e f" + nl() + rs_reg('f') + nl() + 'LOAD f c' + nl()
     loop = m2 + 'JZERO e ' + jump_label[m1] + nl() + 'DEC e' + nl() \
            + p[8] + nl() + 'DEC f' + nl() + 'STORE f c' + nl() + 'JUMP ' + jump_label[m2] + nl() + m1
@@ -190,16 +188,75 @@ def p_expression_multiplication(p):
 def p_expression_division(p):
     """expression   : value DIV value"""
     command = standard_render(p[1], p[3], 'd', 'c', str(p.lineno(2)))
-    m1, m2, m3 = get_marks(3)
-    p[0] = pack(command
-                + m3 + rs_reg('e') + nl()
+    m1, m2, m3, m4, m5, m6 = get_marks(6)
+    p[0] = pack(command +
+                rs_reg('a') + nl() +
+                'JZERO c ' + jump_label[m1] + nl() +
+                'JZERO d ' + jump_label[m1] + nl() +
+                rs_reg('e') + nl() +
+                rs_reg('f') + nl() +
+                rs_reg('b') + nl() +
+                'ADD b c' + nl() +
+                m3 + rs_reg('e') + nl()  # while outer
                 + 'ADD e c' + nl()
-                + "SUB e d" + nl()
-                + 'JZERO e ' + jump_label[m1] + nl()
+                + 'SUB e d' + nl()
+                + 'JZERO e ' + jump_label[m5] + nl()
+                + 'JUMP ' + jump_label[m1] + nl()
+                + m5 + rs_reg('f') + nl()
+                + 'INC f' + nl()
+                + 'SHL c' + nl()
+                + rs_reg('e') + nl()
+                + 'ADD e c' + nl()
+                + 'SUB e d' + nl()
+                + 'JZERO e ' + jump_label[m6] + nl()
                 + 'JUMP ' + jump_label[m2] + nl()
-                + m1 + "JUMP " + jump_label[m3] + nl()
-                + m2
-                , '<<div')
+                + m6 + 'SHL f' + nl()
+                + 'SHL c' + nl()
+                + m2 + 'ADD a f' + nl()
+                + rs_reg('f') + nl()
+                + 'SHR c' + nl()
+                + 'SUB d c' + nl()
+                + 'RESET c' + nl()
+                + 'ADD c b' + nl()
+                + 'JUMP ' + jump_label[m3] + nl()
+                + m1, '<<div')
+
+
+def p_expression_modulo(p):
+    """expression   : value MOD value"""
+    command = standard_render(p[1], p[3], 'a', 'c', str(p.lineno(2)))
+    m1, m2, m3, m4, m5, m6 = get_marks(6)
+    p[0] = pack(command +
+                rs_reg('d') + nl() +
+                'JZERO c ' + jump_label[m1] + nl() +
+                'JZERO a ' + jump_label[m1] + nl() +
+                rs_reg('e') + nl() +
+                rs_reg('f') + nl() +
+                rs_reg('b') + nl() +
+                'ADD b c' + nl() +
+                m3 + rs_reg('e') + nl()  # while outer
+                + 'ADD e c' + nl()
+                + 'SUB e a' + nl()
+                + 'JZERO e ' + jump_label[m5] + nl()
+                + 'JUMP ' + jump_label[m1] + nl()
+                + m5 + rs_reg('f') + nl()
+                + 'INC f' + nl()
+                + 'SHL c' + nl()
+                + rs_reg('e') + nl()
+                + 'ADD e c' + nl()
+                + 'SUB e a' + nl()
+                + 'JZERO e ' + jump_label[m6] + nl()
+                + 'JUMP ' + jump_label[m2] + nl()
+                + m6 + 'SHL f' + nl()
+                + 'SHL c' + nl()
+                + m2 + 'ADD d f' + nl()
+                + rs_reg('f') + nl()
+                + 'SHR c' + nl()
+                + 'SUB a c' + nl()
+                + 'RESET c' + nl()
+                + 'ADD c b' + nl()
+                + 'JUMP ' + jump_label[m3] + nl()
+                + m1, '<<mod')
 
 
 ##################################################################
@@ -334,7 +391,7 @@ def test_compiler(f1='../my_tests/test', f2='result.mr'):
     parsed = parser.parse(f.read(), tracking=True)
     fw = open(f2, "w")
     clear = unpack(parsed)
-    no_labels = remove_marks(unpack(parsed), jump_label)
+    no_labels = remove_marks(clear, jump_label)
     fw.write(no_labels)
     fw.close()
     os.system('../virtual_machine/maszyna-wirtualna result.mr')
