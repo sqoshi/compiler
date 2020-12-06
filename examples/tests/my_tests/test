@@ -1,0 +1,6 @@
+DECLARE
+  n
+BEGIN
+    n:=68790/67;
+    WRITE n;
+END

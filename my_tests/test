@@ -1,6 +1,0 @@
-DECLARE
-    a
-BEGIN
-    a:=765435/1546;
-    WRITE a;
-END
