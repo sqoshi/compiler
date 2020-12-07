@@ -7,7 +7,7 @@ BEGIN
         p:=2*p;
         IF n>p THEN
             WRITE 1;
-        ELSE 
+        ELSE
             WRITE 0;
         ENDIF
         n:=n/2;

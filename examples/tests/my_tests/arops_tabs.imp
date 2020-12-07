@@ -1,0 +1,28 @@
+DECLARE
+  a,b,f(4:7),c,n(5:25),p
+BEGIN
+  f(4):=33333;
+  b:=6;
+  n(b):=22;
+  n(7):=3;
+  n(b) := n(b)/n(7);
+  c:= b/n(7);
+  WHILE
+  n(b)>1
+  DO
+  p:= n(b) % 2;
+  WRITE p;
+  IF
+  p=0
+  THEN
+    WRITE n(b);
+    WRITE n(b);
+  ELSE
+     WRITE f(4);
+     WRITE f(4);
+  ENDIF
+  n(b):=n(b)-1;
+  ENDWHILE
+  WRITE n(b);
+  WRITE n(b);
+END

@@ -134,6 +134,14 @@ def check_array_num_index(variable, line):
                 variable[1], variable[2][1]), 'red'))
 
 
+def is_declared(variable, line):
+    if variable[0] == 'arr':
+        is_declared(variable[2], line)
+    elif variable[0] == 'id':
+        if variable[1] not in variables.keys():
+            raise VariableNotDeclaredException(var=variable[1], line=line)
+
+
 ########################################################################################################################
 ########################## RENDERING ########################################### RENDERING #############################
 ########################################################################################################################
@@ -161,14 +169,14 @@ def generate_number(number, reg):
 
 def get_addr(variable, reg, line, r_opt='c'):
     if variable[0] == 'id':
-        return generate_number(variables[variable[1]], reg)
+        is_declared(variable, line)
+        return pack(generate_number(variables[variable[1]], reg), '<<id_addr>>')
     elif variable[0] == 'arr':
         validate_arr(variable[1], line)
         mem, id1, id2 = arrays[variable[1]]
         check_array_num_index(variable, line)
-        # blad z generowaniem tabllicy np jesli na 9 komorce jest w pamieci, a ind 4 to start
-        return get_value(variable[2], reg, line) + generate_number(id1, r_opt) + cmd('sub', reg, r_opt) \
-               + generate_number(id1, r_opt) + cmd('add', reg, r_opt)
+        return pack(get_value(variable[2], reg, line) + generate_number(id1, r_opt) + cmd('sub', reg, r_opt) \
+                    + generate_number(mem, r_opt) + cmd('add', reg, r_opt), '<<arr_addr>>')
     elif variable[0] == 'num':
         raise Exception('You are trying to find an address of a number. {}'.format(variable))
     else:
@@ -177,13 +185,13 @@ def get_addr(variable, reg, line, r_opt='c'):
 
 def get_value(variable, reg, line, r_opt='c'):
     if variable[0] == 'num':
-        return generate_number(variable[1], reg)
+        return pack(generate_number(variable[1], reg), '<<num_value_gen>>')
     elif variable[0] == 'id':
-        is_var_declared(variable[1], line)
+        is_declared(variable, line)
         is_initialized(variable[1], line)
-        return get_addr(variable, reg, line) + cmd('load', reg, reg)
+        return pack(get_addr(variable, reg, line) + cmd('load', reg, reg), '<<id_value_gen>>')
     elif variable[0] == 'arr':
-        return get_addr(variable, reg, line, r_opt) + cmd('load', reg, reg)
+        return pack(get_addr(variable, reg, line, r_opt) + cmd('load', reg, reg), '<<arr_value_gen>>')
     else:
         raise Exception('Unknown type of {}. It is neither array nor id nor num.'.format(variable))
 
@@ -258,12 +266,17 @@ def p_command_assign(p):
 def p_command_read(p):
     """command	: READ identifier SEMICOLON """
     initialized.add(p[2][1])
-    p[0] = pack(get_addr(p[2], "b", str(p.lineno(1))) + cmd('get', 'b'), '<<read>>')
+    is_declared(p[2], p.lineno(2))
+    p[0] = pack(get_addr(p[2], "b", str(p.lineno(2))) + cmd('get', 'b'), '<<read>>')
 
 
 def p_command_write(p):
-    """command	: WRITE identifier SEMICOLON """
-    p[0] = pack(get_addr(p[2], "b", str(p.lineno(1))) + cmd('put', 'b'), '<<write>>')
+    """command	: WRITE value SEMICOLON """
+    if p[2][0] == 'num':
+        content = generate_number(p[2][1], 'c') + cmd('reset', 'b') + cmd('store', 'c', 'b')
+    else:
+        content = get_addr(p[2], "b", str(p.lineno(2)))
+    p[0] = pack(content + cmd('put', 'b'), '<<write>>')
 
 
 def p_command_if(p):
@@ -300,6 +313,68 @@ def p_command_repeat_until(p):
         + p[4][0]
         + cmd('jump', jump_label[m1])
         + p[4][1], '<<repeat_until>>')
+
+
+"""    v1 = get_value(p[1], 'c', p.lineno(1), 'd')
+    v2 = get_value(p[3], 'd', p.lineno(3), 'b')
+    m1, m2 = get_marks(2)
+    p[0] = (pack(v1 + v2 +
+                 cmd('reset', 'e') +
+                 cmd('add', 'e', 'c') +
+                 cmd('sub', 'e', 'd') +
+                 cmd('jzero', 'e', jump_label[m1]) +
+                 cmd('jump', jump_label[m2]) +
+                 m1"""
+
+
+def p_command_for_to(p):
+    """command  : FOR iterator FROM value TO value DO commands ENDFOR"""
+    v1 = get_value(p[4], 'e', p.lineno(4), 'f')
+    v2 = get_value(p[6], 'f', p.lineno(6), 'd')
+    it_addr = get_addr(p[2], 'c', p.lineno(2), 'd')
+    m1, m2, m3 = get_marks(3)
+    p[0] = pack(v1 + it_addr +
+                cmd('store', 'e', 'c') +
+                m2 + v2 +
+                cmd('sub', 'e', 'f') +
+                cmd('jzero', 'e', jump_label[m3]) +
+                cmd('jump', jump_label[m1]) +
+                m3 + p[8] +  # to uzywa naszych rejestrow, dlatego musimy sporo generowac na nowo^^
+                it_addr +  # zmniejsz wartosc iteratora i zapisz w pamieci
+                cmd('load', 'e', 'c') +
+                cmd('inc', 'e') +
+                cmd('store', 'e', 'c') +
+                cmd('jump', jump_label[m2]) +  # uciekaj stad bo to paskudna okolica
+                m1, '<<for_to>>')
+    remove_iterator(p[2][1])
+
+
+def p_command_for_downto(p):
+    """command  : FOR iterator FROM value DOWNTO value DO commands ENDFOR"""
+    v1 = get_value(p[4], 'e', p.lineno(4), 'f')
+    v2 = get_value(p[6], 'f', p.lineno(6), 'd')
+    it_addr = get_addr(p[2], 'c', p.lineno(2), 'd')
+    m1, m2, m3 = get_marks(3)
+    p[0] = pack(v1 + it_addr +
+                cmd('store', 'e', 'c') +
+                m2 + v2 +
+                cmd('sub', 'f', 'e') +
+                cmd('jzero', 'f', jump_label[m3]) +
+                cmd('jump', jump_label[m1]) +
+                m3 + p[8] +  # to uzywa naszych rejestrow, dlatego musimy sporo generowac na nowo^^
+                it_addr +  # zmniejsz wartosc iteratora i zapisz w pamieci
+                cmd('load', 'e', 'c') +
+                cmd('dec', 'e') +
+                cmd('store', 'e', 'c') +
+                cmd('jump', jump_label[m2]) +  # uciekaj stad bo to paskudna okolica
+                m1, '<<for_downto>>')
+    remove_iterator(p[2][1])
+
+
+def p_iterator(p):
+    '''iterator	: ID '''
+    p[0] = ('id', p[1])
+    add_iterator(p[1], str(p.lineno(1)))
 
 
 ##################################################################
@@ -521,12 +596,12 @@ def p_condition_neq(p):
 ##################################################################
 
 def p_value_num(p):
-    '''value    : NUM '''
+    """value    : NUM """
     p[0] = ("num", p[1])
 
 
 def p_value_identifier(p):
-    '''value    : identifier '''
+    """value    : identifier """
     p[0] = (p[1])
 
 
@@ -535,17 +610,17 @@ def p_value_identifier(p):
 ##################################################################
 
 def p_identifier_id(p):
-    '''identifier	: ID '''
+    """identifier	: ID """
     p[0] = ("id", p[1])
 
 
 def p_identifier_table_recursive(p):
-    '''identifier   : ID LBR ID RBR '''
+    """identifier   : ID LBR ID RBR """
     p[0] = ("arr", p[1], ("id", p[3]))
 
 
 def p_identifier_table_element(p):
-    '''identifier	: ID LBR NUM RBR '''
+    """identifier	: ID LBR NUM RBR """
     p[0] = ("arr", p[1], ("num", p[3]))
 
 
@@ -574,4 +649,19 @@ def test_compiler(f1='../examples/tests/my_tests/test', f2='result.mr'):
 t0 = '../examples/tests/program0.imp'
 t1 = '../examples/tests/program1.imp'
 t2 = '../examples/tests/program2.imp'
-test_compiler()
+
+test_compiler(t2)
+
+
+def test_errors(arr):
+    arr.sort()
+    errs = len(arr)
+    for file in arr:
+        try:
+            test_compiler(f1="/home/piotr/Documents/studies/compiler/examples/errors/" + file)
+            print(colored('No Error in file {}'.format(file), 'green'))
+            errs -= 1
+        except:
+            print(colored('Error in file {}'.format(file), 'yellow'))
+    print('errors = len(arr) +> {}'.format(errs == len(arr)))
+# test_errors(os.listdir('/home/piotr/Documents/studies/compiler/examples/errors'))

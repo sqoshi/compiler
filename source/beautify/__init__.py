@@ -37,7 +37,7 @@ def nl() -> str:
 
 def pack(txt, tag="##"):
     if tags:
-        return tag + " " + txt + " " + tag[::-1]
+        return '[' + tag + ']' + " " + txt + " " + '[' + tag[-2:] + tag[2:-2] + tag[:2] + ']'
     else:
         return txt
 
