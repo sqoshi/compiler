@@ -6,7 +6,10 @@ BEGIN
     FOR i FROM n DOWNTO 2 DO
         sito(i) := 1;
     ENDFOR
+    WRITE 99;
+    WRITE sito(50);
     FOR i FROM 2 TO n DO
+        WRITE sito(i);
         IF sito(i) != 0 THEN
             j := i + i;
             WHILE j <= n DO

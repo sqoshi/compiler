@@ -1,6 +1,6 @@
 import numpy
 
-from source.beautify import concat, nl, mark
+from source.beautify import concat, nl, mark, pack
 from source.errors_handling.exceptions import *
 
 memory_counter = 1
@@ -118,6 +118,14 @@ def add_arr(id, idx1, idx2, line):
     inc_memory_counter(idx2 - idx1 + 1)
 
 
+def validate_arr(id, lineno):
+    if id not in arrays:
+        if id in variables:
+            raise Exception("Error in line {}. Incorrect use of {} variable.".format(lineno, id) + id)
+        else:
+            raise Exception("Error in line {}. Incorrect use of {} array variable.".format(lineno, id) + id)
+
+
 ################################################################################
 ###################### management & operating ##################################
 ################################################################################
@@ -159,6 +167,10 @@ def load_if_addr(command, val, via, to):
     return command
 
 
+def load_and_put(r1, r2):
+    return 'STORE {} {}'.format(r1, r2) + nl() + 'PUT {}'.format(r2) + nl()
+
+
 def generate_number(number, reg):
     commands = ""
     while number != 0:
@@ -176,6 +188,16 @@ def render_addr(variable, line, reg="b") -> str:
     if is_id(variable):
         validate_var_addr(variable[1], line)
         return generate_number(get_variables()[variable[1]], reg)
+    if is_arr(variable):
+        validate_arr(variable[1], line)
+        if is_num(variable[2]):
+            if variable[2][1] > arrays[variable[1]][2] or arrays[variable[1]][1] > variable[2][1]:
+                raise Exception(' You have used invalid index of an array.')
+        return pack(render_value(variable[2], line, reg) \
+                    + generate_number(arrays[variable[1]][1], "c") \
+                    + "SUB {} c".format(reg) + nl() \
+                    + generate_number(arrays[variable[1]][0], "c") \
+                    + "ADD {} c".format(reg) + nl(), '<arr>')
 
 
 def render_value(variable, line, reg="a") -> str:
@@ -184,6 +206,15 @@ def render_value(variable, line, reg="a") -> str:
     elif is_id(variable):
         is_initialized(variable[1], line)
     return render_addr(variable, line, reg)
+
+
+def get_value_of(variable, line, reg="a") -> str:
+    if is_num(variable):
+        return generate_number(int(variable[1]), reg)
+    elif is_id(variable):
+        is_initialized(variable[1], line)
+        validate_var_addr(variable[1], line)
+        return generate_number(get_variables()[variable[1]], reg) + 'LOAD {} {}'.format(reg, reg) + nl()
 
 
 def render_values_multiple(*args) -> str:

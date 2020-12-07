@@ -19,7 +19,10 @@ def remove_marks(text, labels):
     for i, line in enumerate(lines):
         for k, v in labels.items():
             if v in line:
-                lines[i] = line.replace(v, str(line_no[k] - i))
+                try:
+                    lines[i] = line.replace(v, str(line_no[k] - i))
+                except KeyError:
+                    pass
     result = '\n'.join(lines)
     return result
 

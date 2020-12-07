@@ -3,17 +3,13 @@ DECLARE
 BEGIN
     READ n;
     REPEAT
-        WRITE n;
         p:=n/2;
         p:=2*p;
-        WRITE n;
-        IF n>p THEN 
+        IF n>p THEN
             WRITE 1;
         ELSE 
             WRITE 0;
         ENDIF
-        WRITE n;
         n:=n/2;
-    UNTIL n=0;
-    WRITE n;
+    UNTIL n!=0;
 END
