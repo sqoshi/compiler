@@ -1,10 +1,9 @@
 import os
-import numpy
 
 import ply.yacc
 
 from source.beautify import *
-from source.memory import *
+from to_delete.memory import *
 
 
 ##################################################################
@@ -27,23 +26,23 @@ def p_program_(p):
 def p_declarations_variable_rec(p):
     """declarations : declarations COMMA ID"""
     id, line = p[3], str(p.lineno(3))
-    add_var(id, line)
+    declare_variable(id, line)
 
 
 def p_declarations_array_rec(p):
     """declarations : declarations COMMA ID LBR NUM COLON NUM RBR"""
-    add_arr(p[3], p[5], p[7], str(p.lineno(3)))
+    declare_array(p[3], p[5], p[7], str(p.lineno(3)))
 
 
 def p_declarations_variable(p):
     """declarations : ID"""
     id, line = p[1], str(p.lineno(1))
-    add_var(id, line)
+    declare_variable(id, line)
 
 
 def p_declarations_array(p):
     """declarations : ID LBR NUM COLON NUM RBR"""
-    add_arr(p[1], p[3], p[5], str(p.lineno(1)))
+    declare_array(p[1], p[3], p[5], str(p.lineno(1)))
 
 
 ##################################################################
@@ -95,18 +94,18 @@ def p_command_read(p):
 
 def p_command_while(p):
     """command	: WHILE condition DO commands ENDWHILE"""
-    m1 = mark(jump_label)
+    m1 = spawn_frog(frogs)
     p[0] = pack(m1 + p[2][0] + p[4]
-                + "JUMP " + jump_label[m1] + nl() + p[2][1], '<<while>>')
+                + "JUMP " + frogs[m1] + nl() + p[2][1], '<<while>>')
 
 
 def p_command_repeat_until(p):
     """command	: REPEAT commands UNTIL condition SEMICOLON"""
-    m1 = mark(jump_label)
+    m1 = spawn_frog(frogs)
     p[0] = pack(
         m1 + p[2] + nl()
         + p[4][0]
-        + "JUMP " + jump_label[m1] + nl()
+        + "JUMP " + frogs[m1] + nl()
         + p[4][1], '<<repeat_until>>')
 
 
@@ -117,23 +116,20 @@ def p_command_if(p):
 
 def p_command_if_else(p):
     """command	: IF condition THEN commands ELSE commands ENDIF"""
-    m1 = mark(jump_label)
+    m1 = spawn_frog(frogs)
     p[0] = pack(p[2][0] + p[4] + nl()
-                + "JUMP " + jump_label[m1] + nl()
+                + "JUMP " + frogs[m1] + nl()
                 + p[2][1] + p[6] + m1, '<<if_else>>')
 
 
-def p_iterator(p):
-    '''iterator	: ID '''
-    p[0] = ('id', p[1])
-    add_iterator(p[1], str(p.lineno(1)))
+
 
 
 def p_command_for_to(p):
     """command  : FOR iterator FROM value TO value DO commands ENDFOR"""
     v1 = p[4]
     v2 = p[6]
-    m1, m2 = get_marks(2)
+    m1, m2 = spawn_frogs_multiple(2)
     prepared_regs = standard_render(v1, v2, 'e', 'f', str(p.lineno(4))) + render_addr(p[2], str(p.lineno(2)), 'c')
     p[0] = pack(prepared_regs +
                 'STORE e c' + nl() +
@@ -141,13 +137,13 @@ def p_command_for_to(p):
                 'LOAD e c' + nl() +
                 render_value(p[6], str(p.lineno(6)), reg='f') +
                 'SUB f e' + nl() +
-                'JZERO f ' + jump_label[m1] + nl() +
+                'JZERO f ' + frogs[m1] + nl() +
                 p[8] +
                 render_addr(p[2], str(p.lineno(2)), 'c') +
                 'LOAD e c' + nl() +
                 'INC e' + nl() +
                 'STORE e c' + nl() +
-                'JUMP ' + jump_label[m2] + nl()
+                'JUMP ' + frogs[m2] + nl()
                 + m1, '<<for_to>>')
     remove_iterator(p[2][1])
 
@@ -156,7 +152,7 @@ def p_command_for_downto(p):
     """command  : FOR iterator FROM value DOWNTO value DO commands ENDFOR"""
     v1 = p[4]
     v2 = p[6]
-    m1, m2 = get_marks(2)
+    m1, m2 = spawn_frogs_multiple(2)
     prepared_regs = standard_render(v1, v2, 'e', 'f', str(p.lineno(4))) \
                     + render_addr(p[2], str(p.lineno(2)), 'c')
     p[0] = pack(prepared_regs +
@@ -166,13 +162,13 @@ def p_command_for_downto(p):
                 render_value(p[6], str(p.lineno(6)), reg='f') + load_if_addr(
         render_value(p[6], str(p.lineno(6)), reg='f'), p[6], 'f', 'f') +
                 'SUB e f' + nl() +
-                'JZERO e ' + jump_label[m1] + nl() +
+                'JZERO e ' + frogs[m1] + nl() +
                 p[8] +
                 render_addr(p[2], str(p.lineno(2)), 'c') +
                 'LOAD e c' + nl() +
                 'DEC e' + nl() +
                 'STORE e c' + nl() +
-                'JUMP ' + jump_label[m2] + nl()
+                'JUMP ' + frogs[m2] + nl()
                 + m1, '<<for_to>>')
     remove_iterator(p[2][1])
 
@@ -201,14 +197,14 @@ def p_expression_minus(p):
 def p_expression_multiplication(p):
     """expression   : value MULT value"""
     command = standard_render(p[1], p[3], 'd', 'c', str(p.lineno(2)))
-    m1, m2, m3 = get_marks(3)
+    m1, m2, m3 = spawn_frogs_multiple(3)
     p[0] = pack(command
                 + rs_reg('a') + nl()
-                + m3 + "JZERO d " + jump_label[m2] + nl()
-                + "JODD d " + jump_label[m1] + nl()
+                + m3 + "JZERO d " + frogs[m2] + nl()
+                + "JODD d " + frogs[m1] + nl()
                 + "SHL c" + nl() + 'SHR d' + nl()
                 + m1 + "ADD a c" + nl() + "DEC d" + nl()
-                + "JUMP " + jump_label[m3] + nl()
+                + "JUMP " + frogs[m3] + nl()
                 + m2,
                 '<<mult>>')
 
@@ -216,11 +212,11 @@ def p_expression_multiplication(p):
 def p_expression_division(p):
     """expression   : value DIV value"""
     command = standard_render(p[1], p[3], 'd', 'c', str(p.lineno(2)))
-    m1, m2, m3, m4, m5, m6 = get_marks(6)
+    m1, m2, m3, m4, m5, m6 = spawn_frogs_multiple(6)
     p[0] = pack(command +
                 rs_reg('a') + nl() +
-                'JZERO c ' + jump_label[m1] + nl() +
-                'JZERO d ' + jump_label[m1] + nl() +
+                'JZERO c ' + frogs[m1] + nl() +
+                'JZERO d ' + frogs[m1] + nl() +
                 rs_reg('e') + nl() +
                 rs_reg('f') + nl() +
                 rs_reg('b') + nl() +
@@ -228,26 +224,26 @@ def p_expression_division(p):
                 m3 + rs_reg('e') + nl()  # while outer
                 + 'ADD e c' + nl()
                 + 'SUB e d' + nl()
-                + 'JZERO e ' + jump_label[m5] + nl()
-                + 'JUMP ' + jump_label[m1] + nl()
+                + 'JZERO e ' + frogs[m5] + nl()
+                + 'JUMP ' + frogs[m1] + nl()
                 + m5 + rs_reg('f') + nl()
                 + 'INC f' + nl()
                 + 'SHL c' + nl()
                 + m4 + rs_reg('e') + nl()
                 + 'ADD e c' + nl()
                 + 'SUB e d' + nl()
-                + 'JZERO e ' + jump_label[m6] + nl()
-                + 'JUMP ' + jump_label[m2] + nl()
+                + 'JZERO e ' + frogs[m6] + nl()
+                + 'JUMP ' + frogs[m2] + nl()
                 + m6 + 'SHL f' + nl()
                 + 'SHL c' + nl()
-                + 'JUMP ' + jump_label[m4] + nl()
+                + 'JUMP ' + frogs[m4] + nl()
                 + m2 + 'ADD a f' + nl()
                 + rs_reg('f') + nl()
                 + 'SHR c' + nl()
                 + 'SUB d c' + nl()
                 + 'RESET c' + nl()
                 + 'ADD c b' + nl()
-                + 'JUMP ' + jump_label[m3] + nl()
+                + 'JUMP ' + frogs[m3] + nl()
                 + m1
                 + m1, '<<div>>')
 
@@ -255,11 +251,11 @@ def p_expression_division(p):
 def p_expression_modulo(p):
     """expression   : value MOD value"""
     command = standard_render(p[1], p[3], 'a', 'c', str(p.lineno(2)))
-    m1, m2, m3, m4, m5, m6 = get_marks(6)
+    m1, m2, m3, m4, m5, m6 = spawn_frogs_multiple(6)
     p[0] = pack(command +
                 rs_reg('d') + nl() +
-                'JZERO c ' + jump_label[m1] + nl() +
-                'JZERO a ' + jump_label[m1] + nl() +
+                'JZERO c ' + frogs[m1] + nl() +
+                'JZERO a ' + frogs[m1] + nl() +
                 rs_reg('e') + nl() +
                 rs_reg('f') + nl() +
                 rs_reg('b') + nl() +
@@ -267,25 +263,25 @@ def p_expression_modulo(p):
                 m3 + rs_reg('e') + nl()  # while outer
                 + 'ADD e a' + nl()
                 + 'SUB e c' + nl()
-                + 'JZERO e ' + jump_label[m1] + nl()
+                + 'JZERO e ' + frogs[m1] + nl()
                 + rs_reg('f') + nl()
                 + 'INC f' + nl()
                 + 'SHL c' + nl()
                 + m4 + rs_reg('e') + nl()
                 + 'ADD e c' + nl()
                 + 'SUB e a' + nl()
-                + 'JZERO e ' + jump_label[m6] + nl()
-                + 'JUMP ' + jump_label[m2] + nl()
+                + 'JZERO e ' + frogs[m6] + nl()
+                + 'JUMP ' + frogs[m2] + nl()
                 + m6 + 'SHL f' + nl()
                 + 'SHL c' + nl()
-                + 'JUMP ' + jump_label[m4] + nl()
+                + 'JUMP ' + frogs[m4] + nl()
                 + m2 + 'ADD d f' + nl()
                 + rs_reg('f') + nl()
                 + 'SHR c' + nl()
                 + 'SUB a c' + nl()
                 + 'RESET c' + nl()
                 + 'ADD c b' + nl()
-                + 'JUMP ' + jump_label[m3] + nl()
+                + 'JUMP ' + frogs[m3] + nl()
                 + m1, '<<mod>>')
 
 
@@ -295,32 +291,32 @@ def p_expression_modulo(p):
 def p_condition_gt(p):
     """condition   : value GT value"""
     command = standard_render(p[1], p[3], 'c', 'd', str(p.lineno(2)))
-    m1 = mark(jump_label)
+    m1 = spawn_frog(frogs)
     p[0] = (pack(command
                  + "SUB c d" + nl()
-                 + 'JZERO c ' + jump_label[m1] + nl()
+                 + 'JZERO c ' + frogs[m1] + nl()
                  , '<<GT>>'), m1)
 
 
 def p_condition_lt(p):
     """condition   : value LT value"""
     command = standard_render(p[1], p[3], 'd', 'c', str(p.lineno(2)))
-    m1 = mark(jump_label)
+    m1 = spawn_frog(frogs)
     p[0] = (pack(command
                  + "SUB c d" + nl()
-                 + 'JZERO c ' + jump_label[m1] + nl()
+                 + 'JZERO c ' + frogs[m1] + nl()
                  , '<<LT>>'), m1)
 
 
 def p_condition_geq(p):
     """condition   : value GEQ value"""
     command = standard_render(p[1], p[3], 'd', 'c', str(p.lineno(2)))
-    m1, m2 = get_marks(2)
+    m1, m2 = spawn_frogs_multiple(2)
     p[0] = (pack(command
                  + rs_reg('e') + nl() + 'ADD e c' + nl()
                  + "SUB e d" + nl()
-                 + 'JZERO e ' + jump_label[m1] + nl()
-                 + 'JUMP ' + jump_label[m2] + nl()
+                 + 'JZERO e ' + frogs[m1] + nl()
+                 + 'JUMP ' + frogs[m2] + nl()
                  + m1
                  , '<<GEQ>>'), m2)
 
@@ -328,12 +324,12 @@ def p_condition_geq(p):
 def p_condition_leq(p):
     """condition   : value LEQ value"""
     command = standard_render(p[1], p[3], 'c', 'd', str(p.lineno(2)))
-    m1, m2 = get_marks(2)
+    m1, m2 = spawn_frogs_multiple(2)
     p[0] = (pack(command
                  + rs_reg('e') + nl() + 'ADD e c' + nl()
                  + "SUB e d" + nl()
-                 + 'JZERO e ' + jump_label[m1] + nl()  # jesli zero to m1
-                 + 'JUMP ' + jump_label[m2] + nl()  # jesli nie zero to m2( podane wyzej)
+                 + 'JZERO e ' + frogs[m1] + nl()  # jesli zero to m1
+                 + 'JUMP ' + frogs[m2] + nl()  # jesli nie zero to m2( podane wyzej)
                  + m1
                  , '<<LEQ>>'), m2)
 
@@ -341,7 +337,7 @@ def p_condition_leq(p):
 def p_condition_eq(p):
     """condition   : value EQ value"""
     command = standard_render(p[1], p[3], 'c', 'd', str(p.lineno(2)))
-    m1, m2, m3 = get_marks(3)
+    m1, m2, m3 = spawn_frogs_multiple(3)
     p[0] = (pack(command
                  + rs_reg('e') + nl()
                  + 'ADD e c' + nl()
@@ -349,10 +345,10 @@ def p_condition_eq(p):
                  + 'ADD f d' + nl()
                  + "SUB e d" + nl()
                  + "SUB f c" + nl()
-                 + 'JZERO e ' + jump_label[m3] + nl()
-                 + 'JUMP ' + jump_label[m2] + nl()
-                 + m3 + 'JZERO f ' + jump_label[m1] + nl()
-                 + 'JUMP ' + jump_label[m2] + nl()
+                 + 'JZERO e ' + frogs[m3] + nl()
+                 + 'JUMP ' + frogs[m2] + nl()
+                 + m3 + 'JZERO f ' + frogs[m1] + nl()
+                 + 'JUMP ' + frogs[m2] + nl()
                  + m1
                  , '<<EQ>>'), m2)
 
@@ -360,16 +356,16 @@ def p_condition_eq(p):
 def p_condition_neq(p):
     """condition   : value NEQ value"""
     command = standard_render(p[1], p[3], 'c', 'd', str(p.lineno(2)))
-    m1, m2, m3 = get_marks(3)
+    m1, m2, m3 = spawn_frogs_multiple(3)
     p[0] = (pack(command
                  + rs_reg('e') + nl() + 'ADD e c' + nl()
                  + rs_reg('f') + nl() + 'ADD f d' + nl()
                  + "SUB e d" + nl()
                  + "SUB f c" + nl()
-                 + 'JZERO e ' + jump_label[m3] + nl()
-                 + 'JUMP ' + jump_label[m1] + nl()
-                 + m3 + 'JZERO f ' + jump_label[m2] + nl()
-                 + 'JUMP ' + jump_label[m1] + nl()
+                 + 'JZERO e ' + frogs[m3] + nl()
+                 + 'JUMP ' + frogs[m1] + nl()
+                 + m3 + 'JZERO f ' + frogs[m2] + nl()
+                 + 'JUMP ' + frogs[m1] + nl()
                  + m1
                  , '<<NEQ>>'), m2)
 
@@ -423,7 +419,7 @@ def test_compiler(f1='../examples/tests/my_tests/test', f2='result.mr'):
     parsed = parser.parse(f.read(), tracking=True)
     fw = open(f2, "w")
     clear = unpack(parsed)
-    no_labels = remove_marks(clear, jump_label)
+    no_labels = kill_frogs(clear, frogs)
     fw.write(no_labels)
     fw.close()
     os.system('../virtual_machine/maszyna-wirtualna result.mr')

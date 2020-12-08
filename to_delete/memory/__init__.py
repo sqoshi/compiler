@@ -1,14 +1,14 @@
 import numpy
 
-from source.beautify import concat, nl, mark, pack
+from source.beautify import concat, nl, spawn_frog, pack
 from source.errors_handling.exceptions import *
 
 memory_counter = 1
 arrays = dict()
 variables = dict()
 initialized = set()
-jump_label = dict()
-iterators_set = set()
+frogs = dict()
+iterators = set()
 
 
 ################################################################################
@@ -44,9 +44,9 @@ def inc_memory_counter(val=1):
 
 
 def add_iterator(it, line):
-    global iterators_set
-    add_var(it, line)
-    iterators_set.add(it)
+    global iterators
+    declare_variable(it, line)
+    iterators.add(it)
     initialized.add(it)
 
 
@@ -56,7 +56,7 @@ def remove_iterator(it):
 
 
 def get_iterators():
-    return iterators_set
+    return iterators
 
 
 ################################################################################
@@ -110,7 +110,7 @@ def validate_indexes_array(idx1, idx2, line, id):
         raise IndexError('Error in line {}. Array {} indexes are wrong. ({}:{})'.format(line, id, idx1, idx2))
 
 
-def add_arr(id, idx1, idx2, line):
+def declare_array(id, idx1, idx2, line):
     """ Save arr by id in memory and increase memory counter by array length."""
     validate_indexes_array(idx1, idx2, line, id)
     global memory_counter
@@ -136,7 +136,7 @@ def get_var(id, line):
     return variables[id]
 
 
-def add_var(id, line):
+def declare_variable(id, line):
     """ Save variable by id in memory and increase memory counter by 1."""
     inc_memory_counter()
     is_var_taken(id, line)
@@ -156,9 +156,9 @@ def rs_reg(reg):
     return 'RESET ' + str(reg)
 
 
-def get_marks(n):
+def spawn_frogs_multiple(n):
     """ Generate multiple labels. """
-    return tuple(mark(jump_label) for _ in numpy.arange(n))
+    return tuple(spawn_frog(frogs) for _ in numpy.arange(n))
 
 
 def load_if_addr(command, val, via, to):

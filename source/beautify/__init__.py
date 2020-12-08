@@ -7,7 +7,7 @@ def gc():
     subprocess.call(".bash gc.bash 2>/dev/null")
 
 
-def remove_marks(text, labels):
+def kill_frogs(text, labels):
     stack = list(labels.keys())
     line_no = dict()
     lines = text.split('\n')
@@ -50,8 +50,8 @@ def unpack(text: str) -> str:
     return output
 
 
-def mark(labels_dict):
+def spawn_frog(labels_dict):
     val = len(labels_dict)
-    key = '~~LABELJUMPTO>' + str(val) + '<~~'
-    labels_dict[key] = '~~LABEL>' + str(val) + '<~~'
+    key = '~~FROG_GOAL>' + str(val) + '<~~'
+    labels_dict[key] = '~~FROG>' + str(val) + 'LOCATION<~~'
     return key

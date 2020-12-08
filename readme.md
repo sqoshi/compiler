@@ -131,11 +131,11 @@ ab | a | b | b % 2 |
 def p_expression_division(p):
     """expression   : value DIV value"""
     command = standard_render(p[1], p[3], 'd', 'c', str(p.lineno(2)))
-    m1, m2, m3, m4, m5, m6 = get_marks(6)
+    m1, m2, m3, m4, m5, m6 = spawn_frogs_multiple(6)
     p[0] = pack(command +
                 rs_reg('a') + nl() +
-                'JZERO c ' + jump_label[m1] + nl() +
-                'JZERO d ' + jump_label[m1] + nl() +
+                'JZERO c ' + frogs[m1] + nl() +
+                'JZERO d ' + frogs[m1] + nl() +
                 rs_reg('e') + nl() +
                 rs_reg('f') + nl() +
                 rs_reg('b') + nl() +
@@ -143,26 +143,26 @@ def p_expression_division(p):
                 m3 + rs_reg('e') + nl()  # while outer
                 + 'ADD e c' + nl()
                 + 'SUB e d' + nl()
-                + 'JZERO e ' + jump_label[m5] + nl()
-                + 'JUMP ' + jump_label[m1] + nl()
+                + 'JZERO e ' + frogs[m5] + nl()
+                + 'JUMP ' + frogs[m1] + nl()
                 + m5 + rs_reg('f') + nl()
                 + 'INC f' + nl()
                 + 'SHL c' + nl()
                 + m4+rs_reg('e') + nl()
                 + 'ADD e c' + nl()
                 + 'SUB e d' + nl()
-                + 'JZERO e ' + jump_label[m6] + nl()
-                + 'JUMP ' + jump_label[m2] + nl()
+                + 'JZERO e ' + frogs[m6] + nl()
+                + 'JUMP ' + frogs[m2] + nl()
                 + m6 + 'SHL f' + nl()
                 + 'SHL c' + nl()
-                + 'JUMP ' + jump_label[m4] + nl()
+                + 'JUMP ' + frogs[m4] + nl()
                 + m2 + 'ADD a f' + nl()
                 + rs_reg('f') + nl()
                 + 'SHR c' + nl()
                 + 'SUB d c' + nl()
                 + 'RESET c' + nl()
                 + 'ADD c b' + nl()
-                + 'JUMP ' + jump_label[m3] + nl()
+                + 'JUMP ' + frogs[m3] + nl()
                 + m1
                                 + m1, '<<div')
 
@@ -188,15 +188,15 @@ def p_expression_division(p):
 def p_expression_division(p):
     """expression   : value DIV value"""
     command = standard_render(p[1], p[3], 'd', 'c', str(p.lineno(2)))
-    m1, m2, m3, m4, m5, m6 = get_marks(6)
+    m1, m2, m3, m4, m5, m6 = spawn_frogs_multiple(6)
     p[0] = pack(command +
                 rs_reg('a') + nl() +
-                'JZERO c ' + jump_label[m1] + nl() +
-                'JZERO d ' + jump_label[m1] + nl() +
+                'JZERO c ' + frogs[m1] + nl() +
+                'JZERO d ' + frogs[m1] + nl() +
                 m5 + rs_reg('b') + nl() +
                 'ADD b d' + nl()
                 + 'SUB b c' + nl()
-                + 'JZERO b ' + jump_label[m1] + nl()
+                + 'JZERO b ' + frogs[m1] + nl()
                 + rs_reg('f') + nl()
                 + 'INC f' + nl()
                 + rs_reg('e') + nl()
@@ -204,26 +204,26 @@ def p_expression_division(p):
                 + m6 + rs_reg('b') + nl()
                 + 'ADD b d' + nl()
                 + 'SUB b e' + nl()
-                + 'JZERO b ' + jump_label[m4] + nl()
+                + 'JZERO b ' + frogs[m4] + nl()
                 + 'SHL e' + nl()
                 + 'SHL f' + nl()
-                + 'JUMP ' + jump_label[m6] + nl()
+                + 'JUMP ' + frogs[m6] + nl()
                 + m4 + 'SHR e' + nl()
                 + 'SHR f' + nl()
                 + 'SUB d e' + nl()
                 + 'ADD a f' + nl()
-                + 'JUMP ' + jump_label[m5] + nl()
+                + 'JUMP ' + frogs[m5] + nl()
                 + m1, '<<div')
 ```
 ```python
 def p_expression_modulo(p):
     """expression   : value MOD value"""
     command = standard_render(p[1], p[3], 'a', 'c', str(p.lineno(2)))
-    m1, m2, m3, m4, m5, m6 = get_marks(6)
+    m1, m2, m3, m4, m5, m6 = spawn_frogs_multiple(6)
     p[0] = pack(command +
                 rs_reg('d') + nl() +
-                'JZERO c ' + jump_label[m1] + nl() +
-                'JZERO a ' + jump_label[m1] + nl() +
+                'JZERO c ' + frogs[m1] + nl() +
+                'JZERO a ' + frogs[m1] + nl() +
                 rs_reg('e') + nl() +
                 rs_reg('f') + nl() +
                 rs_reg('b') + nl() +
@@ -231,26 +231,26 @@ def p_expression_modulo(p):
                 m3 + rs_reg('e') + nl()  # while outer
                 + 'ADD e c' + nl()
                 + 'SUB e a' + nl()
-                + 'JZERO e ' + jump_label[m5] + nl()
-                + 'JUMP ' + jump_label[m1] + nl()
+                + 'JZERO e ' + frogs[m5] + nl()
+                + 'JUMP ' + frogs[m1] + nl()
                 + m5 + rs_reg('f') + nl()
                 + 'INC f' + nl()
                 + 'SHL c' + nl()
                 + m4 + rs_reg('e') + nl()
                 + 'ADD e c' + nl()
                 + 'SUB e a' + nl()
-                + 'JZERO e ' + jump_label[m6] + nl()
-                + 'JUMP ' + jump_label[m2] + nl()
+                + 'JZERO e ' + frogs[m6] + nl()
+                + 'JUMP ' + frogs[m2] + nl()
                 + m6 + 'SHL f' + nl()
                 + 'SHL c' + nl()
-                + 'JUMP ' + jump_label[m4] + nl()
+                + 'JUMP ' + frogs[m4] + nl()
                 + m2 + 'ADD d f' + nl()
                 + rs_reg('f') + nl()
                 + 'SHR c' + nl()
                 + 'SUB a c' + nl()
                 + 'RESET c' + nl()
                 + 'ADD c b' + nl()
-                + 'JUMP ' + jump_label[m3] + nl()
+                + 'JUMP ' + frogs[m3] + nl()
                 + m1, '<<mod')
 ```
 ## Code Example
@@ -259,16 +259,16 @@ def p_expression_modulo(p):
 def p_condition_eq(p):
     """condition   : value EQ value"""
     command = standard_render(p[1], p[3], 'c', 'd', str(p.lineno(2)))
-    m1, m2, m3 = get_marks(3)
+    m1, m2, m3 = spawn_frogs_multiple(3)
     p[0] = (pack(command
                  + rs_reg('e') + nl() + 'ADD e c' + nl()
                  + rs_reg('f') + nl() + 'ADD f d' + nl()
                  + "SUB e d" + nl()
                  + "SUB f c" + nl()
-                 + 'JZERO e ' + jump_label[m3] + nl()
-                 + 'JUMP ' + jump_label[m2] + nl()
-                 + m3 + 'JZERO f ' + jump_label[m1] + nl()
-                 + 'JUMP ' + jump_label[m2] + nl()
+                 + 'JZERO e ' + frogs[m3] + nl()
+                 + 'JUMP ' + frogs[m2] + nl()
+                 + m3 + 'JZERO f ' + frogs[m1] + nl()
+                 + 'JUMP ' + frogs[m2] + nl()
                  + m1
                  , '<<EQ'), m2)
 ```
