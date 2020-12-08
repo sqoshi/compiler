@@ -1,4 +1,5 @@
 # Compiler
+
 ## Table of contents
 
 * [Installation](#installation)
@@ -8,42 +9,73 @@
 * [Code Example](#code-example)
 * [Technologies](#technologies)
 
-
 ## Installation
+
 ```shell script
 ./install.sh
 ```
-or 
+
+or
+
 ```shell script
 bash install.sh
 ```
+
 ## Launch
+
 ```shell script
 python3 compiler.py in_file out_file
 ```
+
 ## Introduction
+
 Compiler takes some code in imperative language
-(gębalang) defined by grammar in general info section (example below) and produces a machine code which is accepted by a virtual
-machine attached in working tree( maszyna-wirtualna). We 
+(gębalang) defined by grammar in general info section (example below) and produces a machine code which is accepted by a
+virtual machine attached in working tree( maszyna-wirtualna). We
+
 ### Example of imperative language (binary notation of a number)
+
 ```python
-1 DECLARE
-2   n,p
-3 BEGIN
-4       READ n ;
-5       REPEAT
-6       p := n /2;
-7       p :=2* p ;
-8       IF n > p THEN
-9           WRITE 1;
-10      ELSE
-11          WRITE 0;
-12      ENDIF
-13      n := n /2;
-14  UNTIL n =0;
-15 END
+1
+DECLARE
+2
+n, p
+3
+BEGIN
+4
+READ
+n;
+5
+REPEAT
+6
+p := n / 2;
+7
+p := 2 * p;
+8
+IF
+n > p
+THEN
+9
+WRITE
+1;
+10
+ELSE
+11
+WRITE
+0;
+12
+ENDIF
+13
+n := n / 2;
+14
+UNTIL
+n = 0;
+15
+END
 ```
+
 ### Example of compiled code (binary notation of a number)
+
 ```python
 RESET a
 STORE a a
@@ -71,8 +103,11 @@ JZERO a 2
 JUMP -16
 HALT
 ```
+
 ## General Info
+
 ### Grammar
+
 ```python
 program      -> DECLARE declarations BEGIN commands END
              | BEGIN commands END
@@ -116,36 +151,42 @@ identifier   -> pidentifier
              | pidentifier(pidentifier)
              | pidentifier(num)
 ```
+
 ### Numbers Generator
 ```python
     while number != 0:
-        if number % 2 == 0:
-            number = number // 2
-            commands = concat("SHL", reg, nl(), commands)
-        else:
-            number -= 1
-            commands = concat("INC", reg, nl(), commands)
+    if number % 2 == 0:
+        number = number // 2
+        commands = concat("SHL", reg, nl(), commands)
+    else:
+        number -= 1
+        commands = concat("INC", reg, nl(), commands)
 ```
+
 We check the parity of number until we face 0 in number.
+
 - When number is even perform shift left ( multiply by 2 )
 - When number is odd perform shift left ( increase by 1 )
 
 Reduce number in each iteration ( respectively /2 , -1).
 
-### Arithmetic operations 
-#### Multiplication 
-We are checking parity of value in register b. 
+### Arithmetic operations
+#### Multiplication
+
+We are checking parity of value in register b.
+
 ```python
-while b>0:
-    if b%2==0: 
-        a=a*2
-        b=b/2
+while b > 0:
+    if b % 2 == 0:
+        a = a * 2
+        b = b / 2
     else:
-        ab=ab*a
-        b=b-1
+        ab = ab * a
+        b = b - 1
 ```
 
 ##### Example 3 * 100
+
 ab | a | b | b % 2 |
 --- | --- | --- | --- |
 0 | 3 | 100 |  True|
@@ -160,117 +201,60 @@ ab | a | b | b % 2 |
 300 | 192 | 0 |  END|
 
 #### Division and modulo
-##### First Attempt
+
+As we can see in example below same algorithm can be used to find result of mod and integer unsigned division.
+
+##### Attempt #1
+
 ```python
     y_core = y
-    a = 0
+a = 0
+while x >= y:
+    R = 1
+    y *= 2
     while x >= y:
-        R = 1
+        R *= 2
         y *= 2
-        while x >= y:
-            R *= 2
-            y *= 2
-        a += R
-        x -= (y / 2)
-        y = y_core
+    a += R
+    x -= (y / 2)
+    y = y_core
 ```
-###### Code 
-```python
 
-def p_expression_division(p):
-    """expression   : value DIV value"""
-    command = standard_render(p[1], p[3], 'd', 'c', str(p.lineno(2)))
-    m1, m2, m3, m4, m5, m6 = spawn_frogs_multiple(6)
-    p[0] = pack(command +
-                rs_reg('a') + nl() +
-                'JZERO c ' + frogs[m1] + nl() +
-                'JZERO d ' + frogs[m1] + nl() +
-                rs_reg('e') + nl() +
-                rs_reg('f') + nl() +
-                rs_reg('b') + nl() +
-                'ADD b c' + nl() +
-                m3 + rs_reg('e') + nl()  # while outer
-                + 'ADD e c' + nl()
-                + 'SUB e d' + nl()
-                + 'JZERO e ' + frogs[m5] + nl()
-                + 'JUMP ' + frogs[m1] + nl()
-                + m5 + rs_reg('f') + nl()
-                + 'INC f' + nl()
-                + 'SHL c' + nl()
-                + m4+rs_reg('e') + nl()
-                + 'ADD e c' + nl()
-                + 'SUB e d' + nl()
-                + 'JZERO e ' + frogs[m6] + nl()
-                + 'JUMP ' + frogs[m2] + nl()
-                + m6 + 'SHL f' + nl()
-                + 'SHL c' + nl()
-                + 'JUMP ' + frogs[m4] + nl()
-                + m2 + 'ADD a f' + nl()
-                + rs_reg('f') + nl()
-                + 'SHR c' + nl()
-                + 'SUB d c' + nl()
-                + 'RESET c' + nl()
-                + 'ADD c b' + nl()
-                + 'JUMP ' + frogs[m3] + nl()
-                + m1
-                                + m1, '<<div')
+##### Example 39 / 100
 
-```
-##### Second Attempt
+a | b | c | d | A>B|
+--- | --- | --- | --- | ---|
+39 | 5 | 0 |  0| True  |
+39 | 10 | 1 |  0|  True |
+39 | 20 | 2 |  0|  True |
+39 | 40 | 4 |  0|  False |
+19 | 5 | 0 |  4|  True |
+19 | 10 | 1 |  4|  True |
+19 | 20 | 2 |  4|  False |
+9 | 5 | 0 |  6|  True |
+9 | 10 | 1 |  6| False  |
+4 | 5 | 0 |  7|  False |
+
+##### Attempt #2
+
 ```python
     a = 0
-    while d >= c:
-        e = c
-        f = 1
-        while d >= e :
-            f *= 2
-            e *= 2
-        f = f / 2
-        e = e / 2
-        d -= e
-        a += f
+while d >= c:
+    e = c
+    f = 1
+    while d >= e:
+        f *= 2
+        e *= 2
+    f = f / 2
+    e = e / 2
+    d -= e
+    a += f
 ```
-###### Code
-```python
-def p_expression_modulo(p):
-    """expression   : value MOD value"""
-    command = standard_render(p[1], p[3], 'a', 'c', str(p.lineno(2)))
-    m1, m2, m3, m4, m5, m6 = spawn_frogs_multiple(6)
-    p[0] = pack(command +
-                rs_reg('d') + nl() +
-                'JZERO c ' + frogs[m1] + nl() +
-                'JZERO a ' + frogs[m1] + nl() +
-                rs_reg('e') + nl() +
-                rs_reg('f') + nl() +
-                rs_reg('b') + nl() +
-                'ADD b c' + nl() +
-                m3 + rs_reg('e') + nl()  # while outer
-                + 'ADD e c' + nl()
-                + 'SUB e a' + nl()
-                + 'JZERO e ' + frogs[m5] + nl()
-                + 'JUMP ' + frogs[m1] + nl()
-                + m5 + rs_reg('f') + nl()
-                + 'INC f' + nl()
-                + 'SHL c' + nl()
-                + m4 + rs_reg('e') + nl()
-                + 'ADD e c' + nl()
-                + 'SUB e a' + nl()
-                + 'JZERO e ' + frogs[m6] + nl()
-                + 'JUMP ' + frogs[m2] + nl()
-                + m6 + 'SHL f' + nl()
-                + 'SHL c' + nl()
-                + 'JUMP ' + frogs[m4] + nl()
-                + m2 + 'ADD d f' + nl()
-                + rs_reg('f') + nl()
-                + 'SHR c' + nl()
-                + 'SUB a c' + nl()
-                + 'RESET c' + nl()
-                + 'ADD c b' + nl()
-                + 'JUMP ' + frogs[m3] + nl()
-                + m1, '<<mod')
-```
+
 ## Code Example
+
 #### Equality
+
 ```python
 def p_condition_eq(p):
     """condition   : value EQ value"""
@@ -288,7 +272,9 @@ def p_condition_eq(p):
                  + m1
                  , '<<EQ'), m2)
 ```
+
 ## Technologies
+
 - python
 - ply
 - numpy
