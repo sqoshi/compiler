@@ -1,0 +1,206 @@
+RESET e
+INC e 
+SHL e 
+INC e 
+SHL e 
+SHL e 
+INC e 
+RESET c
+INC c 
+SHL c 
+INC c 
+SHL c 
+INC c 
+SHL c 
+STORE e c
+RESET f
+INC f 
+SHL f 
+SHL f 
+SHL f 
+SHL f 
+SUB e f
+JZERO e 2
+JUMP 65
+RESET b
+INC b 
+SHL b 
+INC b 
+SHL b 
+INC b 
+SHL b 
+PUT b
+RESET d
+INC d 
+SHL d 
+INC d 
+SHL d 
+INC d 
+SHL d 
+LOAD d d
+RESET c
+INC c 
+SHL c 
+INC c 
+SHL c 
+INC c 
+SHL c 
+LOAD c c
+RESET a
+JZERO d 7
+JODD d 3
+SHL c
+SHR d
+ADD a c
+DEC d
+JUMP -6
+RESET b
+INC b 
+SHL b 
+INC b 
+SHL b 
+INC b 
+SHL b 
+LOAD b b
+RESET c
+INC c 
+SHL c 
+INC c 
+SHL c 
+INC c 
+SUB b c
+RESET c
+INC c 
+SHL c 
+INC c 
+ADD b c
+STORE a b
+RESET c
+INC c 
+SHL c 
+INC c 
+SHL c 
+INC c 
+SHL c 
+LOAD e c
+INC e
+STORE e c
+JUMP -72
+RESET c
+INC c 
+SHL c 
+SHL c 
+SHL c 
+INC c 
+SHL c 
+INC c 
+SHL c 
+INC c 
+SHL c 
+SHL c 
+SHL c 
+SHL c 
+SHL c 
+INC c 
+SHL c 
+INC c 
+SHL c 
+INC c 
+SHL c 
+INC c 
+RESET b
+STORE c b
+PUT b
+RESET e
+INC e 
+SHL e 
+SHL e 
+SHL e 
+SHL e 
+INC e 
+RESET c
+INC c 
+SHL c 
+INC c 
+SHL c 
+INC c 
+SHL c 
+INC c 
+STORE e c
+RESET f
+INC f 
+SHL f 
+SHL f 
+INC f 
+SHL f 
+INC f 
+SUB f e
+JZERO f 2
+JUMP 44
+RESET b
+INC b 
+SHL b 
+INC b 
+SHL b 
+INC b 
+SHL b 
+INC b 
+PUT b
+RESET b
+INC b 
+SHL b 
+INC b 
+SHL b 
+INC b 
+SHL b 
+INC b 
+LOAD b b
+RESET c
+INC c 
+SHL c 
+INC c 
+SHL c 
+INC c 
+SUB b c
+RESET c
+INC c 
+SHL c 
+INC c 
+ADD b c
+PUT b
+RESET c
+INC c 
+SHL c 
+INC c 
+SHL c 
+INC c 
+SHL c 
+INC c 
+LOAD e c
+DEC e
+STORE e c
+JUMP -52
+RESET c
+INC c 
+SHL c 
+INC c 
+SHL c 
+INC c 
+SHL c 
+INC c 
+SHL c 
+SHL c 
+SHL c 
+INC c 
+SHL c 
+INC c 
+SHL c 
+SHL c 
+SHL c 
+SHL c 
+SHL c 
+INC c 
+RESET b
+STORE c b
+PUT b
+HALT

@@ -1,4 +1,5 @@
 import os
+import sys
 from subprocess import PIPE, STDOUT
 
 import numpy
@@ -654,20 +655,13 @@ parser = ply.yacc.yacc()
 
 
 def test_compiler(f1='../examples/tests/my_tests/test', f2='result.mr'):
-    f = open(f1, "r")
-    parsed = parser.parse(f.read(), tracking=True)
-    fw = open(f2, "w")
-    clear = unpack(parsed)
-    no_labels = kill_frogs(clear, frogs)
-    fw.write(no_labels)
-    fw.close()
-    os.system('../virtual_machine/maszyna-wirtualna result.mr')
-
-
-path = "../examples/tests/simple_tests/"
-my_tests = [path + x for x in os.listdir(path)]
-print(my_tests)
-test_compiler(f1=my_tests[2])
+    with open(f1, "r") as f:
+        with open(f2, "w+") as f_out:
+            parsed = parser.parse(f.read(), tracking=True)
+            clear = unpack(parsed)
+            no_labels = kill_frogs(clear, frogs)
+            f_out.write(no_labels)
+            os.system('../virtual_machine/maszyna-wirtualna result.mr')
 
 
 def test_errors(path='/home/piotr/Documents/studies/compiler/examples/errors'):
@@ -706,3 +700,29 @@ def test_all(path='/home/piotr/Documents/studies/compiler/examples/tests', outpu
                     print('x' * 100)
                 except:
                     pass
+
+
+"""
+path = "../examples/tests/simple_tests/"
+my_tests = [path + x for x in os.listdir(path)]
+print(my_tests)
+test_compiler(f1=my_tests[2])
+"""
+
+
+def main(args):
+    if len(args) < 2:
+        p1 = 'Arguments input error: {} .You need to input exactly two arguments!.'.format(args)
+        raise Exception(colored(p1 + '\n Example usage python3 compiler.py file_in file_out \n ', 'red'))
+    with open(args[0], "r") as f:
+        with open(args[1], "w+") as f_out:
+            parsed = parser.parse(f.read(), tracking=True)
+            clear = unpack(parsed)
+            no_labels = kill_frogs(clear, frogs)
+            f_out.write(no_labels)
+    if len(args) == 3:
+        if args[2] == '--vm' or args[2] == '-vm':
+            os.system('virtual_machine/maszyna-wirtualna ' + args[1])
+
+
+main(sys.argv[1:])

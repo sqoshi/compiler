@@ -13,13 +13,18 @@
 ```shell script
 ./install.sh
 ```
+or 
+```shell script
+bash install.sh
+```
 ## Launch
 ```shell script
 python3 compiler.py in_file out_file
 ```
 ## Introduction
-Compiler takes some code in language below and produces a machine code which is accepted by a virtual
-machine attached in working tree( maszyna-wirtualna)
+Compiler takes some code in imperative language
+(gębalang) defined by grammar in general info section (example below) and produces a machine code which is accepted by a virtual
+machine attached in working tree( maszyna-wirtualna). We 
 ### Example of imperative language (binary notation of a number)
 ```python
 1 DECLARE
@@ -67,7 +72,51 @@ JUMP -16
 HALT
 ```
 ## General Info
-###................................................................................................................. Numbers Generator
+### Grammar
+```python
+program      -> DECLARE declarations BEGIN commands END
+             | BEGIN commands END
+
+declarations -> declarations, pidentifier
+             | declarations, pidentifier(num:num)
+             | pidentifier
+             | pidentifier(num:num)
+
+commands     -> commands command
+             | command
+
+command      -> identifier := expression;
+             | IF condition THEN commands ELSE commands ENDIF
+             | IF condition THEN commands ENDIF
+             | WHILE condition DO commands ENDWHILE
+             | REPEAT commands UNTIL condition;
+             | FOR pidentifier FROM value TO value DO commands ENDFOR
+             | FOR pidentifier FROM value DOWNTO value DO commands ENDFOR
+             | READ identifier;
+             | WRITE value;
+
+expression   -> value
+             | value + value
+             | value - value
+             | value * value
+             | value / value
+             | value % value
+
+condition    -> value = value
+             | value != value
+             | value < value
+             | value > value
+             | value <= value
+             | value >= value
+
+value        -> num
+             | identifier
+
+identifier   -> pidentifier
+             | pidentifier(pidentifier)
+             | pidentifier(num)
+```
+### Numbers Generator
 ```python
     while number != 0:
         if number % 2 == 0:
@@ -181,40 +230,7 @@ def p_expression_division(p):
         d -= e
         a += f
 ```
-###### Code 
-```python
-
-
-def p_expression_division(p):
-    """expression   : value DIV value"""
-    command = standard_render(p[1], p[3], 'd', 'c', str(p.lineno(2)))
-    m1, m2, m3, m4, m5, m6 = spawn_frogs_multiple(6)
-    p[0] = pack(command +
-                rs_reg('a') + nl() +
-                'JZERO c ' + frogs[m1] + nl() +
-                'JZERO d ' + frogs[m1] + nl() +
-                m5 + rs_reg('b') + nl() +
-                'ADD b d' + nl()
-                + 'SUB b c' + nl()
-                + 'JZERO b ' + frogs[m1] + nl()
-                + rs_reg('f') + nl()
-                + 'INC f' + nl()
-                + rs_reg('e') + nl()
-                + 'ADD e c' + nl()
-                + m6 + rs_reg('b') + nl()
-                + 'ADD b d' + nl()
-                + 'SUB b e' + nl()
-                + 'JZERO b ' + frogs[m4] + nl()
-                + 'SHL e' + nl()
-                + 'SHL f' + nl()
-                + 'JUMP ' + frogs[m6] + nl()
-                + m4 + 'SHR e' + nl()
-                + 'SHR f' + nl()
-                + 'SUB d e' + nl()
-                + 'ADD a f' + nl()
-                + 'JUMP ' + frogs[m5] + nl()
-                + m1, '<<div')
-```
+###### Code
 ```python
 def p_expression_modulo(p):
     """expression   : value MOD value"""
