@@ -1,0 +1,22 @@
+-----------------------------------Gebatests------------------------------
+[OK] 	 arithm1.imp
+[OK] 	 arithm2.imp
+[OK] 	 arithm3.imp
+[OK] 	 calc.imp
+[OK] 	 compare.imp
+[OK] 	 cond1.imp
+[OK] 	 cond2.imp
+[OK] 	 cond_nested.imp
+[OK] 	 factorial1.imp
+[OK] 	 factorial2.imp
+[OK] 	 factorial3.imp
+[OK] 	 loop.imp
+[  ] 	 loop_range.imp
+[  ] 	 nestedLoop2.imp
+[OK] 	 simple1.imp
+[OK] 	 simple2.imp
+[  ] 	 tab1.imp
+[  ] 	 tab2.imp
+[  ] 	 tab3.imp
+-----------------------------------Gotests---------------------------------
+

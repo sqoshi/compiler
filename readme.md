@@ -49,7 +49,7 @@ virtual machine attached in working tree( maszyna-wirtualna). We
 11          WRITE 0;
 12      ENDIF
 13      n := n /2;
-14  UNTIL n =0;
+14  UNTIL n !=0;
 15 END
 ```
 

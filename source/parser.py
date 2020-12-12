@@ -58,6 +58,14 @@ def declare_variable(id_name, line):
     variables[id_name] = get_memory_counter()
 
 
+def declare_iterator(id_name, line):
+    """ Save iterator by id in memory and increase memory counter by 2."""
+    inc_memory_counter()
+    is_var_taken(id_name, line)
+    variables[id_name] = get_memory_counter()
+    inc_memory_counter()
+
+
 def declare_array(id_name, idx1, idx2, line):
     """ Save arr by id in memory and increase memory counter by array length."""
     validate_indexes_array(idx1, idx2, line, id_name)
@@ -81,7 +89,7 @@ def inc_memory_counter(val=1):
 def add_iterator(it, line):
     """ Insert iterator to compiler memory, initializes  it and performs *fake declaration* """
     global iterators
-    declare_variable(it, line)
+    declare_iterator(it, line)
     iterators.add(it)
     initialized.add(it)
 
@@ -113,7 +121,7 @@ def validate_var_addr(id_name, line):
 
 def is_var_taken(id_name, line):
     """ Check if id is taken."""
-    if id in get_variables().keys():
+    if id_name in get_variables().keys():
         raise TakenVariableNameException(var=id_name, line=line)
 
 
@@ -334,11 +342,10 @@ def p_command_while(p):
 def p_command_repeat_until(p):
     """command	: REPEAT commands UNTIL condition SEMICOLON"""
     m1 = spawn_frog(frogs)
-    p[0] = pack(
-        m1 + p[2]
-        + p[4][0]
-        + cmd('jump', frogs[m1])
-        + p[4][1], '<<repeat_until>>')
+    p[0] = pack(p[4][1]
+                + p[2]
+                + p[4][0]
+                , '<<repeat_until>>')
 
 
 def p_command_for_to(p):
@@ -349,7 +356,12 @@ def p_command_for_to(p):
     m1, m2, m3 = spawn_frogs_multiple(3)
     p[0] = pack(v1 + it_addr +
                 cmd('store', 'e', 'c') +
-                m2 + v2 +
+                cmd('inc', 'c') +
+                v2 +
+                cmd('store', 'f', 'c') +
+                m2 + it_addr +
+                cmd('inc', 'c') +
+                cmd('load', 'f', 'c') +
                 cmd('sub', 'e', 'f') +
                 cmd('jzero', 'e', frogs[m3]) +
                 cmd('jump', frogs[m1]) +
@@ -371,12 +383,23 @@ def p_command_for_downto(p):
     m1, m2, m3 = spawn_frogs_multiple(3)
     p[0] = pack(v1 + it_addr +
                 cmd('store', 'e', 'c') +
-                m2 + v2 +
-                cmd('sub', 'f', 'e') +
-                cmd('jzero', 'f', frogs[m3]) +
-                cmd('jump', frogs[m1]) +
-                m3 + p[8] +
+                cmd('inc', 'c') +
+                v2 +
+                cmd('reset', 'd') +
+                cmd('add', 'd', 'e') +
+                cmd('sub', 'd', 'f') +
+                cmd('inc', 'd') +
+                cmd('store', 'd', 'c') +
+                m2 + it_addr +
+                cmd('inc', 'c') +
+                cmd('load', 'd', 'c') +
+                cmd('jzero', 'd', frogs[m1]) +
+                p[8] +
                 it_addr +
+                cmd('load', 'e', 'c') +
+                cmd('dec', 'e') +
+                cmd('store', 'e', 'c') +
+                cmd('inc', 'c') +
                 cmd('load', 'e', 'c') +
                 cmd('dec', 'e') +
                 cmd('store', 'e', 'c') +
@@ -423,9 +446,23 @@ def p_expression_multiplication(p):
     """expression   : value MULT value"""
     v1 = get_value(p[1], 'd', p.lineno(1), 'c')
     v2 = get_value(p[3], 'c', p.lineno(3), 'b')
-    m1, m2, m3 = spawn_frogs_multiple(3)
-    p[0] = pack(v1 + v2 +
-                cmd('reset', 'a')
+    m1, m2, m3, m4 = spawn_frogs_multiple(4)
+    p[0] = pack(v1 + v2
+                + cmd('reset', 'a')
+                + cmd('jzero', 'c', frogs[m2])
+                + m4 + cmd('jzero', 'd', frogs[m2])
+                + cmd('jodd', 'd', frogs[m3])
+                + cmd('jump', frogs[m1])
+                + m3 + cmd('add', 'a', 'c')
+                + m1 + cmd('shr', 'd')
+                + cmd('shl', 'c')
+                + cmd('jump', frogs[m4])
+                + m2, '<<mult>>')
+
+
+"""unsigned int    p[0] = pack(v1 + v2
+                + cmd('reset', 'a')
+                + cmd('jzero', 'c', frogs[m2])
                 + m3 + cmd('jzero', 'd', frogs[m2])
                 + cmd('jodd', 'd', frogs[m1])
                 + cmd('shl', 'c')
@@ -434,7 +471,7 @@ def p_expression_multiplication(p):
                 + cmd('dec', 'd')
                 + cmd('jump', frogs[m3])
                 + m2,
-                '<<mult>>')
+                '<<mult>>')"""
 
 
 def p_expression_division(p):
@@ -481,11 +518,11 @@ def p_expression_modulo(p):
     """expression   : value MOD value"""
     v1 = get_value(p[1], 'a', p.lineno(1), 'c')
     v2 = get_value(p[3], 'c', p.lineno(3), 'b')
-    m1, m2, m3, m4, m5, m6 = spawn_frogs_multiple(6)
+    m1, m2, m3, m4, m5, m6, m7 = spawn_frogs_multiple(7)
     p[0] = pack(v1 + v2 +
                 cmd('reset', 'd') +
-                cmd('jzero', 'c', frogs[m1]) +
-                cmd('jzero', 'a', frogs[m1]) +
+                cmd('jzero', 'c', frogs[m7]) +
+                cmd('jzero', 'a', frogs[m7]) +
                 cmd('reset', 'e') +
                 cmd('reset', 'f') +
                 cmd('reset', 'b') +
@@ -513,6 +550,7 @@ def p_expression_modulo(p):
                 cmd('reset', 'c') +
                 cmd('add', 'c', 'b') +
                 cmd('jump', frogs[m3]) +
+                m7 + cmd('reset', 'a') +
                 m1,
                 '<<mod>>')
 
@@ -654,14 +692,34 @@ def p_error(p):
 parser = ply.yacc.yacc()
 
 
-def test_compiler(f1='../examples/tests/my_tests/test', f2='result.mr'):
-    with open(f1, "r") as f:
+def test_compiler(f1='/home/piotr/Documents/studies/compiler/tests/examples/tests/my_tests/test',
+                  f2='/home/piotr/Documents/studies/compiler/result.mr'):
+    mw = "/home/piotr/Documents/studies/compiler/virtual_machine/maszyna-wirtualna-cln"
+    with open(f1, "r+") as f:
         with open(f2, "w+") as f_out:
             parsed = parser.parse(f.read(), tracking=True)
             clear = unpack(parsed)
             no_labels = kill_frogs(clear, frogs)
             f_out.write(no_labels)
-            os.system('../virtual_machine/maszyna-wirtualna result.mr')
+    os.system('{} {}'.format(mw, f2))
+
+
+# test_compiler()
+
+path = "/home/piotr/Documents/studies/compiler/tests/geba_tests/tests/"
+
+
+def print_tests():
+    my_tests = os.listdir(path)
+    my_tests.sort()
+    for i, x in enumerate(my_tests):
+        print('{}. {}'.format(colored(i, 'yellow'), colored(x[:-4], 'green')))
+    ch = int(input('Choose something :='))
+    print(colored(my_tests[ch], 'blue'))
+    test_compiler(f1=path + my_tests[ch])
+
+
+print_tests()
 
 
 def test_errors(path='/home/piotr/Documents/studies/compiler/examples/errors'):
@@ -670,12 +728,15 @@ def test_errors(path='/home/piotr/Documents/studies/compiler/examples/errors'):
     errs = len(arr)
     for file in arr:
         try:
-            test_compiler(f1="/home/piotr/Documents/studies/compiler/examples/errors/" + file)
+            test_compiler(f1=path + file)
             print(colored('No Error in file {}'.format(file), 'green'))
             errs -= 1
         except:
             print(colored('Error in file {}'.format(file), 'yellow'))
     print('errors = len(arr) +> {}'.format(errs == len(arr)))
+
+
+# test_errors(path='/home/piotr/Documents/studies/compiler/tests/geba_tests/errors')
 
 
 def test_all(path='/home/piotr/Documents/studies/compiler/examples/tests', output='result.mr'):
@@ -702,14 +763,6 @@ def test_all(path='/home/piotr/Documents/studies/compiler/examples/tests', outpu
                     pass
 
 
-"""
-path = "../examples/tests/simple_tests/"
-my_tests = [path + x for x in os.listdir(path)]
-print(my_tests)
-test_compiler(f1=my_tests[2])
-"""
-
-
 def main(args):
     if len(args) < 2:
         p1 = 'Arguments input error: {} .You need to input exactly two arguments!.'.format(args)
@@ -722,7 +775,6 @@ def main(args):
             f_out.write(no_labels)
     if len(args) == 3:
         if args[2] == '--vm' or args[2] == '-vm':
-            os.system('virtual_machine/maszyna-wirtualna ' + args[1])
+            os.system('virtual_machine/maszyna-wirtualna-cln ' + args[1])
 
-
-main(sys.argv[1:])
+# main(sys.argv[1:])
