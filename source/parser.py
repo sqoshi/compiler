@@ -377,7 +377,7 @@ def p_command_for_to(p):
 
 def p_command_for_downto(p):
     """command  : FOR iterator FROM value DOWNTO value DO commands ENDFOR"""
-    v1 = get_value(p[4], 'e', p.lineno(4), 'f')
+    v1 = get_value(p[4], 'e', p.lineno(4), 'f')  # BIGGER
     v2 = get_value(p[6], 'f', p.lineno(6), 'd')
     it_addr = get_addr(p[2], 'c', p.lineno(2), 'd')
     m1, m2, m3 = spawn_frogs_multiple(3)
@@ -386,6 +386,11 @@ def p_command_for_downto(p):
                 cmd('inc', 'c') +
                 v2 +
                 cmd('reset', 'd') +
+                cmd('add', 'd', 'f') +
+                cmd('sub', 'd', 'e') +
+                cmd('jzero', 'd', frogs[m3]) +
+                cmd('jump', frogs[m1]) +
+                m3 + cmd('reset', 'd') +
                 cmd('add', 'd', 'e') +
                 cmd('sub', 'd', 'f') +
                 cmd('inc', 'd') +
@@ -704,9 +709,10 @@ def test_compiler(f1='/home/piotr/Documents/studies/compiler/tests/examples/test
     os.system('{} {}'.format(mw, f2))
 
 
-# test_compiler()
+# path = "/home/piotr/Documents/studies/compiler/tests/gotests/tests/"
 
-path = "/home/piotr/Documents/studies/compiler/tests/geba_tests/tests/"
+
+path = "/home/piotr/Documents/studies/compiler/tests/gebatests/"
 
 
 def print_tests():
@@ -736,7 +742,7 @@ def test_errors(path='/home/piotr/Documents/studies/compiler/examples/errors'):
     print('errors = len(arr) +> {}'.format(errs == len(arr)))
 
 
-# test_errors(path='/home/piotr/Documents/studies/compiler/tests/geba_tests/errors')
+# test_errors(path='/home/piotr/Documents/studies/compiler/tests/gotests/errors')
 
 
 def test_all(path='/home/piotr/Documents/studies/compiler/examples/tests', output='result.mr'):

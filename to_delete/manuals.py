@@ -107,4 +107,195 @@ def loop(a=3):
     print(c)
 
 
-loop()
+# loop()
+
+def tab2():
+    """
+    > 10
+    > 20
+    > 30
+    > 40
+    > 50
+    > 111111111
+    > 2
+    > 4
+    > 6
+    > 8
+    > 10
+    > 111111111
+    > 100
+    > 80
+    > 60
+    > 40
+    > 20
+    > 200
+    > 160
+    > 120
+    > 80
+    > 40
+    > 300
+    > 240
+    > 180
+    > 120
+    > 60
+    > 400
+    > 320
+    > 240
+    > 160
+    > 80
+    > 500
+    > 400
+    > 300
+    > 200
+    > 100
+    """
+    ta = [0 for _ in range(5)]
+    tb = [0 for _ in range(5)]
+    tc = [0 for _ in range(25)]
+    n = 25 - 1
+    m = 5 - 1
+    z = 0
+    for i in range(z, m + 1):
+        j = i + 1
+        ta[i] = 9 * j
+        tb[i] = 6 * j
+        tb[i] = tb[i] // 3
+        ta[i] = j + ta[i]
+    for i in range(z, m + 1):
+        print(ta[i])
+    print(111111111)
+    for i in range(z, m + 1):
+        print(tb[i])
+    print(111111111)
+    for i in range(z, m + 1):
+        for k in range(m, z - 1, -1):
+            for l in range(z, n + 1):
+                j = 5 * i
+                j = j + 4
+                j = j - k
+                if j == l:
+                    tc[l] = ta[i] * tb[k]
+
+    for i in range(z, n + 1):
+        print(tc[i])
+
+
+##########################gebala @##############################
+
+def tab5():
+    """> 0
+        > 24
+        > 46
+        > 66
+        > 84
+        > 100
+        > 114
+        > 126
+        > 136
+        > 144
+        > 150
+        > 154
+        > 156
+        > 156
+        > 154
+        > 150
+        > 144
+        > 136
+        > 126
+        > 114
+        > 100
+        > 84
+        > 66
+        > 46
+        > 24
+        > 0"""
+    ta = [0 for _ in range(26)]
+    tb = [0 for _ in range(26)]
+    tc = [0 for _ in range(26)]
+    n = 25
+    tc[0] = n
+    tc[n] = n - n
+    for i in range(tc[0], tc[n] - 1, -1):
+        ta[i] = i
+        tb[i] = n - i
+    for i in range(tc[n], tc[0] + 1):
+        tc[i] = ta[i] * tb[i]
+    for i in range(0, n + 1):
+        print(tc[i])
+
+
+def sort9():
+    """ > 5
+    > 2
+    > 10
+    > 4
+    > 20
+    > 8
+    > 17
+    > 16
+    > 11
+    > 9
+    > 22
+    > 18
+    > 21
+    > 13
+    > 19
+    > 3
+    > 15
+    > 6
+    > 7
+    > 12
+    > 14
+    > 1
+    > 1234567890
+    > 1
+    > 2
+    > 3
+    > 4
+    > 5
+    > 6
+    > 7
+    > 8
+    > 9
+    > 10
+    > 11
+    > 12
+    > 13
+    > 14
+    > 15
+    > 16
+    > 17
+    > 18
+    > 19
+    > 20
+    > 21
+    > 22
+    """
+    tab = [0 for _ in range(23)]
+    n = 23
+    m = n - 1
+    q = 5
+    w = 1
+    for i in range(1, m + 1):
+        w = w * q
+        w = w % n
+        tab[i] = w
+    for i in range(1, m + 1):
+        print(tab[i])
+    print(1234567890)
+    for i in range(2, m + 1):
+        x = tab[i]
+        j = i
+        while j > 1:
+            k = j - 1
+            if tab[k] > x:
+                tab[j] = tab[k]
+                j = j - 1
+            else:
+                k = j
+                j = 0
+        tab[k] = x
+    for i in range(1, m + 1):
+        print(tab[i])
+
+sort9()

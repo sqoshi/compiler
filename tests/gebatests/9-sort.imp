@@ -1,5 +1,5 @@
 [ sort.imp 
-]
+OK]
 DECLARE
 	tab(1:22), x, q, w, j, k, n, m
 BEGIN

@@ -1,4 +1,4 @@
------------------------------------Gebatests------------------------------
+-----------------------------------Gotests------------------------------
 [OK] 	 arithm1.imp
 [OK] 	 arithm2.imp
 [OK] 	 arithm3.imp
@@ -11,12 +11,24 @@
 [OK] 	 factorial2.imp
 [OK] 	 factorial3.imp
 [OK] 	 loop.imp
-[  ] 	 loop_range.imp
-[  ] 	 nestedLoop2.imp
+[OK] 	 loop_range.imp
+[OK] 	 nestedLoop2.imp
 [OK] 	 simple1.imp
 [OK] 	 simple2.imp
 [  ] 	 tab1.imp
-[  ] 	 tab2.imp
-[  ] 	 tab3.imp
------------------------------------Gotests---------------------------------
-
+[OK] 	 tab2.imp
+[OK] 	 tab3.imp
+-----------------------------------Gebatests---------------------------------
+[OK] 	 0-div-mod.imp
+[OK] 	 1-numbers.imp
+[OK] 	 2-fib.imp
+[OK] 	 3-fib-factorial.imp
+[OK] 	 4-factorial.imp
+[OK] 	 5-tab.imp
+[OK] 	 6-mod-mult.imp
+[OK] 	 7-loopiii.imp
+[OK] 	 8-for.imp
+[OK] 	 9-sort.imp
+[OK] 	 program0.imp
+[OK] 	 program1.imp
+[OK] 	 program2.imp

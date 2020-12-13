@@ -2,10 +2,9 @@ DECLARE
 	a, b, c, j, t,i
 BEGIN
     a:=11;
-	FOR ii FROM 29 DOWNTO 0 DO
+	FOR ii FROM 1 DOWNTO 4 DO
 		a := a * 1024;
 		WRITE ii;
-		WRITE a;
 	ENDFOR
 	WRITE a;
 END
