@@ -1,4 +1,4 @@
------------------------------------Gotests------------------------------
+----------------------------------- Gotests -----------------------------------
 [OK] 	 arithm1.imp
 [OK] 	 arithm2.imp
 [OK] 	 arithm3.imp
@@ -15,10 +15,10 @@
 [OK] 	 nestedLoop2.imp
 [OK] 	 simple1.imp
 [OK] 	 simple2.imp
-[  ] 	 tab1.imp
+[OK] 	 tab1.imp
 [OK] 	 tab2.imp
 [OK] 	 tab3.imp
------------------------------------Gebatests---------------------------------
+----------------------------------- Gebatests -----------------------------------
 [OK] 	 0-div-mod.imp
 [OK] 	 1-numbers.imp
 [OK] 	 2-fib.imp

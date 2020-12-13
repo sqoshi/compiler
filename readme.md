@@ -12,6 +12,7 @@
 ## Installation
 
 ```shell script
+chmod a+x install.sh
 ./install.sh
 ```
 
@@ -31,7 +32,7 @@ python3 compiler.py in_file out_file
 
 Compiler takes some code in imperative language
 (gębalang) defined by grammar in general info section (example below) and produces a machine code which is accepted by a
-virtual machine attached in working tree( maszyna-wirtualna). We
+virtual machine attached in working tree( maszyna-wirtualna).
 
 ### Example of imperative language (binary notation of a number)
 
@@ -134,18 +135,18 @@ identifier   -> pidentifier
 ### Numbers Generator
 ```python
     while number != 0:
-    if number % 2 == 0:
-        number = number // 2
-        commands = concat("SHL", reg, nl(), commands)
-    else:
-        number -= 1
-        commands = concat("INC", reg, nl(), commands)
+        if number % 2 == 0:
+            number = number // 2
+            commands = concat("SHL", reg, nl(), commands)
+        else:
+            number -= 1
+            commands = concat("INC", reg, nl(), commands)
 ```
 
 We check the parity of number until we face 0 in number.
 
 - When number is even perform shift left ( multiply by 2 )
-- When number is odd perform shift left ( increase by 1 )
+- When number is odd perform incc ( increase by 1 )
 
 Reduce number in each iteration ( respectively /2 , -1).
 
@@ -237,19 +238,23 @@ while d >= c:
 ```python
 def p_condition_eq(p):
     """condition   : value EQ value"""
-    command = standard_render(p[1], p[3], 'c', 'd', str(p.lineno(2)))
+    v1 = get_value(p[1], 'c', p.lineno(1), 'd')
+    v2 = get_value(p[3], 'd', p.lineno(3), 'b')
     m1, m2, m3 = spawn_frogs_multiple(3)
-    p[0] = (pack(command
-                 + rs_reg('e') + nl() + 'ADD e c' + nl()
-                 + rs_reg('f') + nl() + 'ADD f d' + nl()
-                 + "SUB e d" + nl()
-                 + "SUB f c" + nl()
-                 + 'JZERO e ' + frogs[m3] + nl()
-                 + 'JUMP ' + frogs[m2] + nl()
-                 + m3 + 'JZERO f ' + frogs[m1] + nl()
-                 + 'JUMP ' + frogs[m2] + nl()
-                 + m1
-                 , '<<EQ'), m2)
+    p[0] = (pack(v1 + v2 +
+                 cmd('reset', 'e') +
+                 cmd('add', 'e', 'c') +
+                 cmd('reset', 'f') +
+                 cmd('add', 'f', 'd') +
+                 cmd('sub', 'e', 'd') +
+                 cmd('sub', 'f', 'c') +
+                 cmd('jzero', 'e', frogs[m3]) +
+                 cmd('jump', frogs[m2]) +
+                 m3 + cmd('jzero', 'f', frogs[m1]) +
+                 cmd('jump', frogs[m2]) +
+                 m1,
+                 '<<eq>>'), m2)
+
 ```
 
 ## Technologies
