@@ -26,6 +26,14 @@ class IteratorAssignException(Exception):
         super().__init__(message)
 
 
+class IteratorLimitException(Exception):
+    def __init__(self, var=None, lim=None, line=None, message="Iterator in limit values."):
+        if var and line and lim:
+            message = "Error in line {}. You cannot use not declared iterator {} as limit value {}.".format(line, lim,
+                                                                                                            var)
+        super().__init__(message)
+
+
 class WrongVariableUsageException(Exception):
     def __init__(self, var=None, line=None, message="Incorrect use of {} variable."):
         if var and line:

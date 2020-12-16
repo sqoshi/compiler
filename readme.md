@@ -42,15 +42,15 @@ virtual machine attached in working tree( maszyna-wirtualna).
 3 BEGIN
 4       READ n ;
 5       REPEAT
-6       p := n /2;
-7       p :=2* p ;
+6       p := n / 2;
+7       p := 2 * p ;
 8       IF n > p THEN
 9           WRITE 1;
 10      ELSE
 11          WRITE 0;
 12      ENDIF
-13      n := n /2;
-14  UNTIL n !=0;
+13      n := n / 2;
+14  UNTIL n != 0;
 15 END
 ```
 

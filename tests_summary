@@ -32,3 +32,30 @@
 [OK] 	 program0.imp
 [OK] 	 program1.imp
 [OK] 	 program2.imp
+----------------------------------- Goerrors -----------------------------------
+[OK] 	 error1.imp      mult declaration
+[OK] 	 error2.imp      not declared
+[OK] 	 error3.imp      using not initalized var
+[OK] 	 error4.imp      not recognized 1 [syntax error]
+[OK] 	 error5.imp      using not initalized var
+[OK] 	 error6.imp      not correct sign - [syntax error]
+[OK] 	 error7.imp      not correct sign - [syntax error]
+[OK] 	 error8.imp      index1 in array > index2 arrayindexerror
+[OK] 	 error9.imp      wrong usage of var
+[OK] 	 error10.imp     not declared
+[OK] 	 error11.imp     not recognized sign
+[OK] 	 error12.imp     bad usage of tab arr
+[OK] 	 error13.imp     using not initalized var
+[OK] 	 error14.imp     using not initalized var
+[OK] 	 error15.imp     using iterator as limit of iteration
+[OK] 	 error16.imp     modyfication of iterator val
+----------------------------------- Gebaerrors -----------------------------------
+[OK] 	 error0.imp
+[OK] 	 error1.imp
+[OK] 	 error2.imp
+[OK] 	 error3.imp
+[OK] 	 error4.imp
+[OK] 	 error5.imp
+[OK] 	 error6.imp
+[OK] 	 error7.imp
+[OK] 	 error8.imp

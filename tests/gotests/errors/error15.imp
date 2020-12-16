@@ -1,5 +1,5 @@
-[ errorf2.imp - uzycie niezadeklarowanej zmiennej i 
-    o tej samej nazwie co iterator w zakresie petli ]
+[ errorf2.imp - uzycie niezadeklarowanej zmiennej i
+   o tej samej nazwie co iterator w zakresie petli ]
 DECLARE
 	c
 BEGIN
@@ -7,7 +7,6 @@ BEGIN
 	FOR i FROM 1 TO i DO
 		c := c + i;
 	ENDFOR
-
 	WRITE c;
 
 END

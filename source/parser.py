@@ -147,6 +147,13 @@ def validate_arr(id_name, lineno):
                 message="Error in line {}. Incorrect use of {} array variable.".format(lineno, id_name))
 
 
+def check_var_id_arr(id_name, lineno):
+    """ Check if user is not trying to get value of id variable ."""
+    if id_name in arrays:
+        raise WrongVariableUsageException(
+            message="Error in line {}. Incorrect use of {} array variable.".format(lineno, id_name))
+
+
 def check_array_num_index(variable, line):
     """ Check if usage of an array is inside it's range( indexes)"""
     mem_c, id0, id1 = arrays[variable[1]]
@@ -199,6 +206,7 @@ def generate_number(number, reg):
 def get_addr(variable, reg, line, r_opt='c'):
     """ Function is responsible for generating memory address of given variable"""
     if variable[0] == 'id':
+        check_var_id_arr(variable[1], line)  # err 12
         is_declared(variable, line)
         return pack(generate_number(variables[variable[1]], reg), '<<id_addr>>')
     elif variable[0] == 'arr':
@@ -220,6 +228,7 @@ def get_value(variable, reg, line, r_opt='c'):
     if variable[0] == 'num':
         return pack(generate_number(variable[1], reg), '<<num_value_gen>>')
     elif variable[0] == 'id':
+        check_var_id_arr(variable[1], line)  # err 12
         is_declared(variable, line)
         is_initialized(variable[1], line)
         return pack(get_addr(variable, reg, line) + cmd('load', reg, reg), '<<id_value_gen>>')
@@ -286,6 +295,7 @@ def p_commands_single(p):
 def p_command_assign(p):
     """command  : identifier ASSIGN expression SEMICOLON"""
     check_iterator(p[1], p.lineno(1))
+    print(variables)
     p[0] = pack(p[3]
                 + get_addr(p[1], 'b', p.lineno(1))
                 + cmd('store', 'a', 'b'),
@@ -307,6 +317,7 @@ def p_command_write(p):
     if p[2][0] == 'num':
         content = generate_number(p[2][1], 'c') + cmd('reset', 'b') + cmd('store', 'c', 'b')
     else:
+        is_initialized(p[2][1], p.lineno(2))
         content = get_addr(p[2], "b", p.lineno(2))
     p[0] = pack(content
                 + cmd('put', 'b'),
@@ -341,15 +352,25 @@ def p_command_while(p):
 
 def p_command_repeat_until(p):
     """command	: REPEAT commands UNTIL condition SEMICOLON"""
-    m1 = spawn_frog(frogs)
     p[0] = pack(p[4][1]
                 + p[2]
                 + p[4][0]
                 , '<<repeat_until>>')
 
 
+def check_iterator_limit(it, lim, line):
+    """ Control if user is not trying to iterate over not declared iterator. """
+    if lim[0] == 'arr':
+        check_iterator_limit(it, lim[2], line)
+    elif lim[0] == 'id':
+        if it[1] == lim[1]:
+            raise IteratorLimitException(it, lim, line)
+
+
 def p_command_for_to(p):
     """command  : FOR iterator FROM value TO value DO commands ENDFOR"""
+    check_iterator_limit(p[2], p[4], p.lineno(4))
+    check_iterator_limit(p[2], p[6], p.lineno(6))
     v1 = get_value(p[4], 'e', p.lineno(4), 'f')
     v2 = get_value(p[6], 'f', p.lineno(6), 'd')
     it_addr = get_addr(p[2], 'c', p.lineno(2), 'd')
@@ -377,6 +398,8 @@ def p_command_for_to(p):
 
 def p_command_for_downto(p):
     """command  : FOR iterator FROM value DOWNTO value DO commands ENDFOR"""
+    check_iterator_limit(p[2], p[4], p.lineno(4))
+    check_iterator_limit(p[2], p[6], p.lineno(6))
     v1 = get_value(p[4], 'e', p.lineno(4), 'f')  # BIGGER
     v2 = get_value(p[6], 'f', p.lineno(6), 'd')
     it_addr = get_addr(p[2], 'c', p.lineno(2), 'd')
@@ -687,11 +710,7 @@ def p_identifier_table_element(p):
 
 
 def p_error(p):
-    stack_state_str = ' '.join([symbol.type for symbol in parser.symstack][1:])
-    raise Exception('Syntax error in input! Parser State:{} {} . {}'
-                    .format(parser.state,
-                            stack_state_str,
-                            p))
+    raise SyntaxError('Error in line {}. Syntax error in {}'.format(p.lineno, p))
 
 
 parser = ply.yacc.yacc()
@@ -710,9 +729,9 @@ def test_compiler(f1='/home/piotr/Documents/studies/compiler/tests/examples/test
 
 
 # path = "/home/piotr/Documents/studies/compiler/tests/gotests/tests/"
-
-
-path = "/home/piotr/Documents/studies/compiler/tests/gebatests/"
+# path = "/home/piotr/Documents/studies/compiler/tests/gebatests/"
+# path = "/home/piotr/Documents/studies/compiler/tests/gotests/errors/"
+path = "/home/piotr/Documents/studies/compiler/tests/examples/errors/"
 
 
 def print_tests():
