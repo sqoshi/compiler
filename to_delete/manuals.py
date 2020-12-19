@@ -180,8 +180,6 @@ def tab2():
         print(tc[i])
 
 
-##########################gebala @##############################
-
 def tab5():
     """> 0
         > 24
@@ -297,5 +295,6 @@ def sort9():
         tab[k] = x
     for i in range(1, m + 1):
         print(tab[i])
+
 
 sort9()

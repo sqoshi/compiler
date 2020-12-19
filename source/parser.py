@@ -1,6 +1,4 @@
 import os
-import sys
-from subprocess import PIPE, STDOUT
 
 import numpy
 from termcolor import colored
@@ -9,6 +7,10 @@ from lexer import tokens
 import ply.yacc
 
 from beautify import *
+
+########################################################################################################################
+############################ memory ############################################### memory #############################
+########################################################################################################################
 
 memory_counter = 1
 arrays = dict()
@@ -48,7 +50,7 @@ def spawn_frogs_multiple(n):
 
 
 ########################################################################################################################
-############################ memory ############################################### memory #############################
+########################## setters ############################################### setters #############################
 ########################################################################################################################
 
 def declare_variable(id_name, line):
@@ -180,6 +182,15 @@ def check_iterator(variable, line):
         raise IteratorAssignException(variable, line)
 
 
+def check_iterator_limit(it, lim, line):
+    """ Control if user is not trying to iterate over not declared iterator. """
+    if lim[0] == 'arr':
+        check_iterator_limit(it, lim[2], line)
+    elif lim[0] == 'id':
+        if it[1] == lim[1]:
+            raise IteratorLimitException(it, lim, line)
+
+
 ########################################################################################################################
 ########################## RENDERING ########################################### RENDERING #############################
 ########################################################################################################################
@@ -295,7 +306,6 @@ def p_commands_single(p):
 def p_command_assign(p):
     """command  : identifier ASSIGN expression SEMICOLON"""
     check_iterator(p[1], p.lineno(1))
-    print(variables)
     p[0] = pack(p[3]
                 + get_addr(p[1], 'b', p.lineno(1))
                 + cmd('store', 'a', 'b'),
@@ -356,15 +366,6 @@ def p_command_repeat_until(p):
                 + p[2]
                 + p[4][0]
                 , '<<repeat_until>>')
-
-
-def check_iterator_limit(it, lim, line):
-    """ Control if user is not trying to iterate over not declared iterator. """
-    if lim[0] == 'arr':
-        check_iterator_limit(it, lim[2], line)
-    elif lim[0] == 'id':
-        if it[1] == lim[1]:
-            raise IteratorLimitException(it, lim, line)
 
 
 def p_command_for_to(p):
@@ -676,9 +677,9 @@ def p_condition_neq(p):
                  '<<neq>>'), m2)
 
 
-##################################################################
-########################### value ################################
-##################################################################
+########################################################################################################################
+########################### value ############################################### value ################################
+########################################################################################################################
 
 def p_value_num(p):
     """value    : NUM """
@@ -690,9 +691,9 @@ def p_value_identifier(p):
     p[0] = (p[1])
 
 
-##################################################################
-####################### identifier ###############################
-##################################################################
+########################################################################################################################
+######################### identifier ######################################### identifier ##############################
+########################################################################################################################
 
 def p_identifier_id(p):
     """identifier	: ID """
@@ -714,78 +715,6 @@ def p_error(p):
 
 
 parser = ply.yacc.yacc()
-
-
-def test_compiler(f1='/home/piotr/Documents/studies/compiler/tests/examples/tests/my_tests/test',
-                  f2='/home/piotr/Documents/studies/compiler/result.mr'):
-    mw = "/home/piotr/Documents/studies/compiler/virtual_machine/maszyna-wirtualna-cln"
-    with open(f1, "r+") as f:
-        with open(f2, "w+") as f_out:
-            parsed = parser.parse(f.read(), tracking=True)
-            clear = unpack(parsed)
-            no_labels = kill_frogs(clear, frogs)
-            f_out.write(no_labels)
-    os.system('{} {}'.format(mw, f2))
-
-
-# path = "/home/piotr/Documents/studies/compiler/tests/gotests/tests/"
-# path = "/home/piotr/Documents/studies/compiler/tests/gebatests/"
-# path = "/home/piotr/Documents/studies/compiler/tests/gotests/errors/"
-path = "/home/piotr/Documents/studies/compiler/tests/examples/errors/"
-
-
-def print_tests():
-    my_tests = os.listdir(path)
-    my_tests.sort()
-    for i, x in enumerate(my_tests):
-        print('{}. {}'.format(colored(i, 'yellow'), colored(x[:-4], 'green')))
-    ch = int(input('Choose something :='))
-    print(colored(my_tests[ch], 'blue'))
-    test_compiler(f1=path + my_tests[ch])
-
-
-print_tests()
-
-
-def test_errors(path='/home/piotr/Documents/studies/compiler/examples/errors'):
-    arr = os.listdir(path)
-    arr.sort()
-    errs = len(arr)
-    for file in arr:
-        try:
-            test_compiler(f1=path + file)
-            print(colored('No Error in file {}'.format(file), 'green'))
-            errs -= 1
-        except:
-            print(colored('Error in file {}'.format(file), 'yellow'))
-    print('errors = len(arr) +> {}'.format(errs == len(arr)))
-
-
-# test_errors(path='/home/piotr/Documents/studies/compiler/tests/gotests/errors')
-
-
-def test_all(path='/home/piotr/Documents/studies/compiler/examples/tests', output='result.mr'):
-    arr = [path + "/" + file for file in os.listdir(path) if
-           os.path.isfile(os.path.join(path, file)) and '.imp' in file]
-    for file in arr:
-        with open(file, "r") as f:
-            with open(output, "w") as f_out:
-                try:
-                    parsed = parser.parse(f.read(), tracking=True)
-                    clear = unpack(parsed)
-                    no_labels = kill_frogs(clear, frogs)
-                    f_out.write(no_labels)
-                    f_out.close()
-                    command = "." + '/home/piotr/Documents/studies/compiler/virtual_machine/maszyna-wirtualna' + " " \
-                              + output
-                    p = subprocess.Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
-                    print('x' * 100)
-                    for line in p.stdout:
-                        line = line.rstrip()
-                        print(colored(line, 'green'))
-                    print('x' * 100)
-                except:
-                    pass
 
 
 def main(args):

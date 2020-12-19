@@ -1,10 +1,19 @@
 DECLARE
 	a, b, c, j, t,i
 BEGIN
-    a:=11;
-	FOR ii FROM 1 DOWNTO 4 DO
-		a := a * 1024;
-		WRITE ii;
-	ENDFOR
-	WRITE a;
+    b:=1213123312;
+    c:=1212331231233;
+    a := 11;
+    IF b > c THEN
+        WRITE 1;
+    ENDIF
+    IF b >= c THEN
+        WRITE 2;
+    ENDIF
+    IF b <= c THEN
+        WRITE 3;
+    ENDIF
+    IF b < c THEN
+        WRITE 4;
+    ENDIF
 END
