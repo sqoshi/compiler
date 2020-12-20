@@ -3,6 +3,8 @@
         Przykladowe dane testowe:
         1. 2, 1 OK
         2. 1, 2 OK
+        3. 1, 0 OK
+        4. 0, 1 OK
 ]
 DECLARE
 	a(999999:999999), b(888888:888888)

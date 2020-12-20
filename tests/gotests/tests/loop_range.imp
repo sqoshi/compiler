@@ -1,4 +1,4 @@
-[ loop_range.imp - zakresy petli ]
+[ loop_range.imp - zakresy petli -> wykonaly sie 10k razy kazda.]
 DECLARE
 	a, b, c
 BEGIN

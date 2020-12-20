@@ -1,5 +1,6 @@
 [ tab.imp - tablice 
-    (oryginalna wersja testu jest w paczce na stronie wykladowcy) 
+    (oryginalna wersja testu jest w paczce na stronie wykladowcy)
+    -> 0,23,44,...,143,144,143,...,44,23,0 OK
 ]
 DECLARE
 	n, _r, r_, j, k, d, c, ta(0:24), tb(100:124), tc(999900:999924)

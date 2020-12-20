@@ -31,13 +31,14 @@ t_DIV = r'\/'
 t_MULT = r'\*'
 t_MOD = r'\%'
 
-t_ASSIGN = r':='
 t_EQ = r'='
 t_NEQ = r'!='
 t_LEQ = r'<='
 t_GEQ = r'>='
 t_LT = r'<'
 t_GT = r'>'
+
+t_ASSIGN = r':='
 
 t_LBR = r'\('
 t_RBR = r'\)'

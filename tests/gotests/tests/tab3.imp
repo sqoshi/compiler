@@ -1,9 +1,8 @@
 [ tab3.imp - duuuuuze tablice 
-
         Przykladowe dane testowe:
-        1. 0, 9 OK
-        2. 7777, 9 OK
-        3. 654321, 3 OK
+        1. 0, 9 ->  909090909, 101010101 OK
+        2. 7777, 9 ->  909090909, 101010101 OK
+        3. 654321, 3 ->  909090909, 303030303 OK
 ]
 DECLARE
   tab(0:1325476980), a, b, c, d, n 

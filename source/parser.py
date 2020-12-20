@@ -475,8 +475,15 @@ def p_expression_multiplication(p):
     """expression   : value MULT value"""
     v1 = get_value(p[1], 'd', p.lineno(1), 'c')
     v2 = get_value(p[3], 'c', p.lineno(3), 'b')
-    m1, m2, m3, m4 = spawn_frogs_multiple(4)
+    m1, m2, m3, m4, m5 = spawn_frogs_multiple(5)
     p[0] = pack(v1 + v2
+                + cmd('reset', 'a')
+                + cmd('add', 'a', 'd')
+                + cmd('sub', 'a', 'c')
+                + cmd('jzero', 'a', frogs[m5])
+                + get_value(p[3], 'd', p.lineno(3), 'c')
+                + get_value(p[1], 'c', p.lineno(1), 'b')
+                + m5
                 + cmd('reset', 'a')
                 + cmd('jzero', 'c', frogs[m2])
                 + m4 + cmd('jzero', 'd', frogs[m2])
