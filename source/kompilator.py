@@ -3,14 +3,14 @@ import sys
 import numpy
 import ply.yacc
 from lexer import tokens
-from termcolor import colored
-from errors_handling.exceptions import *
+from errors.exceptions import *
 from beautify import *
 
 ########################################################################################################################
 ############################ flags ################################################ flags ##############################
 ########################################################################################################################
 warnings = False
+sys.tracebacklimit = 0
 
 ########################################################################################################################
 ############################ memory ############################################### memory #############################
@@ -120,7 +120,7 @@ def validate_var_addr(id_name, line):
     """ Check  if var was properly used and declared."""
     if id_name not in get_variables().keys():
         if id_name in get_arrays():
-            raise TypeError('Error in line {}. Wrong usage of table variable {}.'.format(id_name, line))
+            raise TypeError(colored('Error in line {}. Wrong usage of table variable {}.'.format(id_name, line), 'red'))
         else:
             raise VariableNotDeclaredException(id_name, line)
 
@@ -140,7 +140,8 @@ def is_var_declared(id_name, line):
 def validate_indexes_array(idx1, idx2, line, id_name):
     """ Check if array indexes are valid."""
     if idx1 > idx2:
-        raise IndexError('Error in line {}. Array {} indexes are wrong. ({}:{})'.format(line, id_name, idx1, idx2))
+        raise IndexError(
+            colored('Error in line {}. Array {} indexes are wrong. ({}:{})'.format(line, id_name, idx1, idx2), 'red'))
 
 
 def validate_arr(id_name, lineno):
@@ -164,7 +165,9 @@ def check_array_num_index(variable, line):
     """ Check if usage of an array is inside it's range( indexes)"""
     mem_c, id0, id1 = arrays[variable[1]]
     if variable[2][0] == 'num' and (id0 > variable[2][1] or variable[2][1] > id1):
-        raise IndexError('Line {} error. Array {} index out of interval {} used.'.format(line, variable[1], (id0, id1)))
+        raise IndexError(
+            colored('Line {} error. Array {} index out of interval {} used.'.format(line, variable[1], (id0, id1)),
+                    'red'))
     if variable[2][0] == 'id' and warnings:
         print(colored('[WARNING] Dynamic usage of array {}.'
                       ' Theres no way to validate index '
@@ -233,9 +236,9 @@ def get_addr(variable, reg, line, r_opt='c'):
         n3 = generate_number(mem, r_opt)
         return pack(n1 + n2 + cmd('sub', reg, r_opt) + n3 + cmd('add', reg, r_opt), '<<arr_addr>>')
     elif variable[0] == 'num':
-        raise Exception('You are trying to find an address of a number. {}'.format(variable))
+        raise ValueError(colored('You are trying to find an address of a number. {}'.format(variable), 'red'))
     else:
-        raise Exception('Unknown type of {}. It is neither array nor id nor num.'.format(variable))
+        raise TypeError(colored('Unknown type of {}. It is neither array nor id nor num.'.format(variable), 'red'))
 
 
 def get_value(variable, reg, line, r_opt='c'):
@@ -250,7 +253,7 @@ def get_value(variable, reg, line, r_opt='c'):
     elif variable[0] == 'arr':
         return pack(get_addr(variable, reg, line, r_opt) + cmd('load', reg, reg), '<<arr_value_gen>>')
     else:
-        raise Exception('Unknown type of {}. It is neither array nor id nor num.'.format(variable))
+        raise TypeError(colored('Unknown type of {}. It is neither array nor id nor num.'.format(variable), 'red'))
 
 
 ########################################################################################################################
@@ -718,7 +721,7 @@ def p_identifier_table_element(p):
 
 
 def p_error(p):
-    raise SyntaxError('Error in line {}. Syntax error in {}'.format(p.lineno, p))
+    raise SyntaxError(colored('Error in line {}. Syntax error in {}'.format(p.lineno, p), 'red'))
 
 
 parser = ply.yacc.yacc()
