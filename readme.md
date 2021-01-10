@@ -34,9 +34,9 @@ sudo pip3 install -r requirements.txt
 If `pip3 install -r requirements.txt` fails than also packages below need to be installed 
 manually:
 ```shell
-sudo pip install termcolor==1.1.0
-sudo pip install numpy==1.19.5
-sudo pip install ply==3.11
+sudo pip3 install termcolor==1.1.0
+sudo pip3 install numpy==1.19.5
+sudo pip3 install ply==3.11
 ```
 ## Launch
 
