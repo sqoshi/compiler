@@ -6,15 +6,16 @@
 * [Launch](#launch)
 * [Introduction](#Introduction)
 * [General info](#general-info)
+* [Warnings](#warnings)
 * [Code Example](#code-example)
 * [Technologies](#technologies)
 
 ## Installation
-
-```shell script
-chmod a+x install.sh
-./install.sh
+Installation can be carried out automatically with alternatively:
+```shell
+make
 ```
+
 
 or
 
@@ -22,20 +23,35 @@ or
 bash install.sh
 ```
 
+
+If script and make would fail than installation need to be done manually:
+```shell
+sudo apt update
+sudo apt install python3
+sudo apt install python3-pip
+sudo pip3 install -r requirements.txt
+```
+If `pip3 install -r requirements.txt` fails than also packages below need to be installed 
+manually:
+```shell
+sudo pip install termcolor==1.1.0
+sudo pip install numpy==1.19.5
+sudo pip install ply==3.11
+```
 ## Launch
 
 ```shell script
-python3 compiler.py in_file out_file
+python3 kompilator.py in_file out_file
 ```
 
 ## Introduction
 
-Compiler takes some code in imperative language
-(gębalang) defined by grammar in general info section (example below) and produces a machine code which is accepted by a
+Compiler takes some code in Pascal- like imperative language
+ defined by grammar in general info section and produces 
+a machine code which is accepted by a
 virtual machine attached in working tree( maszyna-wirtualna).
 
 ### Example of imperative language (binary notation of a number)
-
 ```python
 1 DECLARE
 2   n,p
@@ -53,9 +69,7 @@ virtual machine attached in working tree( maszyna-wirtualna).
 14  UNTIL n != 0;
 15 END
 ```
-
 ### Example of compiled code (binary notation of a number)
-
 ```python
 RESET a
 STORE a a
@@ -86,7 +100,7 @@ HALT
 
 ## General Info
 
-### Grammar
+### Language Grammar
 
 ```python
 program      -> DECLARE declarations BEGIN commands END
@@ -146,14 +160,16 @@ identifier   -> pidentifier
 We check the parity of number until we face 0 in number.
 
 - When number is even perform shift left ( multiply by 2 )
-- When number is odd perform incc ( increase by 1 )
+- When number is odd perform inc ( increase by 1 )
 
-Reduce number in each iteration ( respectively /2 , -1).
+Reduce number in each iteration ( respectively /2 , -1). 
+Reversed output of this loop is a generated number in given register.
 
 ### Arithmetic operations
 #### Multiplication
 
-We are checking parity of value in register b.
+We are checking parity of value in register b. 
+It is worth to keep smaller number in reduced register.(10^3 time save.)
 
 ```python
 while b > 0:
@@ -182,7 +198,8 @@ ab | a | b | b % 2 |
 
 #### Division and modulo
 
-As we can see in example below same algorithm can be used to find result of mod and integer unsigned division.
+As we can see in example below same 
+algorithm can be used to find result of mod and integer unsigned division.
 
 ##### Attempt #1
 
@@ -230,6 +247,12 @@ while d >= c:
     d -= e
     a += f
 ```
+## Warnings
+Warnings can be turned on with flag --warnings as third argument. User can face some 
+yellow warnings which main response is to inform about that when we refer to array cell using variable
+( for example arr(0:15);a:=123; arr(a) ) than on python side we can not check if arr(a) is 'outside the array', because 
+python does not know what virtual machine hold under memory address of  variable 'a'.
+
 
 ## Code Example
 
@@ -261,5 +284,5 @@ def p_condition_eq(p):
 
 - python
 - ply
+- termcolor
 - numpy
-- os

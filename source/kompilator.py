@@ -1,12 +1,16 @@
 import os
-
+import sys
 import numpy
+import ply.yacc
+from lexer import tokens
 from termcolor import colored
 from errors_handling.exceptions import *
-from lexer import tokens
-import ply.yacc
-
 from beautify import *
+
+########################################################################################################################
+############################ flags ################################################ flags ##############################
+########################################################################################################################
+warnings = False
 
 ########################################################################################################################
 ############################ memory ############################################### memory #############################
@@ -161,10 +165,10 @@ def check_array_num_index(variable, line):
     mem_c, id0, id1 = arrays[variable[1]]
     if variable[2][0] == 'num' and (id0 > variable[2][1] or variable[2][1] > id1):
         raise IndexError('Line {} error. Array {} index out of interval {} used.'.format(line, variable[1], (id0, id1)))
-    if variable[2][0] == 'id':
+    if variable[2][0] == 'id' and warnings:
         print(colored('[WARNING] Dynamic usage of array {}.'
                       ' Theres no way to validate index '
-                      '{} correctness on python side.'.format(variable[1], variable[2][1]), 'red'))
+                      '{} correctness on python side.'.format(variable[1], variable[2][1]), 'yellow'))
 
 
 def is_declared(variable, line):
@@ -308,8 +312,7 @@ def p_command_assign(p):
     check_iterator(p[1], p.lineno(1))
     p[0] = pack(p[3]
                 + get_addr(p[1], 'b', p.lineno(1))
-                + cmd('store', 'a', 'b'),
-                '<<asg>>')
+                + cmd('store', 'a', 'b'), '<<asg>>')
     initialized.add(p[1][1])
 
 
@@ -318,8 +321,7 @@ def p_command_read(p):
     initialized.add(p[2][1])
     is_declared(p[2], p.lineno(2))
     p[0] = pack(get_addr(p[2], "b", p.lineno(2))
-                + cmd('get', 'b'),
-                '<<read>>')
+                + cmd('get', 'b'), '<<read>>')
 
 
 def p_command_write(p):
@@ -330,8 +332,7 @@ def p_command_write(p):
         is_initialized(p[2][1], p.lineno(2))
         content = get_addr(p[2], "b", p.lineno(2))
     p[0] = pack(content
-                + cmd('put', 'b'),
-                '<<write>>')
+                + cmd('put', 'b'), '<<write>>')
 
 
 def p_command_if(p):
@@ -353,19 +354,18 @@ def p_command_if_else(p):
 def p_command_while(p):
     """command	: WHILE condition DO commands ENDWHILE"""
     m1 = spawn_frog(frogs)
-    p[0] = pack(m1
-                + p[2][0]
-                + p[4]
-                + cmd('jump', frogs[m1])
-                + p[2][1], '<<while>>')
+    p[0] = pack(m1 +
+                p[2][0] +
+                p[4] +
+                cmd('jump', frogs[m1]) +
+                p[2][1], '<<while>>')
 
 
 def p_command_repeat_until(p):
     """command	: REPEAT commands UNTIL condition SEMICOLON"""
-    p[0] = pack(p[4][1]
-                + p[2]
-                + p[4][0]
-                , '<<repeat_until>>')
+    p[0] = pack(p[4][1] +
+                p[2] +
+                p[4][0], '<<repeat_until>>')
 
 
 def p_command_for_to(p):
@@ -727,10 +727,13 @@ parser = ply.yacc.yacc()
 def main(args):
     if len(args) < 2:
         p1 = 'Arguments input error: {} .You need to input exactly two arguments!.'.format(args)
-        raise Exception(colored(p1 + '\n Example usage python3 compiler.py file_in file_out \n ', 'red'))
+        raise Exception(colored(p1 + '\n Example usage python3 kompilator.py file_in file_out \n ', 'red'))
+    if len(args) == 3 and args[2] == '--warnings':
+        global warnings
+        warnings = True
     with open(args[0], "r") as f:
         with open(args[1], "w+") as f_out:
-            parsed = parser.parse(f.read(), tracking=True)
+            parsed = parser.parse(f.read(), tracking=False)
             clear = unpack(parsed)
             no_labels = kill_frogs(clear, frogs)
             f_out.write(no_labels)
@@ -738,4 +741,5 @@ def main(args):
         if args[2] == '--vm' or args[2] == '-vm':
             os.system('virtual_machine/maszyna-wirtualna-cln ' + args[1])
 
-# main(sys.argv[1:])
+
+main(sys.argv[1:])
