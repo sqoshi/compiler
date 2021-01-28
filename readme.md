@@ -31,7 +31,7 @@ sudo apt install python3
 sudo apt install python3-pip
 sudo pip3 install -r requirements.txt
 ```
-If `pip3 install -r requirements.txt` fails than also packages below need to be installed 
+If `pip3 install -r requirements.txt` fails than packages below need to be installed 
 manually:
 ```shell
 sudo pip3 install termcolor==1.1.0

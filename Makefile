@@ -1,7 +1,7 @@
-main: install final
-	touch main
+main: grant install final
+grant:
+	chmod a+x install.sh
 install:
 	bash install.sh
 final:
-	echo 'Make finished. Compiler is ready.'
-
+	echo 'Installation success. Compiler is ready to use.'

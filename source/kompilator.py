@@ -1,6 +1,8 @@
 import os
 import sys
 import numpy
+import argparse
+
 import ply.yacc
 from lexer import tokens
 from errors.exceptions import *
@@ -151,14 +153,14 @@ def validate_arr(id_name, lineno):
             raise WrongVariableUsageException(id_name, lineno)
         else:
             raise WrongVariableUsageException(
-                message="Error in line {}. Incorrect use of {} array variable.".format(lineno, id_name))
+                message="Error in line {}. Incorrect use of `{}` array variable.".format(lineno, id_name))
 
 
 def check_var_id_arr(id_name, lineno):
     """ Check if user is not trying to get value of id variable ."""
     if id_name in arrays:
         raise WrongVariableUsageException(
-            message="Error in line {}. Incorrect use of {} array variable.".format(lineno, id_name))
+            message="Error in line {}. Incorrect use of `{}` array variable.".format(lineno, id_name))
 
 
 def check_array_num_index(variable, line):
@@ -186,7 +188,7 @@ def is_declared(variable, line):
 def check_iterator(variable, line):
     """ Validate if there is no try to assign value to iterator."""
     if variable[1] in get_iterators():
-        raise IteratorAssignException(variable, line)
+        raise IteratorAssignException(variable[1], line)
 
 
 def check_iterator_limit(it, lim, line):
@@ -195,7 +197,7 @@ def check_iterator_limit(it, lim, line):
         check_iterator_limit(it, lim[2], line)
     elif lim[0] == 'id':
         if it[1] == lim[1]:
-            raise IteratorLimitException(it, lim, line)
+            raise IteratorLimitException(it[1], lim[1], line)
 
 
 ########################################################################################################################
@@ -721,28 +723,31 @@ def p_identifier_table_element(p):
 
 
 def p_error(p):
-    raise SyntaxError(colored('Error in line {}. Syntax error in {}'.format(p.lineno, p), 'red'))
+    raise SyntaxError(colored('Error in line {}. Syntax error in `{}`'.format(p.lineno, p), 'red'))
 
 
 parser = ply.yacc.yacc()
 
 
-def main(args):
-    if len(args) < 2:
-        p1 = 'Arguments input error: {} .You need to input exactly two arguments!.'.format(args)
-        raise Exception(colored(p1 + '\n Example usage python3 kompilator.py file_in file_out \n ', 'red'))
-    if len(args) == 3 and args[2] == '--warnings':
-        global warnings
+def parse_arguments():
+    argument_parser = argparse.ArgumentParser()
+    argument_parser.add_argument('input_file', type=str)
+    argument_parser.add_argument('output_file', type=str)
+    argument_parser.add_argument('--warnings', action='store_true', help='Turn on warnings')
+    argument_parser.add_argument('--virtual-machine', '--vm', '-vm', action='store',
+                                 help='Automatically pass generated code to virutal machine')
+    return argument_parser.parse_args()
+
+
+if __name__ == '__main__':
+    args = parse_arguments()
+    if args.warnings:
         warnings = True
-    with open(args[0], "r") as f:
-        with open(args[1], "w+") as f_out:
-            parsed = parser.parse(f.read(), tracking=False)
-            clear = unpack(parsed)
-            no_labels = kill_frogs(clear, frogs)
+    with open(args.input_file, "r") as f_in:
+        with open(args.output_file, "w+") as f_out:
+            parsed = parser.parse(f_in.read(), tracking=True)
+            extracted = unpack(parsed)
+            no_labels = kill_frogs(extracted, frogs)
             f_out.write(no_labels)
-    if len(args) == 3:
-        if args[2] == '--vm' or args[2] == '-vm':
-            os.system('virtual_machine/maszyna-wirtualna-cln ' + args[1])
-
-
-main(sys.argv[1:])
+    if args.virtual_machine:
+        os.system(args.virutal_machine + ' ' + args.output_file)
